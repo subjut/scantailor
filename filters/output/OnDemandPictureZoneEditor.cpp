@@ -125,6 +125,8 @@ OnDemandPictureZoneEditor::buildRealPictureZoneEditor()
 		this, SIGNAL(invalidateThumbnail(PageId const&))
 	);
 
+	emit imageViewCreated(qobject_cast<ImageViewBase*>(widget.get()));
+
 	setCurrentIndex(addWidget(widget.release()));
 }
 

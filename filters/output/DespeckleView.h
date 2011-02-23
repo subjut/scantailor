@@ -25,6 +25,7 @@
 #include "IntrusivePtr.h"
 #include "imageproc/BinaryImage.h"
 #include "acceleration/AcceleratableOperations.h"
+#include "ImageViewBase.h"
 #include <QStackedWidget>
 #include <QImage>
 #include <memory>
@@ -57,6 +58,8 @@ public:
 	virtual ~DespeckleView();
 public slots:
 	void despeckleLevelChanged(DespeckleLevel level, bool* handled);
+signals:
+	void imageViewCreated(ImageViewBase*);
 protected:
 	virtual void hideEvent(QHideEvent* evt);
 

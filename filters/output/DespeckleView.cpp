@@ -126,6 +126,7 @@ DespeckleView::DespeckleView(
 		std::auto_ptr<QWidget> widget(
 			new BasicImageView(accel_ops, visualization.image(), visualization.downscaledImage())
 		);
+		emit imageViewCreated(qobject_cast<ImageViewBase*>(widget.get()));
 		setCurrentIndex(addWidget(widget.release()));
 	}
 }
@@ -216,6 +217,7 @@ DespeckleView::despeckleDone(
 			visualization.downscaledImage(), OutputMargins()
 		)
 	);
+	emit imageViewCreated(qobject_cast<ImageViewBase*>(widget.get()));
 
 	if (dbg && !dbg->empty()) {
 		std::auto_ptr<TabbedDebugImages> tab_widget(new TabbedDebugImages);

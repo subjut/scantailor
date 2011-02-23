@@ -25,6 +25,7 @@
 #include "CachingFactory.h"
 #include "imageproc/BinaryImage.h"
 #include "acceleration/AcceleratableOperations.h"
+#include "ImageViewBase.h"
 #include <QStackedWidget>
 #include <QImage>
 #include <functional>
@@ -56,6 +57,7 @@ public:
 		std::function<QPointF(QPointF const&)> const& output_to_orig);
 signals:
 	void invalidateThumbnail(PageId const& page_id);
+	void imageViewCreated(ImageViewBase*);
 protected:
 	virtual void showEvent(QShowEvent* evt);
 private:
