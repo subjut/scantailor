@@ -39,11 +39,26 @@ public:
 	
 	void setThresholdAdjustment(int val) { m_thresholdAdjustment = val; }
 		
+	int localAdaptiveThresholdRadius() const { return m_localAdaptiveThresholdRadius; }
+
+	void setLocalAdaptiveThresholdRadius(int val) { m_localAdaptiveThresholdRadius = val; }
+
+	bool disableSmoothing() const { return m_disableSmoothing; }
+
+	void setDisableSmoothing(bool val) { m_disableSmoothing = val; }
+
+	bool useLocalAdaptiveThreshold() const { return m_useLocalAdaptiveThreshold; }
+
+	void setUseLocalAdaptiveThreshold(bool val) { m_useLocalAdaptiveThreshold = val; }
+
 	bool operator==(BlackWhiteOptions const& other) const;
 	
 	bool operator!=(BlackWhiteOptions const& other) const;
 private:
 	int m_thresholdAdjustment;
+	int m_localAdaptiveThresholdRadius;
+	bool m_disableSmoothing;
+	bool m_useLocalAdaptiveThreshold;
 };
 
 } // namespace output

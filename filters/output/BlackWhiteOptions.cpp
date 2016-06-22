@@ -25,12 +25,18 @@ namespace output
 {
 
 BlackWhiteOptions::BlackWhiteOptions()
-:	m_thresholdAdjustment(0)
+:	m_thresholdAdjustment(0),
+	m_localAdaptiveThresholdRadius(32), //ad-hoc default value
+	m_disableSmoothing(false),
+	m_useLocalAdaptiveThreshold(false)
 {
 }
 
 BlackWhiteOptions::BlackWhiteOptions(QDomElement const& el)
-:	m_thresholdAdjustment(el.attribute("thresholdAdj").toInt())
+:	m_thresholdAdjustment(el.attribute("thresholdAdj").toInt()),
+	m_localAdaptiveThresholdRadius(el.attribute("localAdaptiveThresholdRadius").toInt()),
+	m_disableSmoothing(el.attribute("disableSmoothing") == "1"),
+	m_useLocalAdaptiveThreshold(el.attribute("useLocalAdaptiveThreshold") == "1")
 {
 }
 
@@ -39,13 +45,19 @@ BlackWhiteOptions::toXml(QDomDocument& doc, QString const& name) const
 {
 	QDomElement el(doc.createElement(name));
 	el.setAttribute("thresholdAdj", m_thresholdAdjustment);
+	el.setAttribute("localAdaptiveThresholdRadius", m_localAdaptiveThresholdRadius);
+	el.setAttribute("disableSmoothing", m_disableSmoothing ? "1" : "0");
+	el.setAttribute("useLocalAdaptiveThreshold", m_useLocalAdaptiveThreshold ? "1" : "0");
 	return el;
 }
 
 bool
 BlackWhiteOptions::operator==(BlackWhiteOptions const& other) const
 {
-	if (m_thresholdAdjustment != other.m_thresholdAdjustment) {
+	if (m_thresholdAdjustment != other.m_thresholdAdjustment
+		|| m_localAdaptiveThresholdRadius != other.m_localAdaptiveThresholdRadius
+		|| m_disableSmoothing != other.m_disableSmoothing
+		|| m_useLocalAdaptiveThreshold != other.m_useLocalAdaptiveThreshold) {
 		return false;
 	}
 	

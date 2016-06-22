@@ -378,7 +378,7 @@ OutputGenerator::process(
 	QImage maybe_smoothed;
 
 	// We only do smoothing if we are going to do binarization later.
-	if (!render_params.needBinarization()) {
+	if (!render_params.needBinarization() || m_colorParams.blackWhiteOptions().disableSmoothing()) {
 		maybe_smoothed = maybe_normalized;
 	} else {
 		maybe_smoothed = smoothToGrayscale(maybe_normalized, accel_ops);
