@@ -98,6 +98,10 @@ OptionsWidget::OptionsWidget(
 		this, SLOT(equalizeIlluminationToggled(bool))
 	);
 	connect(
+		disableSmoothingCB, SIGNAL(clicked(bool)),
+		this, SLOT(disableSmoothingToggled(bool))
+		);
+	connect(
 		lighterThresholdLink, SIGNAL(linkActivated(QString const&)),
 		this, SLOT(setLighterThreshold())
 	);
@@ -209,6 +213,16 @@ OptionsWidget::equalizeIlluminationToggled(bool const checked)
 	ColorGrayscaleOptions opt(m_colorParams.colorGrayscaleOptions());
 	opt.setNormalizeIllumination(checked);
 	m_colorParams.setColorGrayscaleOptions(opt);
+	m_ptrSettings->setColorParams(m_pageId, m_colorParams);
+	emit reloadRequested();
+}
+
+void
+OptionsWidget::disableSmoothingToggled(bool const checked)
+{
+	BlackWhiteOptions opt(m_colorParams.blackWhiteOptions());
+	opt.setDisableSmoothing(checked);
+	m_colorParams.setBlackWhiteOptions(opt);
 	m_ptrSettings->setColorParams(m_pageId, m_colorParams);
 	emit reloadRequested();
 }

@@ -66,6 +66,8 @@ private slots:
 	
 	void equalizeIlluminationToggled(bool checked);
 	
+	void disableSmoothingToggled(bool checked);
+
 	void setLighterThreshold();
 	
 	void setDarkerThreshold();

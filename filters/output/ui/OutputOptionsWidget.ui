@@ -344,6 +344,16 @@
            </item>
           </layout>
          </item>
+         <item>
+          <widget class="QCheckBox" name="disableSmoothingCB">
+           <property name="toolTip">
+            <string>Use when the scanned text is clear but thin (experimental).</string>
+           </property>
+           <property name="text">
+            <string>Disable smoothing</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>
