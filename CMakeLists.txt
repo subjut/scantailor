@@ -130,6 +130,7 @@ IF(WIN32)
 		DOC "Path to Eigen include directory (containing \"Eigen\" subdirectory)"
 	)
 
+	IF(0)
 	FIND_PATH(
 		DEPS_BUILD_DIR export-vars.cmake
 		HINTS "${build_outer_dir}/scantailor-deps-build"
@@ -143,6 +144,7 @@ IF(WIN32)
 	ENDIF()
 	SET(STAGING_LIBS_DIR "${DEPS_BUILD_DIR}/staging/libs")
 	INCLUDE("${DEPS_BUILD_DIR}/export-vars.cmake")
+	ENDIF()
 
 	SET(Qt5Core_DIR "${QT_SRC_DIR}/qtbase/lib/cmake/Qt5Core")
 	SET(Qt5Gui_DIR "${QT_SRC_DIR}/qtbase/lib/cmake/Qt5Gui")
@@ -345,7 +347,7 @@ IF(UNIX)
 		)
 	ENDIF(PTHREADS_FOUND)
 ELSEIF(WIN32)
-	ADD_DEFINITIONS(-DNOMINMAX)
+	ADD_DEFINITIONS(-DNOMINMAX -D__STDC_LIMIT_MACROS)
 ENDIF(UNIX)
 
 ADD_DEFINITIONS(-DBOOST_MULTI_INDEX_DISABLE_SERIALIZATION)
@@ -637,6 +639,7 @@ ADD_CUSTOM_TARGET(compile_translations ALL DEPENDS ${QM_FILES})
 
 INSTALL(FILES ${QM_FILES} DESTINATION "share/scantailor/translations")
 
+IF(0)
 # Source code packaging
 SET(CPACK_CMAKE_GENERATOR "")
 SET(CPACK_SOURCE_GENERATOR "TGZ")
@@ -709,3 +712,4 @@ IF(WIN32)
 	# Installer for Windows.  Must go last.
 	ADD_SUBDIRECTORY(packaging/windows)
 ENDIF(WIN32)
+ENDIF()
