@@ -33,6 +33,7 @@ namespace output
 
 Settings::Settings()
 :	m_scalingFactor(defaultScalingFactor())
+,	m_isNearest(false)
 ,	m_defaultPictureZoneProps(initialPictureZoneProps())
 ,	m_defaultFillZoneProps(initialFillZoneProps())
 {
@@ -50,6 +51,7 @@ Settings::clear()
 	initialPictureZoneProps().swap(m_defaultPictureZoneProps);
 	initialFillZoneProps().swap(m_defaultFillZoneProps);
 	m_scalingFactor = defaultScalingFactor();
+	m_isNearest = false;
 	m_perPageParams.clear();
 	m_perPageOutputParams.clear();
 	m_perPagePictureZones.clear();

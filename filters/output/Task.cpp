@@ -155,6 +155,7 @@ Task::process(
 	double const scaling_factor = m_ptrSettings->scalingFactor();
 	std::shared_ptr<AbstractImageTransform> const scaled_transform(orig_image_transform->clone());
 	QTransform const post_scale_xform(scaled_transform->scale(scaling_factor, scaling_factor));
+	scaled_transform->setNearest(m_ptrSettings->isNearest());
 
 	return processScaled(
 		status, accel_ops, orig_image, gray_orig_image_factory, scaled_transform,

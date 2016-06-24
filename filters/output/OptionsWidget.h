@@ -68,6 +68,8 @@ private slots:
 	
 	void disableSmoothingToggled(bool checked);
 
+	void nearestToggled(bool checked);
+
 	void setLighterThreshold();
 	
 	void setDarkerThreshold();

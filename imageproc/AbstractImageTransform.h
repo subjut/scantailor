@@ -44,6 +44,12 @@ class IMAGEPROC_EXPORT AbstractImageTransform
 {
 	// Member-wise copying is OK.
 public:
+	AbstractImageTransform() : m_isNearest(false) {}
+
+	bool isNearest() const { return m_isNearest; }
+
+	void setNearest(bool b) { m_isNearest = b; }
+
 	virtual ~AbstractImageTransform() {}
 
 	virtual std::unique_ptr<AbstractImageTransform> clone() const = 0;
@@ -124,6 +130,8 @@ public:
 	 *        to original image coordinates.
 	 */
 	virtual std::function<QPointF(QPointF const&)> backwardMapper() const = 0;
+protected:
+	bool m_isNearest;
 };
 
 } // namespace imageproc

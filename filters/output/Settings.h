@@ -95,6 +95,10 @@ public:
 	double scalingFactor() const { return m_scalingFactor; }
 
 	void setScalingFactor(double factor) { m_scalingFactor = factor; }
+
+	bool isNearest() const { return m_isNearest; }
+
+	void setNearest(bool b) { m_isNearest = b; }
 private:
 	typedef std::map<PageId, Params> PerPageParams;
 	typedef std::map<PageId, OutputParams> PerPageOutputParams;
@@ -106,6 +110,7 @@ private:
 
 	mutable QMutex m_mutex;
 	double m_scalingFactor;
+	bool m_isNearest;
 	PerPageParams m_perPageParams;
 	PerPageOutputParams m_perPageOutputParams;
 	PerPageZones m_perPagePictureZones;

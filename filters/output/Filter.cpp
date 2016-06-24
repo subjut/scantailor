@@ -88,6 +88,7 @@ Filter::saveSettings(
 {
 	QDomElement filter_el(doc.createElement("output"));
 	filter_el.setAttribute("scalingFactor", Utils::doubleToString(m_ptrSettings->scalingFactor()));
+	filter_el.setAttribute("nearest", m_ptrSettings->isNearest() ? "1" : "0");
 
 	writer.enumPages([this, &doc, &filter_el](PageId const& page_id, int numeric_id) {
 		writePageSettings(doc, filter_el, page_id, numeric_id);
@@ -128,6 +129,7 @@ Filter::loadSettings(ProjectReader const& reader, QDomElement const& filters_el)
 	);
 
 	m_ptrSettings->setScalingFactor(scalingFactorFromString(filter_el.attribute("scalingFactor")));
+	m_ptrSettings->setNearest(filter_el.attribute("nearest") == "1");
 	
 	QString const page_tag_name("page");
 	QDomNode node(filter_el.firstChild());

@@ -46,7 +46,7 @@ QString
 AffineImageTransform::fingerprint() const
 {
 	RoundingHasher hash(QCryptographicHash::Sha1);
-	hash << "AffineImageTransform";
+	hash << "AffineImageTransform" << (int)(m_isNearest ? 1 : 0);
 	hash << m_origSize << m_origCropArea;
 	hash << m_transform.m11() << m_transform.m21() << m_transform.dx();
 	hash << m_transform.m12() << m_transform.m22() << m_transform.dy();
@@ -149,10 +149,17 @@ AffineImageTransform::materialize(QImage const& image,
 	assert(!image.isNull());
 	assert(!target_rect.isEmpty());
 
-	return accel_ops->affineTransform(
-		image, m_transform, target_rect,
-		imageproc::OutsidePixels::assumeColor(outside_color)
-	);
+	if (m_isNearest) {
+		return accel_ops->affineTransform(
+			image, m_transform, target_rect,
+			imageproc::OutsidePixels::assumeColor(outside_color), QSizeF()
+		);
+	} else {
+		return accel_ops->affineTransform(
+			image, m_transform, target_rect,
+			imageproc::OutsidePixels::assumeColor(outside_color)
+		);
+	}
 }
 
 std::function<QPointF(QPointF const&)>

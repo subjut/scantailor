@@ -78,6 +78,59 @@ static QSizeF calcSrcUnitSize(QTransform const& xform, QSizeF const& min)
 	);
 }
 
+template<typename StorageUnit>
+static void affineTransformGenericNearest(
+	StorageUnit const* const src_data, int const src_stride, QSize const src_size,
+	StorageUnit* const dst_data, int const dst_stride, QTransform const& xform,
+	QRect const& dst_rect, StorageUnit const outside_color, int const outside_flags)
+{
+	int const sw = src_size.width();
+	int const sh = src_size.height();
+	int const dw = dst_rect.width();
+	int const dh = dst_rect.height();
+
+	StorageUnit* dst_line = dst_data;
+
+	QTransform inv_xform;
+	inv_xform.translate(dst_rect.x(), dst_rect.y());
+	inv_xform *= xform.inverted();
+	inv_xform *= QTransform().scale(32.0, 32.0);
+
+	for (int dy = 0; dy < dh; ++dy, dst_line += dst_stride) {
+		double const f_dy_center = dy + 0.5;
+		double const f_sx32_base = f_dy_center * inv_xform.m21() + inv_xform.dx();
+		double const f_sy32_base = f_dy_center * inv_xform.m22() + inv_xform.dy();
+
+		for (int dx = 0; dx < dw; ++dx) {
+			double const f_dx_center = dx + 0.5;
+			double const f_sx32_center = f_sx32_base + f_dx_center * inv_xform.m11();
+			double const f_sy32_center = f_sy32_base + f_dx_center * inv_xform.m12();
+			int src32_left = (int)f_sx32_center;
+			int src32_top = (int)f_sy32_center;
+			int src_left = src32_left >> 5;
+			int src_top = src32_top >> 5;
+
+			if (src_left < 0 || src_top < 0 || src_left >= sw || src_top >= sh) {
+				// Completely outside of src image.
+				if (outside_flags & OutsidePixels::COLOR) {
+					dst_line[dx] = outside_color;
+				} else {
+					int const src_x = qBound<int>(0, src_left, sw - 1);
+					int const src_y = qBound<int>(0, src_top, sh - 1);
+					dst_line[dx] = src_data[src_y * src_stride + src_x];
+				}
+				continue;
+			}
+
+			StorageUnit const* src_line = &src_data[src_top * src_stride];
+
+			// dst pixel maps to a single src pixel
+			StorageUnit const c = src_line[src_left];
+			dst_line[dx] = c;
+		}
+	}
+}
+
 template<typename StorageUnit, typename Mixer>
 static void affineTransformGeneric(
 	StorageUnit const* const src_data, int const src_stride, QSize const src_size,
@@ -85,6 +138,11 @@ static void affineTransformGeneric(
 	QRect const& dst_rect, StorageUnit const outside_color, int const outside_flags,
 	QSizeF const& min_mapping_area)
 {
+	if (min_mapping_area.isEmpty()) {
+		affineTransformGenericNearest<StorageUnit>(src_data, src_stride, src_size, dst_data, dst_stride, xform, dst_rect, outside_color, outside_flags);
+		return;
+	}
+
 	int const sw = src_size.width();
 	int const sh = src_size.height();
 	int const dw = dst_rect.width();

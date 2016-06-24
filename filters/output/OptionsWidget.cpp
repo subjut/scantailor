@@ -102,6 +102,10 @@ OptionsWidget::OptionsWidget(
 		this, SLOT(disableSmoothingToggled(bool))
 		);
 	connect(
+		nearestCB, SIGNAL(clicked(bool)),
+		this, SLOT(nearestToggled(bool))
+		);
+	connect(
 		lighterThresholdLink, SIGNAL(linkActivated(QString const&)),
 		this, SLOT(setLighterThreshold())
 	);
@@ -344,6 +348,15 @@ OptionsWidget::scaleChanged(double const scale)
 
 	m_ptrSettings->setScalingFactor(scale);
 	updateScaleDisplay();
+
+	emit invalidateAllThumbnails();
+	emit reloadRequested();
+}
+
+void
+OptionsWidget::nearestToggled(bool const checked)
+{
+	m_ptrSettings->setNearest(checked);
 
 	emit invalidateAllThumbnails();
 	emit reloadRequested();

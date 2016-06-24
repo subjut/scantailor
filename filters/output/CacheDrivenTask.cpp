@@ -63,6 +63,7 @@ CacheDrivenTask::process(
 	double const scaling_factor = m_ptrSettings->scalingFactor();
 	std::shared_ptr<AbstractImageTransform> const scaled_transform(full_size_image_transform->clone());
 	QTransform const post_scale_xform(scaled_transform->scale(scaling_factor, scaling_factor));
+	scaled_transform->setNearest(m_ptrSettings->isNearest());
 
 	return processScaled(
 		page_info, scaled_transform, post_scale_xform.mapRect(content_rect),
