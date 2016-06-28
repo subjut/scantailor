@@ -479,6 +479,8 @@ OptionsWidget::updateColorsDisplay()
 		thresholdSlider->setValue(
 			m_colorParams.blackWhiteOptions().thresholdAdjustment()
 		);
+
+		disableSmoothingCB->setChecked(m_colorParams.blackWhiteOptions().disableSmoothing());
 	}
 	
 	colorModeSelector->blockSignals(false);
@@ -497,6 +499,8 @@ OptionsWidget::updateScaleDisplay()
 	} else {
 		scale2xBtn->setChecked(true);
 	}
+
+	nearestCB->setChecked(m_ptrSettings->isNearest());
 
 	if (m_thisPageOutputSize) {
 		int const width = m_thisPageOutputSize->width();
