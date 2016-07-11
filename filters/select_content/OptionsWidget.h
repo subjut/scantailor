@@ -51,6 +51,8 @@ public:
 	void preUpdateUI(PageId const& page_id);
 	
 	void postUpdateUI(Params const& params);
+
+	static ContentBox adhoc_autoContentBox; //ad-hoc
 public slots:
 	void manualContentBoxSet(
 		ContentBox const& content_box, QSizeF const& content_size_px);
@@ -60,6 +62,8 @@ private slots:
 	void applySelection(std::set<PageId> const& pages);
 
 	void modeChanged(bool auto_mode);
+
+	void autoContentBox();
 private:
 	void updateModeIndication(AutoManualMode const mode);
 	

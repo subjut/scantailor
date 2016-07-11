@@ -46,7 +46,8 @@ public:
 		TaskStatus const& status,
 		std::shared_ptr<AcceleratableOperations> const& accel_ops,
 		imageproc::AffineTransformedImage const& image,
-		DebugImages* dbg = 0);
+		DebugImages* dbg = 0,
+		QRectF existing_box = QRectF());
 private:
 	class Garbage;
 	

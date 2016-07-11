@@ -110,7 +110,7 @@ struct PreferVertical
 QRectF
 ContentBoxFinder::findContentBox(TaskStatus const& status,
 	std::shared_ptr<AcceleratableOperations> const& accel_ops,
-	AffineTransformedImage const& image, DebugImages* dbg)
+	AffineTransformedImage const& image, DebugImages* dbg, QRectF existing_box)
 {
 	AffineImageTransform downscaled_transform(image.xform());
 	downscaled_transform.scaleTo(QSize(1500, 1500), Qt::KeepAspectRatio);
@@ -150,6 +150,15 @@ ContentBoxFinder::findContentBox(TaskStatus const& status,
 	PolygonRasterizer::fillExcept(
 		bw150, BLACK, downscaled_transform.transformedCropArea(), Qt::WindingFill
 	);
+	if (existing_box.isValid()) {
+		QTransform const transform_forward(
+			image.xform().transform().inverted() * downscaled_transform.transform()
+			);
+		QPolygonF existingCropArea(transform_forward.map(QPolygonF(existing_box)));
+		PolygonRasterizer::fillExcept(
+			bw150, BLACK, existingCropArea, Qt::WindingFill
+			);
+	}
 	if (dbg) {
 		dbg->add(bw150, "page_mask_applied");
 	}

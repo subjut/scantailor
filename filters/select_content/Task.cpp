@@ -130,14 +130,20 @@ Task::process(
 			orig_image, Qt::transparent, accel_ops
 		);
 
+		QRectF existing_box;
+		if (OptionsWidget::adhoc_autoContentBox.isValid()) {
+			existing_box = OptionsWidget::adhoc_autoContentBox.toTransformedRect(*orig_image_transform);
+		}
+		OptionsWidget::adhoc_autoContentBox = ContentBox();
+
 		QRectF const content_rect(
-			ContentBoxFinder::findContentBox(status, accel_ops, *dewarped, m_ptrDbg.get())
+			ContentBoxFinder::findContentBox(status, accel_ops, *dewarped, m_ptrDbg.get(), existing_box)
 		);
 
 		params.reset(
 			new Params(
 				ContentBox(*orig_image_transform, content_rect),
-				content_rect.size(), deps, MODE_AUTO
+				content_rect.size(), deps, existing_box.isValid() ? MODE_MANUAL : MODE_AUTO
 			)
 		);
 

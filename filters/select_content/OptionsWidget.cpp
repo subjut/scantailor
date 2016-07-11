@@ -26,6 +26,8 @@
 namespace select_content
 {
 
+ContentBox OptionsWidget::adhoc_autoContentBox;
+
 OptionsWidget::OptionsWidget(
 	IntrusivePtr<Settings> const& settings,
 	PageSelectionAccessor const& page_selection_accessor)
@@ -36,6 +38,7 @@ OptionsWidget::OptionsWidget(
 	setupUi(this);
 	
 	connect(autoBtn, SIGNAL(toggled(bool)), this, SLOT(modeChanged(bool)));
+	connect(autoBtn2, SIGNAL(clicked()), this, SLOT(autoContentBox()));
 	connect(applyToBtn, SIGNAL(clicked()), this, SLOT(showApplyToDialog()));
 }
 
@@ -51,6 +54,7 @@ OptionsWidget::preUpdateUI(PageId const& page_id)
 	m_pageId = page_id;
 	autoBtn->setChecked(true);
 	autoBtn->setEnabled(false);
+	autoBtn2->setEnabled(false);
 	manualBtn->setEnabled(false);
 }
 
@@ -60,6 +64,7 @@ OptionsWidget::postUpdateUI(Params const& params)
 	m_params = params;
 	updateModeIndication(params.mode());
 	autoBtn->setEnabled(true);
+	autoBtn2->setEnabled(true);
 	manualBtn->setEnabled(true);
 }
 
@@ -84,6 +89,8 @@ OptionsWidget::modeChanged(bool const auto_mode)
 	if (m_ignoreAutoManualToggle) {
 		return;
 	}
+
+	adhoc_autoContentBox = ContentBox();
 	
 	if (auto_mode) {
 		m_params.reset();
@@ -93,6 +100,22 @@ OptionsWidget::modeChanged(bool const auto_mode)
 		assert(m_params);
 		m_params->setMode(MODE_MANUAL);
 		commitCurrentParams();
+	}
+}
+
+void
+OptionsWidget::autoContentBox()
+{
+	if (m_ignoreAutoManualToggle) {
+		return;
+	}
+
+	assert(m_params);
+	if (m_params->contentBox().isValid()) {
+		adhoc_autoContentBox = m_params->contentBox();
+		m_params.reset();
+		m_ptrSettings->clearPageParams(m_pageId);
+		emit reloadRequested();
 	}
 }
 
