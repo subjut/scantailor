@@ -36,12 +36,15 @@ IF(MSVC)
 	ENDIF()
 
 	IF(MSVC60 OR MSVC70 OR MSVC71 OR MSVC80 OR MSVC90 OR MSVC10 OR MSVC11)
-		MESSAGE(FATAL_ERROR "This Visual Studio version is too old and is not supported. Only Visual Studio 2013 is currently supported.")
+		MESSAGE(FATAL_ERROR "This Visual Studio version is too old and is not supported. Only Visual Studio 2013 or 2015 are currently supported.")
 	ELSEIF(MSVC12)
-		SET(qt_platform win32-msvc2013)
+		SET(qt_platform win32-msvc)
 		SET(boost_toolset msvc-12.0)
+	ELSEIF(MSVC14)
+		SET(qt_platform win32-msvc)
+		SET(boost_toolset msvc-14.0)
 	ELSE()
-		MESSAGE(FATAL_ERROR "A new and unsupported version of Visual Studio was detected. Only Visual Studio 2013 is currently supported.")
+		MESSAGE(FATAL_ERROR "A new and unsupported version of Visual Studio was detected. Only Visual Studio 2013 or 2015 are currently supported.")
 	ENDIF()
 ELSE()
 	MESSAGE(FATAL_ERROR "Unsupported compiler. Only Visual Studio 2013 is currently supported.")
@@ -266,12 +269,12 @@ IF(EXISTS "${TIFF_DIR}/libtiff/tif_config.h.vc")
 	SET(tiff_vc_config "${TIFF_DIR}/libtiff/tif_config.h.vc")
 ENDIF(EXISTS "${TIFF_DIR}/libtiff/tif_config.h.vc")
 CONFIGURE_FILE(
-	"${tiff_vc_config}" "${TIFF_DIR}/libtiff/tif_config.h" @COPYONLY
+	"${tiff_vc_config}" "${TIFF_DIR}/libtiff/tif_config.h" COPYONLY
 )
 IF(EXISTS "${TIFF_DIR}/libtiff/tiffconf.vc.h")
 	CONFIGURE_FILE(
 		"${TIFF_DIR}/libtiff/tiffconf.vc.h"
-		"${TIFF_DIR}/libtiff/tiffconf.h" @COPYONLY
+		"${TIFF_DIR}/libtiff/tiffconf.h" COPYONLY
 	)
 ENDIF(EXISTS "${TIFF_DIR}/libtiff/tiffconf.vc.h")
 
