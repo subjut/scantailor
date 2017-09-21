@@ -215,7 +215,7 @@ IF(NOT EXISTS "${PNG_DIR}/pnglibconf.h")
 	IF(EXISTS "${PNG_DIR}/scripts/pnglibconf.h.prebuilt")
 		CONFIGURE_FILE(
 			"${PNG_DIR}/scripts/pnglibconf.h.prebuilt"
-			"${PNG_DIR}/pnglibconf.h" @COPYONLY
+			"${PNG_DIR}/pnglibconf.h" COPYONLY
 		)
 	ENDIF()
 ENDIF()
