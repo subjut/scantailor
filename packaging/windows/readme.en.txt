@@ -52,7 +52,8 @@ latest stable version.
    Homepage: http://eigen.tuxfamily.org/
 11. NSIS 2.x (tested with 2.46)
    Homepage: http://nsis.sourceforge.net/
-
+12. For OpenCL support, install an OpenCL SDK from Intel, AMD or CUDA Toolkit
+   from Nvidia.
 
                                     Instructions
 
