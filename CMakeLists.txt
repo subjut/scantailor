@@ -153,7 +153,9 @@ IF(WIN32)
 	IF(QT_PREBUILT_DIR)
 		SET(Qt5LinguistTools_DIR "${QT_PREBUILT_DIR}/lib/cmake/Qt5LinguistTools")
 	ELSE()
-		SET(Qt5LinguistTools_DIR "${QT_SRC_DIR}/qtbase/lib/cmake/Qt5LinguistTools")
+	  # This has changed from qtbase to qttools probably in Qt version 5.9.
+		# Might also be required above.
+		SET(Qt5LinguistTools_DIR "${QT_SRC_DIR}/qttools/lib/cmake/Qt5LinguistTools")
 	ENDIF()
 ENDIF()
 

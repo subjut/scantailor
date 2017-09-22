@@ -124,6 +124,11 @@ latest stable version.
    Where to build the binaries: C:\build\scantailor-build
 
    Click "Configure", then "Generate", just like on step 5.
+	 
+	 Note: With Qt 5.9, there is an error in the cmake configure step where the
+	 path to win32-msvc is garbled, if Qt is build from source. This has to be
+	 manually corrected in the file
+	 *Qt5sources*\qtbase\lib\cmake\Qt5Core\Qt5CoreConfigExtrasMkspecDir.cmake.
 
 8. Now we are going to build Scan Tailor itself.  On subsequent build of the
    same (possibly modified) version, you can start right from this step.
