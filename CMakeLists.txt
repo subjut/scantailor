@@ -307,6 +307,40 @@ IF(NOT TIFF_LIBRARY)
 	)
 ENDIF()
 
+
+FILE(GLOB openjpeg_dir "${source_outer_dir}/openjpeg-*")
+
+FIND_PATH(
+	OPENJPEG_INCLUDE_DIR openjpeg.h
+	PATHS ${OPENJPEG_DIR} # OPENJPEG_DIR may come from export-vars.cmake
+	PATH_SUFFIXES /src/lib/openjp2
+	DOC "Path to openjpeg headers."
+)
+IF(NOT OPENJPEG_INCLUDE_DIR)
+	MESSAGE(
+		FATAL_ERROR
+		"Could not find openjpeg headers.\n"
+		"You may need to install a package named libopenjp2-dev or similarly."
+	)
+ENDIF()
+
+INCLUDE_DIRECTORIES("${OPENJPEG_INCLUDE_DIR}")
+
+FIND_LIBRARY(
+	OPENJPEG_LIBRARY NAMES openjp2
+	PATHS /usr/local/lib /usr/lib
+	HINTS ${STAGING_LIBS_DIR}
+	DOC "Path to openjpeg library."
+)
+IF(NOT OPENJPEG_LIBRARY)
+	MESSAGE(
+		FATAL_ERROR
+		"Could not find openjpeg library.\n"
+		"You may need to install a package named libopenjp2-dev or similarly."
+	)
+ENDIF()
+
+
 IF(WIN32)
 	ADD_DEFINITIONS(-DUSE_LIBTIFF_DLL)
 ENDIF()
@@ -356,7 +390,7 @@ IF(WIN32)
 	LIST(APPEND EXTRA_LIBS winmm imm32 ws2_32 ole32 oleaut32 uuid gdi32 comdlg32 winspool)
 ENDIF()
 
-LIST(APPEND EXTRA_LIBS ${TIFF_LIBRARY} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${JPEG_LIBRARY})
+LIST(APPEND EXTRA_LIBS ${TIFF_LIBRARY} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${JPEG_LIBRARY} ${OPENJPEG_LIBRARY})
 
 SET(MAYBE_QT_OPENGL_MODULE "")
 IF(ENABLE_OPENGL)
@@ -459,9 +493,11 @@ SET(
 	ImageMetadataLoader.cpp ImageMetadataLoader.h
 	TiffReader.cpp TiffReader.h
 	TiffWriter.cpp TiffWriter.h
+	JP2Reader.cpp JP2Reader.h
 	PngMetadataLoader.cpp PngMetadataLoader.h
 	TiffMetadataLoader.cpp TiffMetadataLoader.h
 	JpegMetadataLoader.cpp JpegMetadataLoader.h
+	JP2MetadataLoader.cpp JP2MetadataLoader.h
 	ImageLoader.cpp ImageLoader.h
 	ErrorWidget.cpp ErrorWidget.h
 	OrthogonalRotation.cpp OrthogonalRotation.h
@@ -678,6 +714,7 @@ IF(WIN32)
 	COPY_TO_BUILD_DIR(
 		"${DLL_DIR}/libpng.dll" "${DLL_DIR}/libjpeg.dll"
 		"${DLL_DIR}/libtiff.dll" "${DLL_DIR}/zdll.dll"
+		"${DLL_DIR}/openjp2.dll"
 	)
 
 	# Qt's plugins.

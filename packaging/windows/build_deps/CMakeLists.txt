@@ -61,6 +61,8 @@ FILE(GLOB png_dirs3 "${build_outer_dir}/lpng[0-9]*")
 FILE(GLOB png_dirs4 "${source_outer_dir}/lpng[0-9]*")
 FILE(GLOB tiff_dirs1 "${build_outer_dir}/tiff-[0-9]*.[0-9]*.[0-9]*")
 FILE(GLOB tiff_dirs2 "${source_outer_dir}/tiff-[0-9]*.[0-9]*.[0-9]*")
+FILE(GLOB openjpeg_dirs1 "${build_outer_dir}/openjpeg-[0-9]*.[0-9]*.[0-9]*")
+FILE(GLOB openjpeg_dirs2 "${source_outer_dir}/openjpeg-[0-9]*.[0-9]*.[0-9]*")
 FILE(GLOB qt_dirs1 "${build_outer_dir}/qt-win-*-5.[0-9]*")
 FILE(GLOB qt_dirs2 "${build_outer_dir}/qt-everywhere-*-5.[0-9]*")
 FILE(GLOB qt_dirs3 "${source_outer_dir}/qt-win-*-5.[0-9]*")
@@ -86,6 +88,10 @@ FIND_PATH(
 	DOC "Path to top-level tiff source directory."
 )
 FIND_PATH(
+	OPENJPEG_DIR src/lib/openjp2/openjpeg.h HINTS ${openjpeg_dirs1} ${openjpeg_dirs2}
+	DOC "Path to top-level openjpeg source directory."
+)
+FIND_PATH(
 	QT_SRC_DIR NAMES qtbase/qtbase.pro HINTS ${qt_dirs1} ${qt_dirs2}
 	${qt_dirs3} ${qt_dirs4} ${qt_dirs5}
 	DOC "Path to top-level Qt5 source directory. If you installed a binary version, it will be something like C:\\Qt\\Qt5.0.2\\5.0.2\\Src"
@@ -103,6 +109,8 @@ ELSEIF(NOT PNG_DIR)
 	MESSAGE(FATAL_ERROR "LibPNG source directory not found. You may specify it manually.")
 ELSEIF(NOT TIFF_DIR)
 	MESSAGE(FATAL_ERROR "TIFF source directory not found. You may specify it manually.")
+ELSEIF(NOT OPENJPEG_DIR)
+	MESSAGE(FATAL_ERROR "OpenJPEG source directory not found. You may specify it manually.")
 ELSEIF(NOT QT_SRC_DIR)
 	MESSAGE(FATAL_ERROR "Qt5 source directory not found. You may specify it manually. If you installed a binary version, it will be something like C:\\Qt\\Qt5.0.2\\5.0.2\\Src")
 ELSEIF(NOT BOOST_DIR)
@@ -121,6 +129,7 @@ SET(ZLIB_LIBRARY_NAME zdll)
 SET(PNG_LIBRARY_NAME libpng)
 SET(JPEG_LIBRARY_NAME libjpeg)
 SET(TIFF_LIBRARY_NAME libtiff)
+SET(OPENJPEG_LIBRARY_NAME openjp2)
 
 MACRO(LIST_ITEMS_PREPEND LIST PREFIX)
 	SET(tmp_list_)
@@ -297,6 +306,52 @@ SET_TARGET_PROPERTIES(
 )
 
 
+#================================= OPENJPEG =================================#
+
+SET(
+	openjpeg_sources
+	thread.c thread.h bio.c bio.h cio.c cio.h dwt.c dwt.h event.c event.h image.c
+	image.h invert.c invert.h j2k.c j2k.h jp2.c jp2.h mct.c mct.h mqc.c mqc.h
+	mqc_inl.h openjpeg.c openjpeg.h opj_clock.c opj_clock.h pi.c pi.h t1.c t1.h
+	t2.c t2.h tcd.c tcd.h tgt.c tgt.h function_list.c function_list.h opj_codec.h
+	opj_includes.h opj_intmath.h opj_malloc.c opj_malloc.h opj_stdint.h
+)
+LIST_ITEMS_PREPEND(openjpeg_sources "${OPENJPEG_DIR}/src/lib/openjp2/")
+
+CONFIGURE_FILE(
+  ${OPENJPEG_DIR}/src/lib/openjp2/opj_config.h.cmake.in
+  ${OPENJPEG_DIR}/src/lib/openjp2/opj_config.h
+  @ONLY
+)
+
+CONFIGURE_FILE(
+  ${OPENJPEG_DIR}/src/lib/openjp2/opj_config_private.h.cmake.in
+  ${OPENJPEG_DIR}/src/lib/openjp2/opj_config_private.h
+  @ONLY
+)
+
+add_definitions(-DOPJ_EXPORTS)
+
+ADD_LIBRARY(${OPENJPEG_LIBRARY_NAME} SHARED ${openjpeg_sources})
+
+TARGET_LINK_LIBRARIES(
+  ${PNG_LIBRARY_NAME} ${TIFF_LIBRARY_NAME}
+)
+
+SET_TARGET_PROPERTIES(
+	${OPENJPEG_LIBRARY_NAME} PROPERTIES
+	DEFINE_SYMBOL OPENJPEG_BUILD
+	ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/staging/libs"
+	ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/staging/libs"
+	ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/staging/libs"
+	ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL "${CMAKE_BINARY_DIR}/staging/libs"
+	RUNTIME_OUTPUT_DIRECTORY_DEBUG "${QTBASE_DIR}/bin"
+	RUNTIME_OUTPUT_DIRECTORY_RELEASE "${QTBASE_DIR}/bin"
+	RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${QTBASE_DIR}/bin"
+	RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${QTBASE_DIR}/bin"
+)
+
+
 #================================= Boost ================================#
 
 SET(boost_64bit_flags "")
@@ -415,7 +470,7 @@ ADD_CUSTOM_TARGET(
 # errors occur, as rebuilding boost is much faster than rebuilding Qt.
 ADD_DEPENDENCIES(
 	Qt ${ZLIB_LIBRARY_NAME} ${JPEG_LIBRARY_NAME}
-	${PNG_LIBRARY_NAME} ${TIFF_LIBRARY_NAME}
+	${PNG_LIBRARY_NAME} ${TIFF_LIBRARY_NAME} ${OPENJPEG_LIBRARY_NAME}
 )
 
 # If you have multiple versions of Qt installed, this script
