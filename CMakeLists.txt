@@ -113,6 +113,24 @@ CMAKE_DEPENDENT_OPTION(
 )
 
 INCLUDE(FindOpenCL)
+IF(NOT OpenCL_FOUND)
+  FIND_LIBRARY(
+    OpenCL_LIBRARY NAMES OpenCL.lib
+    PATHS "${build_outer_dir}/opencl"
+    DOC "Local OpenCL library path"
+  )
+
+  FIND_PATH(
+    OpenCL_INCLUDE_DIR opencl.h cl.hpp
+    PATHS "${build_outer_dir}/OpenCL/CL"
+    DOC "Local OpenCL include path"
+  )
+
+  IF(OpenCL_LIBRARY AND OpenCL_INCLUDE_DIR)
+  SET(OpenCL_FOUND ON)
+  INCLUDE_DIRECTORIES("${OpenCL_INCLUDE_DIR}")
+  ENDIF()
+ENDIF()
 CMAKE_DEPENDENT_OPTION(
 	ENABLE_OPENCL "OpenCL may be used for acceleration of image processing" ON
 	"OpenCL_FOUND" OFF
