@@ -142,7 +142,11 @@ latest stable version.
    
    Make sure the building process finishes without errors. Warnings may
    be ignored.
-
+   
+	 Note: If you use the source only Qt5 option, the translations may not be
+	 built, because some Qt5 core files are missing. Copy Qt5Core.dll, Qt5Xml.dll
+	 and zdll.dll from qtbase/bin to qttools/bin.
+	 
    If everything went right, the installer named scantailor-VERSION-install.exe
    will appear in C:\build\scantailor-build. The VERSION part of the name will
    be replaced by the actual version, taken from the version.h file in the root
