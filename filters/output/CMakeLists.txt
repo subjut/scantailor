@@ -18,6 +18,7 @@ SET(
 	Utils.cpp Utils.h
 	Params.cpp Params.h
 	BlackWhiteOptions.cpp BlackWhiteOptions.h
+	MixedOptions.cpp MixedOptions.h
 	ColorGrayscaleOptions.cpp ColorGrayscaleOptions.h
 	RenderParams.cpp RenderParams.h
 	ColorParams.cpp ColorParams.h

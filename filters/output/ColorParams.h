@@ -20,6 +20,7 @@
 #define OUTPUT_COLORPARAMS_H_
 
 #include "ColorGrayscaleOptions.h"
+#include "MixedOptions.h"
 #include "BlackWhiteOptions.h"
 
 class QDomDocument;
@@ -51,6 +52,14 @@ public:
 		m_colorGrayscaleOptions = opt;
 	}
 	
+	MixedOptions const& mixedOptions() const {
+		return m_mixedOptions;
+	}
+
+	void setMixedOptions(MixedOptions const& opt) {
+		m_mixedOptions = opt;
+	}
+
 	BlackWhiteOptions const& blackWhiteOptions() const {
 		return m_bwOptions;
 	}
@@ -65,6 +74,7 @@ private:
 	
 	ColorMode m_colorMode;
 	ColorGrayscaleOptions m_colorGrayscaleOptions;
+	MixedOptions m_mixedOptions;
 	BlackWhiteOptions m_bwOptions;
 };
 

@@ -18,6 +18,7 @@
 
 #include "Params.h"
 #include "ColorGrayscaleOptions.h"
+#include "MixedOptions.h"
 #include "BlackWhiteOptions.h"
 #include "XmlMarshaller.h"
 #include "XmlUnmarshaller.h"
@@ -44,6 +45,9 @@ Params::Params(QDomElement const& el)
 			cp.namedItem("color-or-grayscale").toElement()
 		)
 	);
+	m_colorParams.setMixedOptions(
+		MixedOptions(cp.namedItem("mixed").toElement())
+	);
 	m_colorParams.setBlackWhiteOptions(
 		BlackWhiteOptions(cp.namedItem("bw").toElement())
 	);
@@ -68,6 +72,7 @@ Params::toXml(QDomDocument& doc, QString const& name) const
 			doc, "color-or-grayscale"
 		)
 	);
+	cp.appendChild(m_colorParams.mixedOptions().toXml(doc, "mixed"));
 	cp.appendChild(m_colorParams.blackWhiteOptions().toXml(doc, "bw"));
 	
 	el.appendChild(cp);

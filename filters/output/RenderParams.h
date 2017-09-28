@@ -36,6 +36,10 @@ public:
 	bool normalizeIllumination() const {
 		return (m_mask & NORMALIZE_ILLUMINATION) != 0;
 	}
+
+	bool normalizePictureIllumination() const {
+		return (m_mask & NORMALIZE_PICTURE_ILLUMINATION) != 0;
+	}
 	
 	bool needBinarization() const {
 		return (m_mask & NEED_BINARIZATION) != 0;
@@ -54,7 +58,8 @@ private:
 		WHITE_MARGINS = 1,
 		NORMALIZE_ILLUMINATION = 2,
 		NEED_BINARIZATION = 4,
-		MIXED_OUTPUT = 8
+		MIXED_OUTPUT = 8,
+		NORMALIZE_PICTURE_ILLUMINATION = 16
 	};
 	
 	int m_mask;

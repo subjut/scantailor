@@ -19,6 +19,7 @@
 #include "RenderParams.h"
 #include "ColorParams.h"
 #include "ColorGrayscaleOptions.h"
+#include "MixedOptions.h"
 #include "DespeckleLevel.h"
 
 namespace output
@@ -29,8 +30,8 @@ RenderParams::RenderParams(ColorParams const& cp)
 {
 	switch (cp.colorMode()) {
 		case ColorParams::BLACK_AND_WHITE:
-			m_mask |= WHITE_MARGINS|NORMALIZE_ILLUMINATION
-					|NEED_BINARIZATION;
+			m_mask |= WHITE_MARGINS | NORMALIZE_ILLUMINATION
+					| NEED_BINARIZATION;
 			break;
 		case ColorParams::COLOR_GRAYSCALE: {
 			ColorGrayscaleOptions const opt(
@@ -44,10 +45,20 @@ RenderParams::RenderParams(ColorParams const& cp)
 			}
 			break;
 		}
-		case ColorParams::MIXED:
-			m_mask |= WHITE_MARGINS|NORMALIZE_ILLUMINATION
-					|NEED_BINARIZATION|MIXED_OUTPUT;
+		case ColorParams::MIXED: {
+			MixedOptions const opt(
+				cp.mixedOptions()
+			);
+			if (opt.normalizePictureIllumination()) {
+				m_mask |= NORMALIZE_PICTURE_ILLUMINATION
+					| WHITE_MARGINS | NORMALIZE_ILLUMINATION
+					| NEED_BINARIZATION | MIXED_OUTPUT;
+			} else {
+				m_mask |= WHITE_MARGINS | NORMALIZE_ILLUMINATION
+				| NEED_BINARIZATION | MIXED_OUTPUT;
+			}
 			break;
+		}
 	}
 }
 

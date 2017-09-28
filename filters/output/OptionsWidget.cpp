@@ -98,6 +98,10 @@ OptionsWidget::OptionsWidget(
 		this, SLOT(equalizeIlluminationToggled(bool))
 	);
 	connect(
+		equalizePictureIlluminationCB, SIGNAL(clicked(bool)),
+		this, SLOT(equalizePictureIlluminationToggled(bool))
+	);
+	connect(
 		lighterThresholdLink, SIGNAL(linkActivated(QString const&)),
 		this, SLOT(setLighterThreshold())
 	);
@@ -209,6 +213,15 @@ OptionsWidget::equalizeIlluminationToggled(bool const checked)
 	ColorGrayscaleOptions opt(m_colorParams.colorGrayscaleOptions());
 	opt.setNormalizeIllumination(checked);
 	m_colorParams.setColorGrayscaleOptions(opt);
+	m_ptrSettings->setColorParams(m_pageId, m_colorParams);
+	emit reloadRequested();
+}
+
+void OptionsWidget::equalizePictureIlluminationToggled(bool const checked)
+{
+	MixedOptions opt(m_colorParams.mixedOptions());
+	opt.setNormalizePictureIllumination(checked);
+	m_colorParams.setMixedOptions(opt);
 	m_ptrSettings->setColorParams(m_pageId, m_colorParams);
 	emit reloadRequested();
 }
@@ -404,6 +417,7 @@ OptionsWidget::updateColorsDisplay()
 	colorModeSelector->setCurrentIndex(color_mode_idx);
 	
 	bool color_grayscale_options_visible = false;
+	bool mixed_options_visible = false;
 	bool bw_options_visible = false;
 	switch (color_mode) {
 		case ColorParams::BLACK_AND_WHITE:
@@ -414,6 +428,7 @@ OptionsWidget::updateColorsDisplay()
 			break;
 		case ColorParams::MIXED:
 			bw_options_visible = true;
+			mixed_options_visible = true;
 			break;
 	}
 	
@@ -427,10 +442,11 @@ OptionsWidget::updateColorsDisplay()
 		equalizeIlluminationCB->setEnabled(opt.whiteMargins());
 	}
 	
+	mixedOptions->setVisible(mixed_options_visible);
 	bwOptions->setVisible(bw_options_visible);
 	despecklePanel->setVisible(bw_options_visible);
 
-	if (bw_options_visible) {
+	if (bw_options_visible || mixed_options_visible) {
 		ScopedIncDec<int> const despeckle_guard(m_ignoreDespeckleLevelChanges);
 
 		switch (m_despeckleLevel) {
