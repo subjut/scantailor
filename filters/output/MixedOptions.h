@@ -30,17 +30,12 @@ class MixedOptions
 {
 public:
 	MixedOptions()
-		: m_thresholdAdjustment(0),
-		m_normalizePictureIllumination(true) {}
+		: m_normalizePictureIllumination(true) {}
 	
 	MixedOptions(QDomElement const& el);
 	
 	QDomElement toXml(QDomDocument& doc, QString const& name) const;
 	
-	int thresholdAdjustment() const { return m_thresholdAdjustment; }
-	
-	void setThresholdAdjustment(int val) { m_thresholdAdjustment = val; }
-
 	bool normalizePictureIllumination() const { return m_normalizePictureIllumination; }
 
 	void setNormalizePictureIllumination(bool val) { m_normalizePictureIllumination = val; }
@@ -49,7 +44,6 @@ public:
 	
 	bool operator!=(MixedOptions const& other) const;
 private:
-	int m_thresholdAdjustment;
 	bool m_normalizePictureIllumination;
 };
 

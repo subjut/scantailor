@@ -50,9 +50,9 @@ RenderParams::RenderParams(ColorParams const& cp)
 				cp.mixedOptions()
 			);
 			if (opt.normalizePictureIllumination()) {
-				m_mask |= NORMALIZE_PICTURE_ILLUMINATION
-					| WHITE_MARGINS | NORMALIZE_ILLUMINATION
-					| NEED_BINARIZATION | MIXED_OUTPUT;
+				m_mask |= WHITE_MARGINS | NORMALIZE_ILLUMINATION
+					| NEED_BINARIZATION | MIXED_OUTPUT
+					| NORMALIZE_PICTURE_ILLUMINATION;
 			} else {
 				m_mask |= WHITE_MARGINS | NORMALIZE_ILLUMINATION
 				| NEED_BINARIZATION | MIXED_OUTPUT;

@@ -108,6 +108,9 @@ OutputImageParams::colorParamsMatch(
 			if (cp1.colorGrayscaleOptions() != cp2.colorGrayscaleOptions()) {
 				return false;
 			}
+			if (cp1.mixedOptions() != cp2.mixedOptions()) {
+				return false;
+			}
 			break;
 		default:;
 	}

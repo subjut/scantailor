@@ -341,6 +341,7 @@ OutputGenerator::process(
 	QImage maybe_normalized;
 
 	if (!render_params.normalizeIllumination()) {
+		// color images, not for normalization
 		maybe_normalized = transformed_image;
 	} else {
 		// For background estimation we need a downscaled image of about 200x300 pixels.
@@ -428,6 +429,7 @@ OutputGenerator::process(
 
 		applyFillZonesInPlace(dst, fill_zones);
 		return dst.toQImage();
+		// b/w images are not processed further
 	}
 
 	BinaryImage bw_mask;
@@ -435,6 +437,8 @@ OutputGenerator::process(
 		// This block should go before the block with
 		// adjustBrightnessGrayscale(), which may convert
 		// maybe_normalized from grayscale to color mode.
+
+		// create mask for picture zones
 
 		bw_mask = estimateBinarizationMask(status, GrayImage(maybe_normalized), dbg);
 		if (dbg) {
@@ -470,17 +474,23 @@ OutputGenerator::process(
 	}
 
 	if (render_params.normalizeIllumination() && !orig_image.allGray()) {
+		// only for original color images
 		assert(maybe_normalized.format() == QImage::Format_Indexed8);
 
-		QImage tmp(transformed_image);
-		adjustBrightnessGrayscale(tmp, maybe_normalized);
+		if (!render_params.normalizePictureIllumination() && render_params.mixedOutput()) {
+			// don't normalize color images in mixed output
+			maybe_normalized = transformed_image;
+		} else {
+			QImage tmp(transformed_image);
+			adjustBrightnessGrayscale(tmp, maybe_normalized);
+			
+			maybe_normalized = tmp;
+
+			if (dbg)
+				dbg->add(maybe_normalized, "norm_illum_color");
+		}
 
 		status.throwIfCancelled();
-
-		maybe_normalized = tmp;
-		if (dbg) {
-			dbg->add(maybe_normalized, "norm_illum_color");
-		}
 	}
 
 	if (!render_params.mixedOutput()) {

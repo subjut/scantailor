@@ -217,13 +217,16 @@ OptionsWidget::equalizeIlluminationToggled(bool const checked)
 	emit reloadRequested();
 }
 
-void OptionsWidget::equalizePictureIlluminationToggled(bool const checked)
+void
+OptionsWidget::equalizePictureIlluminationToggled(bool const checked)
 {
 	MixedOptions opt(m_colorParams.mixedOptions());
 	opt.setNormalizePictureIllumination(checked);
 	m_colorParams.setMixedOptions(opt);
 	m_ptrSettings->setColorParams(m_pageId, m_colorParams);
 	emit reloadRequested();
+
+	emit invalidateThumbnail(m_pageId);
 }
 
 void
@@ -442,11 +445,9 @@ OptionsWidget::updateColorsDisplay()
 		equalizeIlluminationCB->setEnabled(opt.whiteMargins());
 	}
 	
-	mixedOptions->setVisible(mixed_options_visible);
 	bwOptions->setVisible(bw_options_visible);
 	despecklePanel->setVisible(bw_options_visible);
-
-	if (bw_options_visible || mixed_options_visible) {
+	if (bw_options_visible) {
 		ScopedIncDec<int> const despeckle_guard(m_ignoreDespeckleLevelChanges);
 
 		switch (m_despeckleLevel) {
@@ -468,6 +469,15 @@ OptionsWidget::updateColorsDisplay()
 		thresholdSlider->setValue(
 			m_colorParams.blackWhiteOptions().thresholdAdjustment()
 		);
+
+	}
+
+	mixedOptions->setVisible(mixed_options_visible);
+	if (mixed_options_visible) {
+		MixedOptions const opt(
+			m_colorParams.mixedOptions()
+		);
+		equalizePictureIlluminationCB->setChecked(opt.normalizePictureIllumination());
 	}
 	
 	colorModeSelector->blockSignals(false);
