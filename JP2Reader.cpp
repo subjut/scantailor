@@ -88,9 +88,11 @@ static opj_image_t *jp2decode(QIODevice& dev, bool full)
 	opj_image_t *jp2 = NULL;
 	bool ok = opj_read_header(jp2_stream, jp2_codec, &jp2);
 
-	if (ok && full)
+	if (ok && full) {
+		// we get "opj_j2k_apply_nb_tile_parts_correction error" from openjpeg library (v2.2)
 		ok = opj_decode(jp2_codec, jp2_stream, jp2) &&
-		     opj_end_decompress(jp2_codec, jp2_stream);
+			opj_end_decompress(jp2_codec, jp2_stream);
+	}
 
 	opj_stream_destroy(jp2_stream);
 	opj_destroy_codec(jp2_codec);
@@ -122,6 +124,12 @@ bool JP2Reader::readMetadata(QIODevice& dev,
 QImage
 JP2Reader::readImage(QIODevice& dev)
 {
+	
+	if (dev.isSequential()) {
+		// openjpeg needs to be able to seek.
+		return QImage();
+	}
+	
 	opj_image_t *jp2 = jp2decode(dev, true);
 	if (!jp2)
 		return QImage();
