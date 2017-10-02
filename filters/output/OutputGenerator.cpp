@@ -493,6 +493,12 @@ OutputGenerator::process(
 		status.throwIfCancelled();
 	}
 
+	if (!render_params.normalizePictureIllumination() && orig_image.isGrayscale()
+		&& render_params.mixedOutput()) {
+		// We have mixed output and don't want to normalize illumination
+		maybe_normalized = transformed_image;
+	}
+
 	if (!render_params.mixedOutput()) {
 		// It's "Color / Grayscale" mode, as we handle B/W above.
 		reserveBlackAndWhite(maybe_normalized);
