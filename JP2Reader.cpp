@@ -33,9 +33,9 @@ bool JP2Reader::peekMagic(QIODevice& device)
 		(seen == 12 && memcmp(buf, magic12, 12) == 0);
 }
 
-static OPJ_SIZE_T readFn(void *buf, OPJ_SIZE_T size, void *ctx)
+static OPJ_SIZE_T readFn(void *buf, OPJ_SIZE_T size, void *p_user_data)
 {
-	QIODevice* device = (QIODevice *) ctx;
+	QIODevice* device = (QIODevice *) p_user_data;
 	qint64 n = device->read((char *) buf, size);
 	if (n < 0)
 		/* error... */
@@ -46,18 +46,29 @@ static OPJ_SIZE_T readFn(void *buf, OPJ_SIZE_T size, void *ctx)
 	return n;
 }
 
-static OPJ_OFF_T skipFn(OPJ_OFF_T off, void *ctx)
+static OPJ_OFF_T skipFn(OPJ_OFF_T skip, void *p_user_data)
 {
-	(void) ctx; (void) off;
-	fprintf(stderr, "jp2: skip not supported\n");
-	return 0;
+	//  We need to use seek because QIODevice does not support skippping
+	QIODevice* device = (QIODevice *) p_user_data;
+	if (skip > device->size() - device->pos()) {
+		device->seek(device->size());
+	} else {
+		device->seek(device->pos() + skip);
+	}
+	/* Always return input value to avoid "Problem with skipping JPEG2000 box, stream error" */
+	return skip;
 }
 
-static OPJ_BOOL seekFn(OPJ_OFF_T off, void *ctx)
+static OPJ_BOOL seekFn(OPJ_OFF_T off, void *p_user_data)
 {
-	(void) ctx; (void) off;
-	fprintf(stderr, "jp2: seek not supported\n");
-	return false;
+	QIODevice* device = (QIODevice *) p_user_data;
+	if (off > device->size()) {
+		return OPJ_FALSE;
+	}
+	if (device->seek(off)) {
+		return OPJ_TRUE;
+	}
+	return OPJ_FALSE;
 }
 
 static void warner(const char *msg, void *ctx)
@@ -87,7 +98,7 @@ static opj_image_t *jp2decode(QIODevice& device, bool full)
 	opj_set_warning_handler(jp2_codec, warner, NULL);
 	opj_set_error_handler(jp2_codec, warner, NULL);
 
-	opj_stream_t *jp2_stream = opj_stream_create(OPJ_J2K_STREAM_CHUNK_SIZE, OPJ_TRUE);
+	jp2_stream = opj_stream_create(OPJ_J2K_STREAM_CHUNK_SIZE, OPJ_TRUE);
 	if (!jp2_stream) {
 		opj_destroy_codec(jp2_codec);
 		return NULL;
