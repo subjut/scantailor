@@ -22,21 +22,21 @@
 #include <QImage>
 #include <openjpeg.h>
 
-bool JP2Reader::peekMagic(QIODevice& dev)
+bool JP2Reader::peekMagic(QIODevice& device)
 {
 	char buf[12];
 	const char magic4[] = "\x0d\x0a\x87\x0a";
 	const char magic12[] = "\x00\x00\x00\x0c\x6a\x50\x20\x20\x0d\x0a\x87\x0a";
 
-	qint64 seen = dev.peek(buf, 12);
+	qint64 seen = device.peek(buf, 12);
 	return	(seen >=  4 && memcmp(buf, magic4,   4) == 0) ||
 		(seen == 12 && memcmp(buf, magic12, 12) == 0);
 }
 
 static OPJ_SIZE_T readFn(void *buf, OPJ_SIZE_T size, void *ctx)
 {
-	QIODevice* dev = (QIODevice *) ctx;
-	qint64 n = dev->read((char *) buf, size);
+	QIODevice* device = (QIODevice *) ctx;
+	qint64 n = device->read((char *) buf, size);
 	if (n < 0)
 		/* error... */
 		return (OPJ_SIZE_T)-1;
@@ -66,24 +66,38 @@ static void warner(const char *msg, void *ctx)
 	fprintf(stderr, "jp2: %s", msg);
 }
 
-static opj_image_t *jp2decode(QIODevice& dev, bool full)
+static opj_image_t *jp2decode(QIODevice& device, bool full)
 {
 	opj_dparameters_t jp2_param;
+	opj_codec_t *jp2_codec;
+	opj_stream_t *jp2_stream;
+
+	/* Set decoding parameters to default values */
 	opj_set_default_decoder_parameters(&jp2_param);
 
-	opj_codec_t *jp2_codec = opj_create_decompress(OPJ_CODEC_JP2);
-	opj_setup_decoder(jp2_codec, &jp2_param);
+	if ((jp2_codec = opj_create_decompress(OPJ_CODEC_JP2)) == NULL) {
+		return NULL;
+	}
+	
+	if (!opj_setup_decoder(jp2_codec, &jp2_param)) {
+		opj_destroy_codec(jp2_codec);
+		return NULL;
+	}
 
 	opj_set_warning_handler(jp2_codec, warner, NULL);
 	opj_set_error_handler(jp2_codec, warner, NULL);
 
 	opj_stream_t *jp2_stream = opj_stream_create(OPJ_J2K_STREAM_CHUNK_SIZE, OPJ_TRUE);
+	if (!jp2_stream) {
+		opj_destroy_codec(jp2_codec);
+		return NULL;
+	}
 	opj_stream_set_read_function(jp2_stream, readFn);
 	opj_stream_set_skip_function(jp2_stream, skipFn);
 	opj_stream_set_seek_function(jp2_stream, seekFn);
 
-	opj_stream_set_user_data(jp2_stream, &dev, NULL);
-	opj_stream_set_user_data_length(jp2_stream, dev.size());
+	opj_stream_set_user_data(jp2_stream, &device, (opj_stream_free_user_data_fn)NULL);
+	opj_stream_set_user_data_length(jp2_stream, device.size());
 
 	opj_image_t *jp2 = NULL;
 	bool ok = opj_read_header(jp2_stream, jp2_codec, &jp2);
@@ -105,10 +119,10 @@ static opj_image_t *jp2decode(QIODevice& dev, bool full)
 	return jp2;
 }
 
-bool JP2Reader::readMetadata(QIODevice& dev,
+bool JP2Reader::readMetadata(QIODevice& device,
 	VirtualFunction1<void, ImageMetadata const&>& out)
 {
-	opj_image_t *jp2 = jp2decode(dev, false);
+	opj_image_t *jp2 = jp2decode(device, false);
 	if (!jp2)
 		return false;
 
@@ -122,15 +136,19 @@ bool JP2Reader::readMetadata(QIODevice& dev,
 }
 
 QImage
-JP2Reader::readImage(QIODevice& dev)
+JP2Reader::readImage(QIODevice& device)
 {
+
+	if (!device.isReadable()) {
+		return QImage();
+	}
 	
-	if (dev.isSequential()) {
+	if (device.isSequential()) {
 		// openjpeg needs to be able to seek.
 		return QImage();
 	}
 	
-	opj_image_t *jp2 = jp2decode(dev, true);
+	opj_image_t *jp2 = jp2decode(device, true);
 	if (!jp2)
 		return QImage();
 
