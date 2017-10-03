@@ -6,6 +6,7 @@ build/
 *~
 *_automoc.cpp
 moc_*cpp
+.vscode
 
 # Individual files
 .version.h
