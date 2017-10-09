@@ -32,7 +32,6 @@
 #include <QFile>
 #include <QVariant>
 #include <boost/bind.hpp>
-#include <boost/foreach.hpp>
 #include <vector>
 
 struct RelinkablePathVisualization::PathComponent
@@ -127,7 +126,7 @@ RelinkablePathVisualization::setPath(RelinkablePath const& path, bool clickable)
 	checkForExistence(path_components);
 
 	int component_idx = -1;
-	BOOST_FOREACH(PathComponent& path_component, path_components) {
+	for(PathComponent& path_component : path_components) {
 		++component_idx;
 		ComponentButton* btn = new ComponentButton(this);
 		m_pLayout->addWidget(btn);
@@ -271,7 +270,7 @@ RelinkablePathVisualization::checkForExistence(std::vector<PathComponent>& compo
 	}
 
 	if (QFile::exists(components.back().prefixPath)) {
-		BOOST_FOREACH(PathComponent& comp, components) {
+		for(PathComponent& comp : components) {
 			comp.exists = true;
 		}
 		return;

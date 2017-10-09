@@ -49,7 +49,6 @@
 #include "imageproc/AdjustBrightness.h"
 #include "imageproc/PolygonRasterizer.h"
 #include "config.h"
-#include <boost/foreach.hpp>
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
 #include <QImage>

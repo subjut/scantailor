@@ -48,7 +48,6 @@
 #include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index/sequenced_index.hpp>
 #include <boost/multi_index/member.hpp>
-#include <boost/foreach.hpp>
 #include <boost/optional.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <algorithm>
@@ -526,7 +525,7 @@ ThumbnailPixmapCache::Impl::setThumbDir(QString const& thumb_dir)
 
 	m_thumbDir = thumb_dir;
 
-	BOOST_FOREACH(Item const& item, m_loadQueue) {
+	for(Item const& item : m_loadQueue) {
 		// This trick will make all queued tasks to expire.
 		m_totalLoadAttempts = std::max(
 			m_totalLoadAttempts,

@@ -19,7 +19,6 @@
 #include "MaxWhitespaceFinder.h"
 #include <QPoint>
 #include <QDebug>
-#include <boost/foreach.hpp>
 #include <algorithm>
 #include <limits>
 #include <stddef.h>
@@ -185,7 +184,7 @@ MaxWhitespaceFinder::findPivotObstacle(Region const& region) const
 	
 	QRect best_obstacle;
 	int best_distance = std::numeric_limits<int>::max();
-	BOOST_FOREACH (QRect const& obstacle, region.obstacles()) {
+	for (QRect const& obstacle : region.obstacles()) {
 		QPoint const vec(center - obstacle.center());
 		int const distance = vec.x() * vec.x() + vec.y() * vec.y();
 		if (distance <= best_distance) {
@@ -397,7 +396,7 @@ MaxWhitespaceFinder::Region::Region(Region const& other)
 void
 MaxWhitespaceFinder::Region::addObstacles(Region const& other_region)
 {
-	BOOST_FOREACH (QRect const& obstacle, other_region.obstacles()) {
+	for (QRect const& obstacle : other_region.obstacles()) {
 		QRect const intersected(obstacle.intersected(m_bounds));
 		if (!intersected.isEmpty()) {
 			m_obstacles.push_back(intersected);

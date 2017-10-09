@@ -27,7 +27,6 @@
 #include <QCoreApplication>
 #include <QColor>
 #include <Qt>
-#include <boost/foreach.hpp>
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index/sequenced_index.hpp>
@@ -194,7 +193,7 @@ RelinkingModel::replacePrefix(
 	int modified_rowspan_begin = -1;
 
 	int row = -1;
-	BOOST_FOREACH(Item& item, m_items) {
+	for(Item& item : m_items) {
 		++row;
 		bool modified = false;
 		
@@ -241,7 +240,7 @@ RelinkingModel::checkForMerges() const
 	std::vector<QString> new_paths;
 	new_paths.reserve(m_items.size());
 
-	BOOST_FOREACH(Item const& item, m_items) {
+	for(Item const& item : m_items) {
 		new_paths.push_back(item.uncommittedPath);
 	}
 
@@ -260,7 +259,7 @@ RelinkingModel::commitChanges()
 	int modified_rowspan_begin = -1;
 
 	int row = -1;
-	BOOST_FOREACH(Item& item, m_items) {
+	for(Item& item : m_items) {
 		++row;
 		
 		if (item.committedPath != item.uncommittedPath) {
@@ -296,7 +295,7 @@ RelinkingModel::rollbackChanges()
 	int modified_rowspan_begin = -1;
 
 	int row = -1;
-	BOOST_FOREACH(Item& item, m_items) {
+	for(Item& item : m_items) {
 		++row;
 		
 		if (item.uncommittedPath != item.committedPath) {

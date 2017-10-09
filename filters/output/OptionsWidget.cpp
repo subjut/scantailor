@@ -28,7 +28,6 @@
 #include "../../Utils.h"
 #include "ScopedIncDec.h"
 #include "config.h"
-#include <boost/foreach.hpp>
 #include <QtGlobal>
 #include <QVariant>
 #include <QColorDialog>
@@ -318,7 +317,7 @@ OptionsWidget::applyColorsButtonClicked()
 void
 OptionsWidget::applyColorsConfirmed(std::set<PageId> const& pages)
 {
-	BOOST_FOREACH(PageId const& page_id, pages) {
+	for(PageId const& page_id : pages) {
 		m_ptrSettings->setColorParams(page_id, m_colorParams);
 		emit invalidateThumbnail(page_id);
 	}
@@ -381,7 +380,7 @@ OptionsWidget::applyDespeckleButtonClicked()
 void
 OptionsWidget::applyDespeckleConfirmed(std::set<PageId> const& pages)
 {
-	BOOST_FOREACH(PageId const& page_id, pages) {
+	for(PageId const& page_id : pages) {
 		m_ptrSettings->setDespeckleLevel(page_id, m_despeckleLevel);
 		emit invalidateThumbnail(page_id);
 	}

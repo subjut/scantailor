@@ -29,7 +29,6 @@
 #include <QtGlobal>
 #include <QDebug>
 #include <boost/bind.hpp>
-#include <boost/foreach.hpp>
 #include <algorithm>
 
 namespace page_split

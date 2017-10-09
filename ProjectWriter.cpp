@@ -30,7 +30,6 @@
 #include <QTextStream>
 #include <QFileInfo>
 #include <boost/bind.hpp>
-#include <boost/foreach.hpp>
 #include <stddef.h>
 #include <assert.h>
 
@@ -123,7 +122,7 @@ ProjectWriter::processDirectories(QDomDocument& doc) const
 {
 	QDomElement dirs_el(doc.createElement("directories"));
 	
-	BOOST_FOREACH(Directory const& dir, m_dirs.get<Sequenced>()) {
+	for(Directory const& dir : m_dirs.get<Sequenced>()) {
 		QDomElement dir_el(doc.createElement("directory"));
 		dir_el.setAttribute("id", dir.numericId);
 		dir_el.setAttribute("path", dir.path);
@@ -138,7 +137,7 @@ ProjectWriter::processFiles(QDomDocument& doc) const
 {
 	QDomElement files_el(doc.createElement("files"));
 	
-	BOOST_FOREACH(File const& file, m_files.get<Sequenced>()) {
+	for(File const& file : m_files.get<Sequenced>()) {
 		QFileInfo const file_info(file.path);
 		QString const& dir_path = file_info.absolutePath();
 		QDomElement file_el(doc.createElement("file"));
@@ -156,7 +155,7 @@ ProjectWriter::processImages(QDomDocument& doc) const
 {
 	QDomElement images_el(doc.createElement("images"));
 	
-	BOOST_FOREACH(Image const& image, m_images.get<Sequenced>()) {
+	for(Image const& image : m_images.get<Sequenced>()) {
 		QDomElement image_el(doc.createElement("image"));
 		image_el.setAttribute("id", image.numericId);
 		image_el.setAttribute("subPages", image.numSubPages);
@@ -261,7 +260,7 @@ ProjectWriter::pageId(PageId const& page_id) const
 void
 ProjectWriter::enumImagesImpl(VirtualFunction2<void, ImageId const&, int>& out) const
 {
-	BOOST_FOREACH(Image const& image, m_images.get<Sequenced>()) {
+	for(Image const& image : m_images.get<Sequenced>()) {
 		out(image.id, image.numericId);
 	}
 }
@@ -269,7 +268,7 @@ ProjectWriter::enumImagesImpl(VirtualFunction2<void, ImageId const&, int>& out) 
 void
 ProjectWriter::enumPagesImpl(VirtualFunction2<void, PageId const&, int>& out) const
 {
-	BOOST_FOREACH(Page const& page, m_pages.get<Sequenced>()) {
+	for(Page const& page : m_pages.get<Sequenced>()) {
 		out(page.id, page.numericId);
 	}
 }

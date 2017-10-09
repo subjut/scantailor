@@ -43,7 +43,6 @@
 #include <QDebug>
 #include <boost/array.hpp>
 #include <boost/bind.hpp>
-#include <boost/foreach.hpp>
 #include <vector>
 #include <stdexcept>
 
@@ -116,7 +115,7 @@ DewarpingView::DewarpingView(
 	
 	InteractiveXSpline* splines[2] = { &m_topSpline, &m_bottomSpline };
 	int curve_idx = -1;
-	BOOST_FOREACH(InteractiveXSpline* spline, splines) {
+	for(InteractiveXSpline* spline : splines) {
 		++curve_idx;
 		spline->setModifiedCallback(boost::bind(&DewarpingView::curveModified, this, curve_idx));
 		spline->setDragFinishedCallback(boost::bind(&DewarpingView::dragFinished, this));

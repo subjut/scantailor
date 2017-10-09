@@ -38,7 +38,6 @@
 #include <QPen>
 #include <Qt>
 #include <boost/bind.hpp>
-#include <boost/foreach.hpp>
 #include <vector>
 #include <assert.h>
 
@@ -100,7 +99,7 @@ FillZoneEditor::FillZoneEditor(
 	rootInteractionHandler().makeLastFollower(m_dragHandler);
 	rootInteractionHandler().makeLastFollower(m_zoomHandler);
 
-	BOOST_FOREACH(Zone const& zone, m_ptrSettings->fillZonesForPage(page_id)) {
+	for(Zone const& zone : m_ptrSettings->fillZonesForPage(page_id)) {
 		EditableSpline::Ptr spline(
 			new EditableSpline(zone.spline().transformed(m_origToImage))
 		);
@@ -124,7 +123,7 @@ FillZoneEditor::onPaint(QPainter& painter, InteractionState const& interaction)
 
 	painter.setPen(Qt::NoPen);
 
-	BOOST_FOREACH(EditableZoneSet::Zone const& zone, m_zones) {
+	for(EditableZoneSet::Zone const& zone : m_zones) {
 		typedef FillColorProperty FCP;
 		QColor const color(zone.properties()->locateOrDefault<FCP>()->color());
 		painter.setBrush(m_colorAdapter(color));
@@ -154,7 +153,7 @@ FillZoneEditor::commitZones()
 {
 	ZoneSet zones;
 
-	BOOST_FOREACH(EditableZoneSet::Zone const& zone, m_zones) {
+	for(EditableZoneSet::Zone const& zone : m_zones) {
 		SerializableSpline const spline(
 			SerializableSpline(*zone.spline()).transformed(m_imageToOrig)
 		);
