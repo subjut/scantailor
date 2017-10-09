@@ -25,7 +25,8 @@ namespace output
 {
 
 MixedOptions::MixedOptions(QDomElement const& el)
-:	m_normalizePictureIllumination(el.attribute("normalizePictureIllumination") == "1")
+:	m_normalizePictureIllumination(el.attribute("normalizePictureIllumination") == "1"),
+    m_rectangularizePictures(el.attribute("rectangularizePictures") == "0")
 {
 }
 
@@ -34,6 +35,7 @@ MixedOptions::toXml(QDomDocument& doc, QString const& name) const
 {
 	QDomElement el(doc.createElement(name));
 	el.setAttribute("normalizePictureIllumination", m_normalizePictureIllumination ? "1" : "0");
+	el.setAttribute("rectangularizePictures", m_rectangularizePictures ? "1" : "0");
 	return el;
 }
 
@@ -41,6 +43,9 @@ bool
 MixedOptions::operator==(MixedOptions const& other) const
 {
 	if (m_normalizePictureIllumination != other.m_normalizePictureIllumination) {
+		return false;
+	}
+	if (m_rectangularizePictures != other.m_rectangularizePictures) {
 		return false;
 	}
 	

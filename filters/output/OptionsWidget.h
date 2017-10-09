@@ -67,6 +67,8 @@ private slots:
 	void equalizeIlluminationToggled(bool checked);
 
 	void equalizePictureIlluminationToggled(bool checked);
+
+	void rectangularizePicturesToggled(bool checked);
 	
 	void setLighterThreshold();
 	

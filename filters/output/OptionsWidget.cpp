@@ -61,7 +61,7 @@ OptionsWidget::OptionsWidget(
 	colorModeSelector->addItem(tr("Black and White"), ColorParams::BLACK_AND_WHITE);
 	colorModeSelector->addItem(tr("Color / Grayscale"), ColorParams::COLOR_GRAYSCALE);
 	colorModeSelector->addItem(tr("Mixed"), ColorParams::MIXED);
-	
+
 	darkerThresholdLink->setText(
 		Utils::richTextForLink(darkerThresholdLink->text())
 	);
@@ -100,6 +100,10 @@ OptionsWidget::OptionsWidget(
 	connect(
 		equalizePictureIlluminationCB, SIGNAL(clicked(bool)),
 		this, SLOT(equalizePictureIlluminationToggled(bool))
+	);
+	connect(
+		rectangularizePicturesCB, SIGNAL(clicked(bool)),
+		this, SLOT(rectangularizePicturesToggled(bool))
 	);
 	connect(
 		lighterThresholdLink, SIGNAL(linkActivated(QString const&)),
@@ -225,8 +229,16 @@ OptionsWidget::equalizePictureIlluminationToggled(bool const checked)
 	m_colorParams.setMixedOptions(opt);
 	m_ptrSettings->setColorParams(m_pageId, m_colorParams);
 	emit reloadRequested();
+}
 
-	emit invalidateThumbnail(m_pageId);
+void
+OptionsWidget::rectangularizePicturesToggled(bool const checked)
+{
+	MixedOptions opt(m_colorParams.mixedOptions());
+	opt.setRectangularizePictures(checked);
+	m_colorParams.setMixedOptions(opt);
+	m_ptrSettings->setColorParams(m_pageId, m_colorParams);
+	emit reloadRequested();
 }
 
 void

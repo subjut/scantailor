@@ -39,12 +39,17 @@ public:
 	bool normalizePictureIllumination() const { return m_normalizePictureIllumination; }
 
 	void setNormalizePictureIllumination(bool val) { m_normalizePictureIllumination = val; }
+
+	bool rectangularizePictures() const { return m_rectangularizePictures; }
+
+	void setRectangularizePictures(bool val) { m_rectangularizePictures = val; }
 		
 	bool operator==(MixedOptions const& other) const;
 	
 	bool operator!=(MixedOptions const& other) const;
 private:
 	bool m_normalizePictureIllumination;
+	bool m_rectangularizePictures;
 };
 
 } // namespace output

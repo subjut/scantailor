@@ -49,13 +49,13 @@ RenderParams::RenderParams(ColorParams const& cp)
 			MixedOptions const opt(
 				cp.mixedOptions()
 			);
-			if (opt.normalizePictureIllumination()) {
-				m_mask |= WHITE_MARGINS | NORMALIZE_ILLUMINATION
-					| NEED_BINARIZATION | MIXED_OUTPUT
-					| NORMALIZE_PICTURE_ILLUMINATION;
-			} else {
-				m_mask |= WHITE_MARGINS | NORMALIZE_ILLUMINATION
+			m_mask |= WHITE_MARGINS | NORMALIZE_ILLUMINATION
 				| NEED_BINARIZATION | MIXED_OUTPUT;
+			if (opt.normalizePictureIllumination()) {
+				m_mask |= NORMALIZE_PICTURE_ILLUMINATION;
+			}
+			if (opt.rectangularizePictures()) {
+				m_mask |= RECTANGULARIZE_PICTURES;
 			}
 			break;
 		}

@@ -45,6 +45,10 @@ public:
 		return (m_mask & NEED_BINARIZATION) != 0;
 	}
 	
+	bool rectangularizePictures() const {
+		return (m_mask & RECTANGULARIZE_PICTURES) != 0;
+	}
+
 	bool mixedOutput() const {
 		return (m_mask & MIXED_OUTPUT) != 0;
 	}
@@ -59,7 +63,8 @@ private:
 		NORMALIZE_ILLUMINATION = 2,
 		NEED_BINARIZATION = 4,
 		MIXED_OUTPUT = 8,
-		NORMALIZE_PICTURE_ILLUMINATION = 16
+		NORMALIZE_PICTURE_ILLUMINATION = 16,
+		RECTANGULARIZE_PICTURES = 32
 	};
 	
 	int m_mask;

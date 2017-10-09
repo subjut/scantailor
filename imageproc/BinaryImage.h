@@ -205,6 +205,11 @@ public:
 	 */
 	QRect contentBoundingBox(BWColor content_color = BLACK) const;
 	
+	/**
+	 * \brief Looks for joined areas, fits a rectangle around it and fills it.
+	 */
+	void rectangularizeAreas(BWColor content_color = BLACK);
+
 	int width() const { return m_width; }
 	
 	int height() const { return m_height; }

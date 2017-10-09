@@ -441,6 +441,11 @@ OutputGenerator::process(
 		// create mask for picture zones
 
 		bw_mask = estimateBinarizationMask(status, GrayImage(maybe_normalized), dbg);
+		
+		if (render_params.rectangularizePictures()) {
+			bw_mask.rectangularizeAreas(WHITE);
+		}
+
 		if (dbg) {
 			dbg->add(bw_mask, "bw_mask");
 		}
