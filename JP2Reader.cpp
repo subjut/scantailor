@@ -114,7 +114,6 @@ static opj_image_t *jp2decode(QIODevice& device, bool full)
 	bool ok = opj_read_header(jp2_stream, jp2_codec, &jp2);
 
 	if (ok && full) {
-		// we get "opj_j2k_apply_nb_tile_parts_correction error" from openjpeg library (v2.2)
 		ok = opj_decode(jp2_codec, jp2_stream, jp2) &&
 			opj_end_decompress(jp2_codec, jp2_stream);
 	}
