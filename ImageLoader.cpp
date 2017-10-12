@@ -47,12 +47,7 @@ ImageLoader::load(QIODevice& io_dev, int const page_num)
 	if (TiffReader::canRead(io_dev)) {
 		return TiffReader::readImage(io_dev, page_num);
 	}
-	
-	if (page_num != 0) {
-		// Qt can only load the first page of multi-page images.
-		return QImage();
-	}
-	
+
 	if (JP2Reader::peekMagic(io_dev)) {
 		return JP2Reader::readImage(io_dev);
 	}
