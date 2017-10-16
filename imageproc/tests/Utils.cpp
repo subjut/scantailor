@@ -128,7 +128,7 @@ void dumpBinaryImage(BinaryImage const& img, char const* name)
 	}
 	
 	if (img.isNull()) {
-		std::cout << "NULL image" << std::endl;
+		std::cout << "nullptr image" << std::endl;
 		return;
 	}
 	
@@ -155,7 +155,7 @@ void dumpGrayImage(QImage const& img, char const* name)
 	}
 	
 	if (img.isNull()) {
-		std::cout << "NULL image" << std::endl;
+		std::cout << "nullptr image" << std::endl;
 		return;
 	}
 	if (img.format() != QImage::Format_Indexed8) {

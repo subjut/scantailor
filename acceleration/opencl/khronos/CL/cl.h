@@ -984,8 +984,8 @@ clEnqueueBarrier(cl_command_queue /* command_queue */) CL_API_SUFFIX__VERSION_1_
 /* Extension function access
  *
  * Returns the extension function address for the given function name,
- * or NULL if a valid function can not be found.  The client must
- * check to make sure the address is not NULL, before using or 
+ * or nullptr if a valid function can not be found.  The client must
+ * check to make sure the address is not nullptr, before using or 
  * calling the returned function address.
  */
 extern CL_API_ENTRY void * CL_API_CALL clGetExtensionFunctionAddress(const char * /* func_name */) CL_API_SUFFIX__VERSION_1_0;

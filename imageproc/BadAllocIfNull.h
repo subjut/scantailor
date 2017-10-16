@@ -16,8 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef IMAGEPROC_BAD_ALLOC_IF_NULL_H_
-#define IMAGEPROC_BAD_ALLOC_IF_NULL_H_
+#ifndef IMAGEPROC_BAD_ALLOC_IF_NULLPTR_H_
+#define IMAGEPROC_BAD_ALLOC_IF_NULLPTR_H_
 
 #include "imageproc_config.h"
 

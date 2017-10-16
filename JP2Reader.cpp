@@ -86,31 +86,31 @@ static opj_image_t *jp2decode(QIODevice& device, bool full)
 	/* Set decoding parameters to default values */
 	opj_set_default_decoder_parameters(&jp2_param);
 
-	if ((jp2_codec = opj_create_decompress(OPJ_CODEC_JP2)) == NULL) {
-		return NULL;
+	if ((jp2_codec = opj_create_decompress(OPJ_CODEC_JP2)) == nullptr) {
+		return nullptr;
 	}
 	
 	if (!opj_setup_decoder(jp2_codec, &jp2_param)) {
 		opj_destroy_codec(jp2_codec);
-		return NULL;
+		return nullptr;
 	}
 
-	opj_set_warning_handler(jp2_codec, warner, NULL);
-	opj_set_error_handler(jp2_codec, warner, NULL);
+	opj_set_warning_handler(jp2_codec, warner, nullptr);
+	opj_set_error_handler(jp2_codec, warner, nullptr);
 
 	jp2_stream = opj_stream_create(OPJ_J2K_STREAM_CHUNK_SIZE, OPJ_TRUE);
 	if (!jp2_stream) {
 		opj_destroy_codec(jp2_codec);
-		return NULL;
+		return nullptr;
 	}
 	opj_stream_set_read_function(jp2_stream, readFn);
 	opj_stream_set_skip_function(jp2_stream, skipFn);
 	opj_stream_set_seek_function(jp2_stream, seekFn);
 
-	opj_stream_set_user_data(jp2_stream, &device, (opj_stream_free_user_data_fn)NULL);
+	opj_stream_set_user_data(jp2_stream, &device, (opj_stream_free_user_data_fn)nullptr);
 	opj_stream_set_user_data_length(jp2_stream, device.size());
 
-	opj_image_t *jp2 = NULL;
+	opj_image_t *jp2 = nullptr;
 	bool ok = opj_read_header(jp2_stream, jp2_codec, &jp2);
 
 	if (ok && full) {
@@ -123,7 +123,7 @@ static opj_image_t *jp2decode(QIODevice& device, bool full)
 
 	if (!ok) {
 		opj_image_destroy(jp2);
-		return NULL;
+		return nullptr;
 	}
 
 	return jp2;

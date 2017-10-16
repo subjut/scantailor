@@ -670,7 +670,7 @@ namespace cl {
          *                handling of the exception has concluded.  If set, it
          *                will be returned by what().
          */
-        Error(cl_int err, const char * errStr = NULL) : err_(err), errStr_(errStr)
+        Error(cl_int err, const char * errStr = nullptr) : err_(err), errStr_(errStr)
         {}
 
         ~Error() throw() {}
@@ -681,7 +681,7 @@ namespace cl {
          */
         virtual const char * what() const throw ()
         {
-            if (errStr_ == NULL) {
+            if (errStr_ == nullptr) {
                 return "empty";
             }
             else {
@@ -697,7 +697,7 @@ namespace cl {
     };
 #define CL_HPP_ERR_STR_(x) #x
 #else
-#define CL_HPP_ERR_STR_(x) NULL
+#define CL_HPP_ERR_STR_(x) nullptr
 #endif // CL_HPP_ENABLE_EXCEPTIONS
 
 
@@ -706,7 +706,7 @@ namespace detail
 #if defined(CL_HPP_ENABLE_EXCEPTIONS)
 static inline cl_int errHandler (
     cl_int err,
-    const char * errStr = NULL)
+    const char * errStr = nullptr)
 {
     if (err != CL_SUCCESS) {
         throw Error(err, errStr);
@@ -714,7 +714,7 @@ static inline cl_int errHandler (
     return err;
 }
 #else
-static inline cl_int errHandler (cl_int err, const char * errStr = NULL)
+static inline cl_int errHandler (cl_int err, const char * errStr = nullptr)
 {
     (void) errStr; // suppress unused variable warning
     return err;
@@ -874,7 +874,7 @@ namespace detail {
 template<typename Functor, typename T>
 inline cl_int getInfoHelper(Functor f, cl_uint name, T* param, long)
 {
-    return f(name, sizeof(T), param, NULL);
+    return f(name, sizeof(T), param, nullptr);
 }
 
 // Specialized for getInfo<CL_PROGRAM_BINARIES>
@@ -897,7 +897,7 @@ inline cl_int getInfoHelper(Func f, cl_uint name, vector<vector<unsigned char>>*
             totalSize += (*param)[i].size();
         }
 
-        cl_int err = f(name, totalSize, binariesPointers.data(), NULL);
+        cl_int err = f(name, totalSize, binariesPointers.data(), nullptr);
 
         if (err != CL_SUCCESS) {
             return err;
@@ -913,7 +913,7 @@ template <typename Func, typename T>
 inline cl_int getInfoHelper(Func f, cl_uint name, vector<T>* param, long)
 {
     size_type required;
-    cl_int err = f(name, 0, NULL, &required);
+    cl_int err = f(name, 0, nullptr, &required);
     if (err != CL_SUCCESS) {
         return err;
     }
@@ -921,7 +921,7 @@ inline cl_int getInfoHelper(Func f, cl_uint name, vector<T>* param, long)
 
     // Temporary to avoid changing param on an error
     vector<T> localData(elements);
-    err = f(name, required, localData.data(), NULL);
+    err = f(name, required, localData.data(), nullptr);
     if (err != CL_SUCCESS) {
         return err;
     }
@@ -943,7 +943,7 @@ inline cl_int getInfoHelper(
     Func f, cl_uint name, vector<T>* param, int, typename T::cl_type = 0)
 {
     size_type required;
-    cl_int err = f(name, 0, NULL, &required);
+    cl_int err = f(name, 0, nullptr, &required);
     if (err != CL_SUCCESS) {
         return err;
     }
@@ -951,7 +951,7 @@ inline cl_int getInfoHelper(
     const size_type elements = required / sizeof(typename T::cl_type);
 
     vector<typename T::cl_type> value(elements);
-    err = f(name, required, value.data(), NULL);
+    err = f(name, required, value.data(), nullptr);
     if (err != CL_SUCCESS) {
         return err;
     }
@@ -974,7 +974,7 @@ template <typename Func>
 inline cl_int getInfoHelper(Func f, cl_uint name, string* param, long)
 {
     size_type required;
-    cl_int err = f(name, 0, NULL, &required);
+    cl_int err = f(name, 0, nullptr, &required);
     if (err != CL_SUCCESS) {
         return err;
     }
@@ -983,7 +983,7 @@ inline cl_int getInfoHelper(Func f, cl_uint name, string* param, long)
     // a char vector does not
     if (required > 0) {
         vector<char> value(required);
-        err = f(name, required, value.data(), NULL);
+        err = f(name, required, value.data(), nullptr);
         if (err != CL_SUCCESS) {
             return err;
         }
@@ -1002,7 +1002,7 @@ template <typename Func, size_type N>
 inline cl_int getInfoHelper(Func f, cl_uint name, array<size_type, N>* param, long)
 {
     size_type required;
-    cl_int err = f(name, 0, NULL, &required);
+    cl_int err = f(name, 0, nullptr, &required);
     if (err != CL_SUCCESS) {
         return err;
     }
@@ -1010,7 +1010,7 @@ inline cl_int getInfoHelper(Func f, cl_uint name, array<size_type, N>* param, lo
     size_type elements = required / sizeof(size_type);
     vector<size_type> value(elements, 0);
 
-    err = f(name, required, value.data(), NULL);
+    err = f(name, required, value.data(), nullptr);
     if (err != CL_SUCCESS) {
         return err;
     }
@@ -1039,12 +1039,12 @@ template<typename Func, typename T>
 inline cl_int getInfoHelper(Func f, cl_uint name, T* param, int, typename T::cl_type = 0)
 {
     typename T::cl_type value;
-    cl_int err = f(name, sizeof(value), &value, NULL);
+    cl_int err = f(name, sizeof(value), &value, nullptr);
     if (err != CL_SUCCESS) {
         return err;
     }
     *param = value;
-    if (value != NULL)
+    if (value != nullptr)
     {
         err = param->retain();
         if (err != CL_SUCCESS) {
@@ -1554,7 +1554,7 @@ static cl_uint getVersion(const vector<char> &versionInfo)
 static cl_uint getPlatformVersion(cl_platform_id platform)
 {
     size_type size = 0;
-    clGetPlatformInfo(platform, CL_PLATFORM_VERSION, 0, NULL, &size);
+    clGetPlatformInfo(platform, CL_PLATFORM_VERSION, 0, nullptr, &size);
     
     vector<char> versionInfo(size);
     clGetPlatformInfo(platform, CL_PLATFORM_VERSION, size, versionInfo.data(), &size);
@@ -1564,7 +1564,7 @@ static cl_uint getPlatformVersion(cl_platform_id platform)
 static cl_uint getDevicePlatformVersion(cl_device_id device)
 {
     cl_platform_id platform;
-    clGetDeviceInfo(device, CL_DEVICE_PLATFORM, sizeof(platform), &platform, NULL);
+    clGetDeviceInfo(device, CL_DEVICE_PLATFORM, sizeof(platform), &platform, nullptr);
     return getPlatformVersion(platform);
 }
 
@@ -1573,11 +1573,11 @@ static cl_uint getContextPlatformVersion(cl_context context)
     // The platform cannot be queried directly, so we first have to grab a
     // device and obtain its context
     size_type size = 0;
-    clGetContextInfo(context, CL_CONTEXT_DEVICES, 0, NULL, &size);
+    clGetContextInfo(context, CL_CONTEXT_DEVICES, 0, nullptr, &size);
     if (size == 0)
         return 0;
     vector<cl_device_id> devices(size/sizeof(cl_device_id));
-    clGetContextInfo(context, CL_CONTEXT_DEVICES, size, devices.data(), NULL);
+    clGetContextInfo(context, CL_CONTEXT_DEVICES, size, devices.data(), nullptr);
     return getDevicePlatformVersion(devices[0]);
 }
 #endif // CL_HPP_TARGET_OPENCL_VERSION >= 120 && CL_HPP_MINIMUM_OPENCL_VERSION < 120
@@ -1592,7 +1592,7 @@ protected:
     cl_type object_;
 
 public:
-    Wrapper() : object_(NULL) { }
+    Wrapper() : object_(nullptr) { }
     
     Wrapper(const cl_type &obj, bool retainObject) : object_(obj) 
     {
@@ -1603,7 +1603,7 @@ public:
 
     ~Wrapper()
     {
-        if (object_ != NULL) { release(); }
+        if (object_ != nullptr) { release(); }
     }
 
     Wrapper(const Wrapper<cl_type>& rhs)
@@ -1615,7 +1615,7 @@ public:
     Wrapper(Wrapper<cl_type>&& rhs) CL_HPP_NOEXCEPT_
     {
         object_ = rhs.object_;
-        rhs.object_ = NULL;
+        rhs.object_ = nullptr;
     }
 
     Wrapper<cl_type>& operator = (const Wrapper<cl_type>& rhs)
@@ -1633,7 +1633,7 @@ public:
         if (this != &rhs) {
             detail::errHandler(release(), __RELEASE_ERR);
             object_ = rhs.object_;
-            rhs.object_ = NULL;
+            rhs.object_ = nullptr;
         }
         return *this;
     }
@@ -1694,7 +1694,7 @@ protected:
         bool retVal = false;
 #if CL_HPP_TARGET_OPENCL_VERSION >= 120
 #if CL_HPP_MINIMUM_OPENCL_VERSION < 120
-        if (device != NULL) {
+        if (device != nullptr) {
             int version = getDevicePlatformVersion(device);
             if(version > ((1 << 16) + 1)) {
                 retVal = true;
@@ -1708,7 +1708,7 @@ protected:
     }
 
 public:
-    Wrapper() : object_(NULL), referenceCountable_(false) 
+    Wrapper() : object_(nullptr), referenceCountable_(false) 
     { 
     }
     
@@ -1739,7 +1739,7 @@ public:
     {
         object_ = rhs.object_;
         referenceCountable_ = rhs.referenceCountable_;
-        rhs.object_ = NULL;
+        rhs.object_ = nullptr;
         rhs.referenceCountable_ = false;
     }
 
@@ -1760,7 +1760,7 @@ public:
             detail::errHandler(release(), __RELEASE_ERR);
             object_ = rhs.object_;
             referenceCountable_ = rhs.referenceCountable_;
-            rhs.object_ = NULL;
+            rhs.object_ = nullptr;
             rhs.referenceCountable_ = false;
         }
         return *this;
@@ -1944,7 +1944,7 @@ public:
     }
 #endif // #ifdef CL_HPP_UNIT_TEST_ENABLE
 
-    //! \brief Default constructor - initializes to NULL.
+    //! \brief Default constructor - initializes to nullptr.
     Device() : detail::Wrapper<cl_type>() { }
 
     /*! \brief Constructor from cl_device_id.
@@ -1959,11 +1959,11 @@ public:
      *  \see Context::getDefault()
      */
     static Device getDefault(
-        cl_int *errResult = NULL)
+        cl_int *errResult = nullptr)
     {
         std::call_once(default_initialized_, makeDefault);
         detail::errHandler(default_error_);
-        if (errResult != NULL) {
+        if (errResult != nullptr) {
             *errResult = default_error_;
         }
         return default_;
@@ -2033,12 +2033,12 @@ public:
     //! \brief Wrapper for clGetDeviceInfo() that returns by value.
     template <cl_int name> typename
     detail::param_traits<detail::cl_device_info, name>::param_type
-    getInfo(cl_int* err = NULL) const
+    getInfo(cl_int* err = nullptr) const
     {
         typename detail::param_traits<
             detail::cl_device_info, name>::param_type param;
         cl_int result = getInfo(name, &param);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = result;
         }
         return param;
@@ -2054,13 +2054,13 @@ public:
         vector<Device>* devices)
     {
         cl_uint n = 0;
-        cl_int err = clCreateSubDevices(object_, properties, 0, NULL, &n);
+        cl_int err = clCreateSubDevices(object_, properties, 0, nullptr, &n);
         if (err != CL_SUCCESS) {
             return detail::errHandler(err, __CREATE_SUB_DEVICES_ERR);
         }
 
         vector<cl_device_id> ids(n);
-        err = clCreateSubDevices(object_, properties, n, ids.data(), NULL);
+        err = clCreateSubDevices(object_, properties, n, ids.data(), nullptr);
         if (err != CL_SUCCESS) {
             return detail::errHandler(err, __CREATE_SUB_DEVICES_ERR);
         }
@@ -2098,17 +2098,17 @@ public:
                 cl_device_id * /*out_devices*/,
                 cl_uint * /*num_devices*/ ) CL_EXT_SUFFIX__VERSION_1_1;
 
-        static PFN_clCreateSubDevicesEXT pfn_clCreateSubDevicesEXT = NULL;
+        static PFN_clCreateSubDevicesEXT pfn_clCreateSubDevicesEXT = nullptr;
         CL_HPP_INIT_CL_EXT_FCN_PTR_(clCreateSubDevicesEXT);
 
         cl_uint n = 0;
-        cl_int err = pfn_clCreateSubDevicesEXT(object_, properties, 0, NULL, &n);
+        cl_int err = pfn_clCreateSubDevicesEXT(object_, properties, 0, nullptr, &n);
         if (err != CL_SUCCESS) {
             return detail::errHandler(err, __CREATE_SUB_DEVICES_ERR);
         }
 
         vector<cl_device_id> ids(n);
-        err = pfn_clCreateSubDevicesEXT(object_, properties, n, ids.data(), NULL);
+        err = pfn_clCreateSubDevicesEXT(object_, properties, n, ids.data(), nullptr);
         if (err != CL_SUCCESS) {
             return detail::errHandler(err, __CREATE_SUB_DEVICES_ERR);
         }
@@ -2165,7 +2165,7 @@ private:
             // Otherwise set it
             cl_uint n = 0;
 
-            cl_int err = ::clGetPlatformIDs(0, NULL, &n);
+            cl_int err = ::clGetPlatformIDs(0, nullptr, &n);
             if (err != CL_SUCCESS) {
                 default_error_ = err;
                 return;
@@ -2176,7 +2176,7 @@ private:
             }
 
             vector<cl_platform_id> ids(n);
-            err = ::clGetPlatformIDs(n, ids.data(), NULL);
+            err = ::clGetPlatformIDs(n, ids.data(), nullptr);
             if (err != CL_SUCCESS) {
                 default_error_ = err;
                 return;
@@ -2213,7 +2213,7 @@ public:
     }
 #endif // #ifdef CL_HPP_UNIT_TEST_ENABLE
 
-    //! \brief Default constructor - initializes to NULL.
+    //! \brief Default constructor - initializes to nullptr.
     Platform() : detail::Wrapper<cl_type>()  { }
 
     /*! \brief Constructor from cl_platform_id.
@@ -2237,11 +2237,11 @@ public:
     }
 
     static Platform getDefault(
-        cl_int *errResult = NULL)
+        cl_int *errResult = nullptr)
     {
         std::call_once(default_initialized_, makeDefault);
         detail::errHandler(default_error_);
-        if (errResult != NULL) {
+        if (errResult != nullptr) {
             *errResult = default_error_;
         }
         return default_;
@@ -2272,12 +2272,12 @@ public:
     //! \brief Wrapper for clGetPlatformInfo() that returns by value.
     template <cl_int name> typename
     detail::param_traits<detail::cl_platform_info, name>::param_type
-    getInfo(cl_int* err = NULL) const
+    getInfo(cl_int* err = nullptr) const
     {
         typename detail::param_traits<
             detail::cl_platform_info, name>::param_type param;
         cl_int result = getInfo(name, &param);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = result;
         }
         return param;
@@ -2292,16 +2292,16 @@ public:
         vector<Device>* devices) const
     {
         cl_uint n = 0;
-        if( devices == NULL ) {
+        if( devices == nullptr ) {
             return detail::errHandler(CL_INVALID_ARG_VALUE, __GET_DEVICE_IDS_ERR);
         }
-        cl_int err = ::clGetDeviceIDs(object_, type, 0, NULL, &n);
+        cl_int err = ::clGetDeviceIDs(object_, type, 0, nullptr, &n);
         if (err != CL_SUCCESS) {
             return detail::errHandler(err, __GET_DEVICE_IDS_ERR);
         }
 
         vector<cl_device_id> ids(n);
-        err = ::clGetDeviceIDs(object_, type, n, ids.data(), NULL);
+        err = ::clGetDeviceIDs(object_, type, n, ids.data(), nullptr);
         if (err != CL_SUCCESS) {
             return detail::errHandler(err, __GET_DEVICE_IDS_ERR);
         }
@@ -2333,7 +2333,7 @@ public:
      *
      *  \param devices returns a vector of OpenCL D3D10 devices found. The cl::Device
      *  values returned in devices can be used to identify a specific OpenCL
-     *  device. If \a devices argument is NULL, this argument is ignored.
+     *  device. If \a devices argument is nullptr, this argument is ignored.
      *
      *  \return One of the following values:
      *    - CL_SUCCESS if the function is executed successfully.
@@ -2361,11 +2361,11 @@ public:
             cl_device_id * devices,
             cl_uint* num_devices);
 
-        if( devices == NULL ) {
+        if( devices == nullptr ) {
             return detail::errHandler(CL_INVALID_ARG_VALUE, __GET_DEVICE_IDS_ERR);
         }
 
-        static PFN_clGetDeviceIDsFromD3D10KHR pfn_clGetDeviceIDsFromD3D10KHR = NULL;
+        static PFN_clGetDeviceIDsFromD3D10KHR pfn_clGetDeviceIDsFromD3D10KHR = nullptr;
         CL_HPP_INIT_CL_EXT_FCN_PTR_PLATFORM_(object_, clGetDeviceIDsFromD3D10KHR);
 
         cl_uint n = 0;
@@ -2375,7 +2375,7 @@ public:
             d3d_object,
             d3d_device_set, 
             0, 
-            NULL, 
+            nullptr, 
             &n);
         if (err != CL_SUCCESS) {
             return detail::errHandler(err, __GET_DEVICE_IDS_ERR);
@@ -2389,7 +2389,7 @@ public:
             d3d_device_set,
             n, 
             ids.data(), 
-            NULL);
+            nullptr);
         if (err != CL_SUCCESS) {
             return detail::errHandler(err, __GET_DEVICE_IDS_ERR);
         }
@@ -2420,17 +2420,17 @@ public:
     {
         cl_uint n = 0;
 
-        if( platforms == NULL ) {
+        if( platforms == nullptr ) {
             return detail::errHandler(CL_INVALID_ARG_VALUE, __GET_PLATFORM_IDS_ERR);
         }
 
-        cl_int err = ::clGetPlatformIDs(0, NULL, &n);
+        cl_int err = ::clGetPlatformIDs(0, nullptr, &n);
         if (err != CL_SUCCESS) {
             return detail::errHandler(err, __GET_PLATFORM_IDS_ERR);
         }
 
         vector<cl_platform_id> ids(n);
-        err = ::clGetPlatformIDs(n, ids.data(), NULL);
+        err = ::clGetPlatformIDs(n, ids.data(), nullptr);
         if (err != CL_SUCCESS) {
             return detail::errHandler(err, __GET_PLATFORM_IDS_ERR);
         }
@@ -2470,7 +2470,7 @@ public:
      * Wraps clGetPlatformIDs(), returning the first result.
      */
     static Platform get(
-        cl_int * errResult = NULL)
+        cl_int * errResult = nullptr)
     {
         cl_int err;
         Platform default_platform = Platform::getDefault(&err);
@@ -2554,8 +2554,8 @@ private:
             default_ = Context(
                 CL_DEVICE_TYPE_DEFAULT,
                 properties,
-                NULL,
-                NULL,
+                nullptr,
+                nullptr,
                 &default_error_);
         }
 #if defined(CL_HPP_ENABLE_EXCEPTIONS)
@@ -2594,14 +2594,14 @@ public:
      */
     Context(
         const vector<Device>& devices,
-        cl_context_properties* properties = NULL,
+        cl_context_properties* properties = nullptr,
         void (CL_CALLBACK * notifyFptr)(
             const char *,
             const void *,
             size_type,
-            void *) = NULL,
-        void* data = NULL,
-        cl_int* err = NULL)
+            void *) = nullptr,
+        void* data = nullptr,
+        cl_int* err = nullptr)
     {
         cl_int error;
 
@@ -2618,21 +2618,21 @@ public:
             notifyFptr, data, &error);
 
         detail::errHandler(error, __CREATE_CONTEXT_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
 
     Context(
         const Device& device,
-        cl_context_properties* properties = NULL,
+        cl_context_properties* properties = nullptr,
         void (CL_CALLBACK * notifyFptr)(
             const char *,
             const void *,
             size_type,
-            void *) = NULL,
-        void* data = NULL,
-        cl_int* err = NULL)
+            void *) = nullptr,
+        void* data = nullptr,
+        cl_int* err = nullptr)
     {
         cl_int error;
 
@@ -2644,7 +2644,7 @@ public:
             notifyFptr, data, &error);
 
         detail::errHandler(error, __CREATE_CONTEXT_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
@@ -2655,27 +2655,27 @@ public:
      */
     Context(
         cl_device_type type,
-        cl_context_properties* properties = NULL,
+        cl_context_properties* properties = nullptr,
         void (CL_CALLBACK * notifyFptr)(
             const char *,
             const void *,
             size_type,
-            void *) = NULL,
-        void* data = NULL,
-        cl_int* err = NULL)
+            void *) = nullptr,
+        void* data = nullptr,
+        cl_int* err = nullptr)
     {
         cl_int error;
 
 #if !defined(__APPLE__) && !defined(__MACOS)
         cl_context_properties prop[4] = {CL_CONTEXT_PLATFORM, 0, 0, 0 };
 
-        if (properties == NULL) {
+        if (properties == nullptr) {
             // Get a valid platform ID as we cannot send in a blank one
             vector<Platform> platforms;
             error = Platform::get(&platforms);
             if (error != CL_SUCCESS) {
                 detail::errHandler(error, __CREATE_CONTEXT_FROM_TYPE_ERR);
-                if (err != NULL) {
+                if (err != nullptr) {
                     *err = error;
                 }
                 return;
@@ -2702,7 +2702,7 @@ public:
                 // Only squash CL_SUCCESS and CL_DEVICE_NOT_FOUND
                 if (error != CL_SUCCESS && error != CL_DEVICE_NOT_FOUND) {
                     detail::errHandler(error, __CREATE_CONTEXT_FROM_TYPE_ERR);
-                    if (err != NULL) {
+                    if (err != nullptr) {
                         *err = error;
                     }
                 }
@@ -2715,7 +2715,7 @@ public:
 
             if (platform_id == 0) {
                 detail::errHandler(CL_DEVICE_NOT_FOUND, __CREATE_CONTEXT_FROM_TYPE_ERR);
-                if (err != NULL) {
+                if (err != nullptr) {
                     *err = CL_DEVICE_NOT_FOUND;
                 }
                 return;
@@ -2729,7 +2729,7 @@ public:
             properties, type, notifyFptr, data, &error);
 
         detail::errHandler(error, __CREATE_CONTEXT_FROM_TYPE_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
@@ -2767,11 +2767,11 @@ public:
      *
      *  \note All calls to this function return the same cl_context as the first.
      */
-    static Context getDefault(cl_int * err = NULL) 
+    static Context getDefault(cl_int * err = nullptr) 
     {
         std::call_once(default_initialized_, makeDefault);
         detail::errHandler(default_error_);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = default_error_;
         }
         return default_;
@@ -2791,7 +2791,7 @@ public:
         return default_;
     }
 
-    //! \brief Default constructor - initializes to NULL.
+    //! \brief Default constructor - initializes to nullptr.
     Context() : detail::Wrapper<cl_type>() { }
 
     /*! \brief Constructor from cl_context - takes ownership.
@@ -2825,12 +2825,12 @@ public:
     //! \brief Wrapper for clGetContextInfo() that returns by value.
     template <cl_int name> typename
     detail::param_traits<detail::cl_context_info, name>::param_type
-    getInfo(cl_int* err = NULL) const
+    getInfo(cl_int* err = nullptr) const
     {
         typename detail::param_traits<
             detail::cl_context_info, name>::param_type param;
         cl_int result = getInfo(name, &param);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = result;
         }
         return param;
@@ -2856,7 +2856,7 @@ public:
            flags,
            type, 
            0, 
-           NULL, 
+           nullptr, 
            &numEntries);
         if (err != CL_SUCCESS) {
             return detail::errHandler(err, __GET_SUPPORTED_IMAGE_FORMATS_ERR);
@@ -2870,7 +2870,7 @@ public:
                 type,
                 numEntries,
                 (cl_image_format*)value.data(),
-                NULL);
+                nullptr);
             if (err != CL_SUCCESS) {
                 return detail::errHandler(err, __GET_SUPPORTED_IMAGE_FORMATS_ERR);
             }
@@ -2930,7 +2930,7 @@ CL_HPP_DEFINE_STATIC_MEMBER_ cl_int Context::default_error_ = CL_SUCCESS;
 class Event : public detail::Wrapper<cl_event>
 {
 public:
-    //! \brief Default constructor - initializes to NULL.
+    //! \brief Default constructor - initializes to nullptr.
     Event() : detail::Wrapper<cl_type>() { }
 
     /*! \brief Constructor from cl_event - takes ownership.
@@ -2967,12 +2967,12 @@ public:
     //! \brief Wrapper for clGetEventInfo() that returns by value.
     template <cl_int name> typename
     detail::param_traits<detail::cl_event_info, name>::param_type
-    getInfo(cl_int* err = NULL) const
+    getInfo(cl_int* err = nullptr) const
     {
         typename detail::param_traits<
             detail::cl_event_info, name>::param_type param;
         cl_int result = getInfo(name, &param);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = result;
         }
         return param;
@@ -2990,12 +2990,12 @@ public:
     //! \brief Wrapper for clGetEventProfilingInfo() that returns by value.
     template <cl_int name> typename
     detail::param_traits<detail::cl_profiling_info, name>::param_type
-    getProfilingInfo(cl_int* err = NULL) const
+    getProfilingInfo(cl_int* err = nullptr) const
     {
         typename detail::param_traits<
             detail::cl_profiling_info, name>::param_type param;
         cl_int result = getProfilingInfo(name, &param);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = result;
         }
         return param;
@@ -3020,7 +3020,7 @@ public:
     cl_int setCallback(
         cl_int type,
         void (CL_CALLBACK * pfn_notify)(cl_event, cl_int, void *),		
-        void * user_data = NULL)
+        void * user_data = nullptr)
     {
         return detail::errHandler(
             ::clSetEventCallback(
@@ -3041,7 +3041,7 @@ public:
     {
         return detail::errHandler(
             ::clWaitForEvents(
-                (cl_uint) events.size(), (events.size() > 0) ? (cl_event*)&events.front() : NULL),
+                (cl_uint) events.size(), (events.size() > 0) ? (cl_event*)&events.front() : nullptr),
             __WAIT_FOR_EVENTS_ERR);
     }
 };
@@ -3060,7 +3060,7 @@ public:
      */
     UserEvent(
         const Context& context,
-        cl_int * err = NULL)
+        cl_int * err = nullptr)
     {
         cl_int error;
         object_ = ::clCreateUserEvent(
@@ -3068,12 +3068,12 @@ public:
             &error);
 
         detail::errHandler(error, __CREATE_USER_EVENT_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
 
-    //! \brief Default constructor - initializes to NULL.
+    //! \brief Default constructor - initializes to nullptr.
     UserEvent() : Event() { }
 
     /*! \brief Sets the execution status of a user event object.
@@ -3098,7 +3098,7 @@ WaitForEvents(const vector<Event>& events)
 {
     return detail::errHandler(
         ::clWaitForEvents(
-            (cl_uint) events.size(), (events.size() > 0) ? (cl_event*)&events.front() : NULL),
+            (cl_uint) events.size(), (events.size() > 0) ? (cl_event*)&events.front() : nullptr),
         __WAIT_FOR_EVENTS_ERR);
 }
 
@@ -3113,7 +3113,7 @@ WaitForEvents(const vector<Event>& events)
 class Memory : public detail::Wrapper<cl_mem>
 {
 public:
-    //! \brief Default constructor - initializes to NULL.
+    //! \brief Default constructor - initializes to nullptr.
     Memory() : detail::Wrapper<cl_type>() { }
 
     /*! \brief Constructor from cl_mem - takes ownership.
@@ -3182,12 +3182,12 @@ public:
     //! \brief Wrapper for clGetMemObjectInfo() that returns by value.
     template <cl_int name> typename
     detail::param_traits<detail::cl_mem_info, name>::param_type
-    getInfo(cl_int* err = NULL) const
+    getInfo(cl_int* err = nullptr) const
     {
         typename detail::param_traits<
             detail::cl_mem_info, name>::param_type param;
         cl_int result = getInfo(name, &param);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = result;
         }
         return param;
@@ -3209,7 +3209,7 @@ public:
      */
     cl_int setDestructorCallback(
         void (CL_CALLBACK * pfn_notify)(cl_mem, void *),		
-        void * user_data = NULL)
+        void * user_data = nullptr)
     {
         return detail::errHandler(
             ::clSetMemObjectDestructorCallback(
@@ -3321,8 +3321,8 @@ inline cl_int enqueueMapSVM(
     cl_bool blocking,
     cl_map_flags flags,
     size_type size,
-    const vector<Event>* events = NULL,
-    Event* event = NULL);
+    const vector<Event>* events = nullptr,
+    Event* event = nullptr);
 
 /**
  * STL-like allocator class for managing SVM objects provided for convenience.
@@ -3615,14 +3615,14 @@ public:
         const Context& context,
         cl_mem_flags flags,
         size_type size,
-        void* host_ptr = NULL,
-        cl_int* err = NULL)
+        void* host_ptr = nullptr,
+        cl_int* err = nullptr)
     {
         cl_int error;
         object_ = ::clCreateBuffer(context(), flags, size, host_ptr, &error);
 
         detail::errHandler(error, __CREATE_BUFFER_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
@@ -3639,8 +3639,8 @@ public:
     Buffer(
          cl_mem_flags flags,
         size_type size,
-        void* host_ptr = NULL,
-        cl_int* err = NULL)
+        void* host_ptr = nullptr,
+        cl_int* err = nullptr)
     {
         cl_int error;
 
@@ -3649,7 +3649,7 @@ public:
         object_ = ::clCreateBuffer(context(), flags, size, host_ptr, &error);
 
         detail::errHandler(error, __CREATE_BUFFER_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
@@ -3665,7 +3665,7 @@ public:
         IteratorType endIterator,
         bool readOnly,
         bool useHostPtr = false,
-        cl_int* err = NULL)
+        cl_int* err = nullptr)
     {
         typedef typename std::iterator_traits<IteratorType>::value_type DataType;
         cl_int error;
@@ -3692,14 +3692,14 @@ public:
         }
 
         detail::errHandler(error, __CREATE_BUFFER_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
 
         if( !useHostPtr ) {
             error = cl::copy(startIterator, endIterator, *this);
             detail::errHandler(error, __CREATE_BUFFER_ERR);
-            if (err != NULL) {
+            if (err != nullptr) {
                 *err = error;
             }
         }
@@ -3712,7 +3712,7 @@ public:
      */
     template< typename IteratorType >
     Buffer(const Context &context, IteratorType startIterator, IteratorType endIterator,
-        bool readOnly, bool useHostPtr = false, cl_int* err = NULL);
+        bool readOnly, bool useHostPtr = false, cl_int* err = nullptr);
     
     /*!
     * \brief Construct a Buffer from a host container via iterators using a specified queue.
@@ -3720,9 +3720,9 @@ public:
     */
     template< typename IteratorType >
     Buffer(const CommandQueue &queue, IteratorType startIterator, IteratorType endIterator,
-        bool readOnly, bool useHostPtr = false, cl_int* err = NULL);
+        bool readOnly, bool useHostPtr = false, cl_int* err = nullptr);
 
-    //! \brief Default constructor - initializes to NULL.
+    //! \brief Default constructor - initializes to nullptr.
     Buffer() : Memory() { }
 
     /*! \brief Constructor from cl_mem - takes ownership.
@@ -3782,7 +3782,7 @@ public:
         cl_mem_flags flags,
         cl_buffer_create_type buffer_create_type,
         const void * buffer_create_info,
-        cl_int * err = NULL)
+        cl_int * err = nullptr)
     {
         Buffer result;
         cl_int error;
@@ -3794,7 +3794,7 @@ public:
             &error);
 
         detail::errHandler(error, __CREATE_SUBBUFFER_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
 
@@ -3826,7 +3826,7 @@ public:
         const Context& context,
         cl_mem_flags flags,
         ID3D10Buffer* bufobj,
-        cl_int * err = NULL) : pfn_clCreateFromD3D10BufferKHR(nullptr)
+        cl_int * err = nullptr) : pfn_clCreateFromD3D10BufferKHR(nullptr)
     {
         typedef CL_API_ENTRY cl_mem (CL_API_CALL *PFN_clCreateFromD3D10BufferKHR)(
             cl_context context, cl_mem_flags flags, ID3D10Buffer*  buffer,
@@ -3853,12 +3853,12 @@ public:
             &error);
 
         detail::errHandler(error, __CREATE_GL_BUFFER_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
 
-    //! \brief Default constructor - initializes to NULL.
+    //! \brief Default constructor - initializes to nullptr.
     BufferD3D10() : Buffer() { }
 
     /*! \brief Constructor from cl_mem - takes ownership.
@@ -3932,7 +3932,7 @@ public:
         const Context& context,
         cl_mem_flags flags,
         cl_GLuint bufobj,
-        cl_int * err = NULL)
+        cl_int * err = nullptr)
     {
         cl_int error;
         object_ = ::clCreateFromGLBuffer(
@@ -3942,12 +3942,12 @@ public:
             &error);
 
         detail::errHandler(error, __CREATE_GL_BUFFER_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
 
-    //! \brief Default constructor - initializes to NULL.
+    //! \brief Default constructor - initializes to nullptr.
     BufferGL() : Buffer() { }
 
     /*! \brief Constructor from cl_mem - takes ownership.
@@ -4029,7 +4029,7 @@ public:
         const Context& context,
         cl_mem_flags flags,
         cl_GLuint bufobj,
-        cl_int * err = NULL)
+        cl_int * err = nullptr)
     {
         cl_int error;
         object_ = ::clCreateFromGLRenderbuffer(
@@ -4039,12 +4039,12 @@ public:
             &error);
 
         detail::errHandler(error, __CREATE_GL_RENDER_BUFFER_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
 
-    //! \brief Default constructor - initializes to NULL.
+    //! \brief Default constructor - initializes to nullptr.
     BufferRenderGL() : Buffer() { }
 
     /*! \brief Constructor from cl_mem - takes ownership.
@@ -4115,7 +4115,7 @@ public:
 class Image : public Memory
 {
 protected:
-    //! \brief Default constructor - initializes to NULL.
+    //! \brief Default constructor - initializes to nullptr.
     Image() : Memory() { }
 
     /*! \brief Constructor from cl_mem - takes ownership.
@@ -4180,12 +4180,12 @@ public:
     //! \brief Wrapper for clGetImageInfo() that returns by value.
     template <cl_int name> typename
     detail::param_traits<detail::cl_image_info, name>::param_type
-    getImageInfo(cl_int* err = NULL) const
+    getImageInfo(cl_int* err = nullptr) const
     {
         typename detail::param_traits<
             detail::cl_image_info, name>::param_type param;
         cl_int result = getImageInfo(name, &param);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = result;
         }
         return param;
@@ -4211,8 +4211,8 @@ public:
         cl_mem_flags flags,
         ImageFormat format,
         size_type width,
-        void* host_ptr = NULL,
-        cl_int* err = NULL)
+        void* host_ptr = nullptr,
+        cl_int* err = nullptr)
     {
         cl_int error;
         cl_image_desc desc =
@@ -4230,12 +4230,12 @@ public:
             &error);
 
         detail::errHandler(error, __CREATE_IMAGE_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
 
-    //! \brief Default constructor - initializes to NULL.
+    //! \brief Default constructor - initializes to nullptr.
     Image1D() { }
 
     /*! \brief Constructor from cl_mem - takes ownership.
@@ -4300,7 +4300,7 @@ public:
         ImageFormat format,
         size_type width,
         const Buffer &buffer,
-        cl_int* err = NULL)
+        cl_int* err = nullptr)
     {
         cl_int error;
         cl_image_desc desc =
@@ -4315,11 +4315,11 @@ public:
             flags, 
             &format, 
             &desc, 
-            NULL, 
+            nullptr, 
             &error);
 
         detail::errHandler(error, __CREATE_IMAGE_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
@@ -4385,8 +4385,8 @@ public:
         size_type arraySize,
         size_type width,
         size_type rowPitch,
-        void* host_ptr = NULL,
-        cl_int* err = NULL)
+        void* host_ptr = nullptr,
+        cl_int* err = nullptr)
     {
         cl_int error;
         cl_image_desc desc =
@@ -4407,7 +4407,7 @@ public:
             &error);
 
         detail::errHandler(error, __CREATE_IMAGE_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
@@ -4483,8 +4483,8 @@ public:
         size_type width,
         size_type height,
         size_type row_pitch = 0,
-        void* host_ptr = NULL,
-        cl_int* err = NULL)
+        void* host_ptr = nullptr,
+        cl_int* err = nullptr)
     {
         cl_int error;
         bool useCreateImage;
@@ -4522,7 +4522,7 @@ public:
                 &error);
 
             detail::errHandler(error, __CREATE_IMAGE_ERR);
-            if (err != NULL) {
+            if (err != nullptr) {
                 *err = error;
             }
         }
@@ -4534,7 +4534,7 @@ public:
                 context(), flags,&format, width, height, row_pitch, host_ptr, &error);
 
             detail::errHandler(error, __CREATE_IMAGE2D_ERR);
-            if (err != NULL) {
+            if (err != nullptr) {
                 *err = error;
             }
         }
@@ -4650,7 +4650,7 @@ public:
     }
 #endif //#if CL_HPP_TARGET_OPENCL_VERSION >= 200
 
-    //! \brief Default constructor - initializes to NULL.
+    //! \brief Default constructor - initializes to nullptr.
     Image2D() { }
 
     /*! \brief Constructor from cl_mem - takes ownership.
@@ -4728,7 +4728,7 @@ public:
         cl_GLenum target,
         cl_GLint  miplevel,
         cl_GLuint texobj,
-        cl_int * err = NULL)
+        cl_int * err = nullptr)
     {
         cl_int error;
         object_ = ::clCreateFromGLTexture2D(
@@ -4740,13 +4740,13 @@ public:
             &error);
 
         detail::errHandler(error, __CREATE_GL_TEXTURE_2D_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
 
     }
     
-    //! \brief Default constructor - initializes to NULL.
+    //! \brief Default constructor - initializes to nullptr.
     Image2DGL() : Image2D() { }
 
     /*! \brief Constructor from cl_mem - takes ownership.
@@ -4816,8 +4816,8 @@ public:
         size_type height,
         size_type rowPitch,
         size_type slicePitch,
-        void* host_ptr = NULL,
-        cl_int* err = NULL)
+        void* host_ptr = nullptr,
+        cl_int* err = nullptr)
     {
         cl_int error;
         cl_image_desc desc =
@@ -4840,7 +4840,7 @@ public:
             &error);
 
         detail::errHandler(error, __CREATE_IMAGE_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
@@ -4914,8 +4914,8 @@ public:
         size_type depth,
         size_type row_pitch = 0,
         size_type slice_pitch = 0,
-        void* host_ptr = NULL,
-        cl_int* err = NULL)
+        void* host_ptr = nullptr,
+        cl_int* err = nullptr)
     {
         cl_int error;
         bool useCreateImage;
@@ -4955,7 +4955,7 @@ public:
                 &error);
 
             detail::errHandler(error, __CREATE_IMAGE_ERR);
-            if (err != NULL) {
+            if (err != nullptr) {
                 *err = error;
             }
         }
@@ -4968,14 +4968,14 @@ public:
                 slice_pitch, host_ptr, &error);
 
             detail::errHandler(error, __CREATE_IMAGE3D_ERR);
-            if (err != NULL) {
+            if (err != nullptr) {
                 *err = error;
             }
         }
 #endif // CL_HPP_MINIMUM_OPENCL_VERSION < 120
     }
 
-    //! \brief Default constructor - initializes to NULL.
+    //! \brief Default constructor - initializes to nullptr.
     Image3D() : Image() { }
 
     /*! \brief Constructor from cl_mem - takes ownership.
@@ -5050,7 +5050,7 @@ public:
         cl_GLenum target,
         cl_GLint  miplevel,
         cl_GLuint texobj,
-        cl_int * err = NULL)
+        cl_int * err = nullptr)
     {
         cl_int error;
         object_ = ::clCreateFromGLTexture3D(
@@ -5062,12 +5062,12 @@ public:
             &error);
 
         detail::errHandler(error, __CREATE_GL_TEXTURE_3D_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
 
-    //! \brief Default constructor - initializes to NULL.
+    //! \brief Default constructor - initializes to nullptr.
     Image3DGL() : Image3D() { }
 
     /*! \brief Constructor from cl_mem - takes ownership.
@@ -5136,7 +5136,7 @@ public:
         cl_GLenum target,
         cl_GLint  miplevel,
         cl_GLuint texobj,
-        cl_int * err = NULL)
+        cl_int * err = nullptr)
     {
         cl_int error;
         object_ = ::clCreateFromGLTexture(
@@ -5148,7 +5148,7 @@ public:
             &error);
 
         detail::errHandler(error, __CREATE_GL_TEXTURE_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
@@ -5227,7 +5227,7 @@ public:
         const Context& context,
         cl_uint packet_size,
         cl_uint max_packets,
-        cl_int* err = NULL)
+        cl_int* err = nullptr)
     {
         cl_int error;
 
@@ -5235,7 +5235,7 @@ public:
         object_ = ::clCreatePipe(context(), flags, packet_size, max_packets, nullptr, &error);
 
         detail::errHandler(error, __CREATE_PIPE_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
@@ -5251,7 +5251,7 @@ public:
     Pipe(
         cl_uint packet_size,
         cl_uint max_packets,
-        cl_int* err = NULL)
+        cl_int* err = nullptr)
     {
         cl_int error;
 
@@ -5261,12 +5261,12 @@ public:
         object_ = ::clCreatePipe(context(), flags, packet_size, max_packets, nullptr, &error);
 
         detail::errHandler(error, __CREATE_PIPE_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
 
-    //! \brief Default constructor - initializes to NULL.
+    //! \brief Default constructor - initializes to nullptr.
     Pipe() : Memory() { }
 
     /*! \brief Constructor from cl_mem - takes ownership.
@@ -5329,12 +5329,12 @@ public:
     //! \brief Wrapper for clGetMemObjectInfo() that returns by value.
     template <cl_int name> typename
         detail::param_traits<detail::cl_pipe_info, name>::param_type
-        getInfo(cl_int* err = NULL) const
+        getInfo(cl_int* err = nullptr) const
     {
         typename detail::param_traits<
             detail::cl_pipe_info, name>::param_type param;
         cl_int result = getInfo(name, &param);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = result;
         }
         return param;
@@ -5354,7 +5354,7 @@ public:
 class Sampler : public detail::Wrapper<cl_sampler>
 {
 public:
-    //! \brief Default constructor - initializes to NULL.
+    //! \brief Default constructor - initializes to nullptr.
     Sampler() { }
 
     /*! \brief Constructs a Sampler in a specified context.
@@ -5366,7 +5366,7 @@ public:
         cl_bool normalized_coords,
         cl_addressing_mode addressing_mode,
         cl_filter_mode filter_mode,
-        cl_int* err = NULL)
+        cl_int* err = nullptr)
     {
         cl_int error;
 
@@ -5382,7 +5382,7 @@ public:
             &error);
 
         detail::errHandler(error, __CREATE_SAMPLER_WITH_PROPERTIES_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
 #else
@@ -5394,7 +5394,7 @@ public:
             &error);
 
         detail::errHandler(error, __CREATE_SAMPLER_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
 #endif        
@@ -5462,12 +5462,12 @@ public:
     //! \brief Wrapper for clGetSamplerInfo() that returns by value.
     template <cl_int name> typename
     detail::param_traits<detail::cl_sampler_info, name>::param_type
-    getInfo(cl_int* err = NULL) const
+    getInfo(cl_int* err = nullptr) const
     {
         typename detail::param_traits<
             detail::cl_sampler_info, name>::param_type param;
         cl_int result = getInfo(name, &param);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = result;
         }
         return param;
@@ -5593,7 +5593,7 @@ template <>
 struct KernelArgumentHandler<LocalSpaceArg, void>
 {
     static size_type size(const LocalSpaceArg& value) { return value.size_; }
-    static const void* ptr(const LocalSpaceArg&) { return NULL; }
+    static const void* ptr(const LocalSpaceArg&) { return nullptr; }
 };
 
 } 
@@ -5620,9 +5620,9 @@ Local(size_type size)
 class Kernel : public detail::Wrapper<cl_kernel>
 {
 public:
-    inline Kernel(const Program& program, const char* name, cl_int* err = NULL);
+    inline Kernel(const Program& program, const char* name, cl_int* err = nullptr);
 
-    //! \brief Default constructor - initializes to NULL.
+    //! \brief Default constructor - initializes to nullptr.
     Kernel() { }
 
     /*! \brief Constructor from cl_kernel - takes ownership.
@@ -5685,12 +5685,12 @@ public:
 
     template <cl_int name> typename
     detail::param_traits<detail::cl_kernel_info, name>::param_type
-    getInfo(cl_int* err = NULL) const
+    getInfo(cl_int* err = nullptr) const
     {
         typename detail::param_traits<
             detail::cl_kernel_info, name>::param_type param;
         cl_int result = getInfo(name, &param);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = result;
         }
         return param;
@@ -5707,12 +5707,12 @@ public:
 
     template <cl_int name> typename
     detail::param_traits<detail::cl_kernel_arg_info, name>::param_type
-    getArgInfo(cl_uint argIndex, cl_int* err = NULL) const
+    getArgInfo(cl_uint argIndex, cl_int* err = nullptr) const
     {
         typename detail::param_traits<
             detail::cl_kernel_arg_info, name>::param_type param;
         cl_int result = getArgInfo(argIndex, name, &param);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = result;
         }
         return param;
@@ -5731,12 +5731,12 @@ public:
 
     template <cl_int name> typename
     detail::param_traits<detail::cl_kernel_work_group_info, name>::param_type
-        getWorkGroupInfo(const Device& device, cl_int* err = NULL) const
+        getWorkGroupInfo(const Device& device, cl_int* err = nullptr) const
     {
         typename detail::param_traits<
         detail::cl_kernel_work_group_info, name>::param_type param;
         cl_int result = getWorkGroupInfo(device, name, &param);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = result;
         }
         return param;
@@ -5747,7 +5747,7 @@ public:
     cl_int getSubGroupInfo(const cl::Device &dev, cl_kernel_sub_group_info name, const cl::NDRange &range, size_type* param) const
     {
         typedef clGetKernelSubGroupInfoKHR_fn PFN_clGetKernelSubGroupInfoKHR;
-        static PFN_clGetKernelSubGroupInfoKHR pfn_clGetKernelSubGroupInfoKHR = NULL;
+        static PFN_clGetKernelSubGroupInfoKHR pfn_clGetKernelSubGroupInfoKHR = nullptr;
         CL_HPP_INIT_CL_EXT_FCN_PTR_(clGetKernelSubGroupInfoKHR);
 
         return detail::errHandler(
@@ -5756,11 +5756,11 @@ public:
     }
 
     template <cl_int name>
-        size_type getSubGroupInfo(const cl::Device &dev, const cl::NDRange &range, cl_int* err = NULL) const
+        size_type getSubGroupInfo(const cl::Device &dev, const cl::NDRange &range, cl_int* err = nullptr) const
     {
         size_type param;
         cl_int result = getSubGroupInfo(dev, name, range, &param);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = result;
         }
         return param;
@@ -5938,7 +5938,7 @@ public:
     Program(
         const string& source,
         bool build = false,
-        cl_int* err = NULL)
+        cl_int* err = nullptr)
     {
         cl_int error;
 
@@ -5957,19 +5957,19 @@ public:
             error = ::clBuildProgram(
                 object_,
                 0,
-                NULL,
+                nullptr,
 #if !defined(CL_HPP_CL_1_2_DEFAULT_BUILD)
                 "-cl-std=CL2.0",
 #else
                 "",
 #endif // #if !defined(CL_HPP_CL_1_2_DEFAULT_BUILD)
-                NULL,
-                NULL);
+                nullptr,
+                nullptr);
 
             detail::buildErrHandler(error, __BUILD_PROGRAM_ERR, getBuildInfo<CL_PROGRAM_BUILD_LOG>());
         }
 
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
@@ -5978,7 +5978,7 @@ public:
         const Context& context,
         const string& source,
         bool build = false,
-        cl_int* err = NULL)
+        cl_int* err = nullptr)
     {
         cl_int error;
 
@@ -5994,19 +5994,19 @@ public:
             error = ::clBuildProgram(
                 object_,
                 0,
-                NULL,
+                nullptr,
 #if !defined(CL_HPP_CL_1_2_DEFAULT_BUILD)
                 "-cl-std=CL2.0",
 #else
                 "",
 #endif // #if !defined(CL_HPP_CL_1_2_DEFAULT_BUILD)
-                NULL,
-                NULL);
+                nullptr,
+                nullptr);
             
             detail::buildErrHandler(error, __BUILD_PROGRAM_ERR, getBuildInfo<CL_PROGRAM_BUILD_LOG>());
         }
 
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
@@ -6017,7 +6017,7 @@ public:
      */
     Program(
         const Sources& sources,
-        cl_int* err = NULL)
+        cl_int* err = nullptr)
     {
         cl_int error;
         Context context = Context::getDefault(err);
@@ -6041,7 +6041,7 @@ public:
             context(), (cl_uint)n, strings.data(), lengths.data(), &error);
 
         detail::errHandler(error, __CREATE_PROGRAM_WITH_SOURCE_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
@@ -6053,7 +6053,7 @@ public:
     Program(
         const Context& context,
         const Sources& sources,
-        cl_int* err = NULL)
+        cl_int* err = nullptr)
     {
         cl_int error;
 
@@ -6076,7 +6076,7 @@ public:
             context(), (cl_uint)n, strings.data(), lengths.data(), &error);
 
         detail::errHandler(error, __CREATE_PROGRAM_WITH_SOURCE_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
@@ -6090,12 +6090,12 @@ public:
      *   match the size of binaries and filled with values to specify if each binary
      *   was successfully loaded.
      *   Set to CL_SUCCESS if the binary was successfully loaded.
-     *   Set to CL_INVALID_VALUE if the length is 0 or the binary pointer is NULL.
+     *   Set to CL_INVALID_VALUE if the length is 0 or the binary pointer is nullptr.
      *   Set to CL_INVALID_BINARY if the binary provided is not valid for the matching device.
-     * \param err if non-NULL will be set to CL_SUCCESS on successful operation or one of the following errors:
+     * \param err if non-nullptr will be set to CL_SUCCESS on successful operation or one of the following errors:
      *   CL_INVALID_CONTEXT if context is not a valid context.
      *   CL_INVALID_VALUE if the length of devices is zero; or if the length of binaries does not match the length of devices; 
-     *     or if any entry in binaries is NULL or has length 0.
+     *     or if any entry in binaries is nullptr or has length 0.
      *   CL_INVALID_DEVICE if OpenCL devices listed in devices are not in the list of devices associated with context.
      *   CL_INVALID_BINARY if an invalid program binary was encountered for any device. binaryStatus will return specific status for each device.
      *   CL_OUT_OF_HOST_MEMORY if there is a failure to allocate resources required by the OpenCL implementation on the host.
@@ -6104,8 +6104,8 @@ public:
         const Context& context,
         const vector<Device>& devices,
         const Binaries& binaries,
-        vector<cl_int>* binaryStatus = NULL,
-        cl_int* err = NULL)
+        vector<cl_int>* binaryStatus = nullptr,
+        cl_int* err = nullptr)
     {
         cl_int error;
         
@@ -6115,7 +6115,7 @@ public:
         if(binaries.size() != numDevices) {
             error = CL_INVALID_VALUE;
             detail::errHandler(error, __CREATE_PROGRAM_WITH_BINARY_ERR);
-            if (err != NULL) {
+            if (err != nullptr) {
                 *err = error;
             }
             return;
@@ -6148,12 +6148,12 @@ public:
         object_ = ::clCreateProgramWithBinary(
             context(), (cl_uint) devices.size(),
             deviceIDs.data(),
-            lengths.data(), images.data(), (binaryStatus != NULL && numDevices > 0)
+            lengths.data(), images.data(), (binaryStatus != nullptr && numDevices > 0)
                ? &binaryStatus->front()
-               : NULL, &error);
+               : nullptr, &error);
 
         detail::errHandler(error, __CREATE_PROGRAM_WITH_BINARY_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
@@ -6168,7 +6168,7 @@ public:
         const Context& context,
         const vector<Device>& devices,
         const string& kernelNames,
-        cl_int* err = NULL)
+        cl_int* err = nullptr)
     {
         cl_int error;
 
@@ -6187,7 +6187,7 @@ public:
             &error);
 
         detail::errHandler(error, __CREATE_PROGRAM_WITH_BUILT_IN_KERNELS_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
@@ -6241,9 +6241,9 @@ public:
 
     cl_int build(
         const vector<Device>& devices,
-        const char* options = NULL,
-        void (CL_CALLBACK * notifyFptr)(cl_program, void *) = NULL,
-        void* data = NULL) const
+        const char* options = nullptr,
+        void (CL_CALLBACK * notifyFptr)(cl_program, void *) = nullptr,
+        void* data = nullptr) const
     {
         size_type numDevices = devices.size();
         vector<cl_device_id> deviceIDs(numDevices);
@@ -6265,14 +6265,14 @@ public:
     }
 
     cl_int build(
-        const char* options = NULL,
-        void (CL_CALLBACK * notifyFptr)(cl_program, void *) = NULL,
-        void* data = NULL) const
+        const char* options = nullptr,
+        void (CL_CALLBACK * notifyFptr)(cl_program, void *) = nullptr,
+        void* data = nullptr) const
     {
         cl_int buildError = ::clBuildProgram(
             object_,
             0,
-            NULL,
+            nullptr,
             options,
             notifyFptr,
             data);
@@ -6283,18 +6283,18 @@ public:
 
 #if CL_HPP_TARGET_OPENCL_VERSION >= 120
     cl_int compile(
-        const char* options = NULL,
-        void (CL_CALLBACK * notifyFptr)(cl_program, void *) = NULL,
-        void* data = NULL) const
+        const char* options = nullptr,
+        void (CL_CALLBACK * notifyFptr)(cl_program, void *) = nullptr,
+        void* data = nullptr) const
     {
         cl_int error = ::clCompileProgram(
             object_,
             0,
-            NULL,
+            nullptr,
             options,
             0,
-            NULL,
-            NULL,
+            nullptr,
+            nullptr,
             notifyFptr,
             data);
         return detail::buildErrHandler(error, __COMPILE_PROGRAM_ERR, getBuildInfo<CL_PROGRAM_BUILD_LOG>());
@@ -6311,12 +6311,12 @@ public:
 
     template <cl_int name> typename
     detail::param_traits<detail::cl_program_info, name>::param_type
-    getInfo(cl_int* err = NULL) const
+    getInfo(cl_int* err = nullptr) const
     {
         typename detail::param_traits<
             detail::cl_program_info, name>::param_type param;
         cl_int result = getInfo(name, &param);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = result;
         }
         return param;
@@ -6334,12 +6334,12 @@ public:
 
     template <cl_int name> typename
     detail::param_traits<detail::cl_program_build_info, name>::param_type
-    getBuildInfo(const Device& device, cl_int* err = NULL) const
+    getBuildInfo(const Device& device, cl_int* err = nullptr) const
     {
         typename detail::param_traits<
             detail::cl_program_build_info, name>::param_type param;
         cl_int result = getBuildInfo(device, name, &param);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = result;
         }
         return param;
@@ -6352,7 +6352,7 @@ public:
      */
     template <cl_int name>
     vector<std::pair<cl::Device, typename detail::param_traits<detail::cl_program_build_info, name>::param_type>>
-        getBuildInfo(cl_int *err = NULL) const
+        getBuildInfo(cl_int *err = nullptr) const
     {
         cl_int result = CL_SUCCESS;
 
@@ -6362,7 +6362,7 @@ public:
 
         // If there was an initial error from getInfo return the error
         if (result != CL_SUCCESS) {
-            if (err != NULL) {
+            if (err != nullptr) {
                 *err = result;
             }
             return devInfo;
@@ -6380,7 +6380,7 @@ public:
                 break;
             }
         }
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = result;
         }
         if (result != CL_SUCCESS) {
@@ -6392,7 +6392,7 @@ public:
     cl_int createKernels(vector<Kernel>* kernels)
     {
         cl_uint numKernels;
-        cl_int err = ::clCreateKernelsInProgram(object_, 0, NULL, &numKernels);
+        cl_int err = ::clCreateKernelsInProgram(object_, 0, nullptr, &numKernels);
         if (err != CL_SUCCESS) {
             return detail::errHandler(err, __CREATE_KERNELS_IN_PROGRAM_ERR);
         }
@@ -6400,7 +6400,7 @@ public:
         vector<cl_kernel> value(numKernels);
         
         err = ::clCreateKernelsInProgram(
-            object_, numKernels, value.data(), NULL);
+            object_, numKernels, value.data(), nullptr);
         if (err != CL_SUCCESS) {
             return detail::errHandler(err, __CREATE_KERNELS_IN_PROGRAM_ERR);
         }
@@ -6424,10 +6424,10 @@ public:
 inline Program linkProgram(
     Program input1,
     Program input2,
-    const char* options = NULL,
-    void (CL_CALLBACK * notifyFptr)(cl_program, void *) = NULL,
-    void* data = NULL,
-    cl_int* err = NULL) 
+    const char* options = nullptr,
+    void (CL_CALLBACK * notifyFptr)(cl_program, void *) = nullptr,
+    void* data = nullptr,
+    cl_int* err = nullptr) 
 {
     cl_int error_local = CL_SUCCESS;
 
@@ -6441,7 +6441,7 @@ inline Program linkProgram(
     cl_program prog = ::clLinkProgram(
         ctx(),
         0,
-        NULL,
+        nullptr,
         options,
         2,
         programs,
@@ -6450,7 +6450,7 @@ inline Program linkProgram(
         &error_local);
 
     detail::errHandler(error_local,__COMPILE_PROGRAM_ERR);
-    if (err != NULL) {
+    if (err != nullptr) {
         *err = error_local;
     }
 
@@ -6459,10 +6459,10 @@ inline Program linkProgram(
 
 inline Program linkProgram(
     vector<Program> inputPrograms,
-    const char* options = NULL,
-    void (CL_CALLBACK * notifyFptr)(cl_program, void *) = NULL,
-    void* data = NULL,
-    cl_int* err = NULL) 
+    const char* options = nullptr,
+    void (CL_CALLBACK * notifyFptr)(cl_program, void *) = nullptr,
+    void* data = nullptr,
+    cl_int* err = nullptr) 
 {
     cl_int error_local = CL_SUCCESS;
 
@@ -6482,7 +6482,7 @@ inline Program linkProgram(
     cl_program prog = ::clLinkProgram(
         ctx(),
         0,
-        NULL,
+        nullptr,
         options,
         (cl_uint)inputPrograms.size(),
         programs.data(),
@@ -6491,7 +6491,7 @@ inline Program linkProgram(
         &error_local);
 
     detail::errHandler(error_local,__COMPILE_PROGRAM_ERR);
-    if (err != NULL) {
+    if (err != nullptr) {
         *err = error_local;
     }
 
@@ -6533,7 +6533,7 @@ inline vector<vector<unsigned char>> cl::Program::getInfo<CL_PROGRAM_BINARIES>(c
     vector<vector<unsigned char>> binariesVectors;
 
     cl_int result = getInfo(CL_PROGRAM_BINARIES, &binariesVectors);
-    if (err != NULL) {
+    if (err != nullptr) {
         *err = result;
     }
     return binariesVectors;
@@ -6546,7 +6546,7 @@ inline Kernel::Kernel(const Program& program, const char* name, cl_int* err)
     object_ = ::clCreateKernel(program(), name, &error);
     detail::errHandler(error, __CREATE_KERNEL_ERR);
 
-    if (err != NULL) {
+    if (err != nullptr) {
         *err = error;
     }
 
@@ -6635,7 +6635,7 @@ public:
      */
    CommandQueue(
         cl_command_queue_properties properties,
-        cl_int* err = NULL)
+        cl_int* err = nullptr)
     {
         cl_int error;
 
@@ -6643,7 +6643,7 @@ public:
         detail::errHandler(error, __CREATE_CONTEXT_ERR);
 
         if (error != CL_SUCCESS) {
-            if (err != NULL) {
+            if (err != nullptr) {
                 *err = error;
             }
         }
@@ -6662,7 +6662,7 @@ public:
             }
 
             detail::errHandler(error, __CREATE_COMMAND_QUEUE_WITH_PROPERTIES_ERR);
-            if (err != NULL) {
+            if (err != nullptr) {
                 *err = error;
             }
 #else
@@ -6670,7 +6670,7 @@ public:
                 context(), device(), properties, &error);
 
             detail::errHandler(error, __CREATE_COMMAND_QUEUE_ERR);
-            if (err != NULL) {
+            if (err != nullptr) {
                 *err = error;
             }
 #endif
@@ -6683,7 +6683,7 @@ public:
     */
    CommandQueue(
        QueueProperties properties,
-       cl_int* err = NULL)
+       cl_int* err = nullptr)
    {
        cl_int error;
 
@@ -6691,7 +6691,7 @@ public:
        detail::errHandler(error, __CREATE_CONTEXT_ERR);
 
        if (error != CL_SUCCESS) {
-           if (err != NULL) {
+           if (err != nullptr) {
                *err = error;
            }
        }
@@ -6707,7 +6707,7 @@ public:
 
 
            detail::errHandler(error, __CREATE_COMMAND_QUEUE_WITH_PROPERTIES_ERR);
-           if (err != NULL) {
+           if (err != nullptr) {
                *err = error;
            }
 #else
@@ -6715,7 +6715,7 @@ public:
                context(), device(), static_cast<cl_command_queue_properties>(properties), &error);
 
            detail::errHandler(error, __CREATE_COMMAND_QUEUE_ERR);
-           if (err != NULL) {
+           if (err != nullptr) {
                *err = error;
            }
 #endif
@@ -6729,7 +6729,7 @@ public:
     explicit CommandQueue(
         const Context& context,
         cl_command_queue_properties properties = 0,
-        cl_int* err = NULL)
+        cl_int* err = nullptr)
     {
         cl_int error;
         vector<cl::Device> devices;
@@ -6739,7 +6739,7 @@ public:
 
         if (error != CL_SUCCESS)
         {
-            if (err != NULL) {
+            if (err != nullptr) {
                 *err = error;
             }
             return;
@@ -6757,7 +6757,7 @@ public:
         }
 
         detail::errHandler(error, __CREATE_COMMAND_QUEUE_WITH_PROPERTIES_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
 #else
@@ -6765,7 +6765,7 @@ public:
             context(), devices[0](), properties, &error);
 
         detail::errHandler(error, __CREATE_COMMAND_QUEUE_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
 #endif
@@ -6779,7 +6779,7 @@ public:
     explicit CommandQueue(
         const Context& context,
         QueueProperties properties,
-        cl_int* err = NULL)
+        cl_int* err = nullptr)
     {
         cl_int error;
         vector<cl::Device> devices;
@@ -6789,7 +6789,7 @@ public:
 
         if (error != CL_SUCCESS)
         {
-            if (err != NULL) {
+            if (err != nullptr) {
                 *err = error;
             }
             return;
@@ -6802,7 +6802,7 @@ public:
             context(), devices[0](), queue_properties, &error);
        
         detail::errHandler(error, __CREATE_COMMAND_QUEUE_WITH_PROPERTIES_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
 #else
@@ -6810,7 +6810,7 @@ public:
             context(), devices[0](), static_cast<cl_command_queue_properties>(properties), &error);
 
         detail::errHandler(error, __CREATE_COMMAND_QUEUE_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
 #endif
@@ -6825,7 +6825,7 @@ public:
         const Context& context,
         const Device& device,
         cl_command_queue_properties properties = 0,
-        cl_int* err = NULL)
+        cl_int* err = nullptr)
     {
         cl_int error;
 
@@ -6836,7 +6836,7 @@ public:
             context(), device(), queue_properties, &error);
         
         detail::errHandler(error, __CREATE_COMMAND_QUEUE_WITH_PROPERTIES_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
 #else
@@ -6844,7 +6844,7 @@ public:
             context(), device(), properties, &error);
 
         detail::errHandler(error, __CREATE_COMMAND_QUEUE_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
 #endif
@@ -6858,7 +6858,7 @@ public:
         const Context& context,
         const Device& device,
         QueueProperties properties,
-        cl_int* err = NULL)
+        cl_int* err = nullptr)
     {
             cl_int error;
 
@@ -6869,7 +6869,7 @@ public:
                 context(), device(), queue_properties, &error);
       
             detail::errHandler(error, __CREATE_COMMAND_QUEUE_WITH_PROPERTIES_ERR);
-            if (err != NULL) {
+            if (err != nullptr) {
                 *err = error;
             }
 #else
@@ -6877,13 +6877,13 @@ public:
                 context(), device(), static_cast<cl_command_queue_properties>(properties), &error);
 
             detail::errHandler(error, __CREATE_COMMAND_QUEUE_ERR);
-            if (err != NULL) {
+            if (err != nullptr) {
                 *err = error;
             }
 #endif
         }
 
-    static CommandQueue getDefault(cl_int * err = NULL) 
+    static CommandQueue getDefault(cl_int * err = nullptr) 
     {
         std::call_once(default_initialized_, makeDefault);
 #if CL_HPP_TARGET_OPENCL_VERSION >= 200
@@ -6891,7 +6891,7 @@ public:
 #else // CL_HPP_TARGET_OPENCL_VERSION >= 200
         detail::errHandler(default_error_, __CREATE_COMMAND_QUEUE_ERR);
 #endif // CL_HPP_TARGET_OPENCL_VERSION >= 200
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = default_error_;
         }
         return default_;
@@ -6968,12 +6968,12 @@ public:
 
     template <cl_int name> typename
     detail::param_traits<detail::cl_command_queue_info, name>::param_type
-    getInfo(cl_int* err = NULL) const
+    getInfo(cl_int* err = nullptr) const
     {
         typename detail::param_traits<
             detail::cl_command_queue_info, name>::param_type param;
         cl_int result = getInfo(name, &param);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = result;
         }
         return param;
@@ -6985,20 +6985,20 @@ public:
         size_type offset,
         size_type size,
         void* ptr,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) const
     {
         cl_event tmp;
         cl_int err = detail::errHandler(
             ::clEnqueueReadBuffer(
                 object_, buffer(), blocking, offset, size,
                 ptr,
-                (events != NULL) ? (cl_uint) events->size() : 0,
-                (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                (event != NULL) ? &tmp : NULL),
+                (events != nullptr) ? (cl_uint) events->size() : 0,
+                (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                (event != nullptr) ? &tmp : nullptr),
             __ENQUEUE_READ_BUFFER_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7010,20 +7010,20 @@ public:
         size_type offset,
         size_type size,
         const void* ptr,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) const
     {
         cl_event tmp;
         cl_int err = detail::errHandler(
             ::clEnqueueWriteBuffer(
                 object_, buffer(), blocking, offset, size,
                 ptr,
-                (events != NULL) ? (cl_uint) events->size() : 0,
-                (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                (event != NULL) ? &tmp : NULL),
+                (events != nullptr) ? (cl_uint) events->size() : 0,
+                (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                (event != nullptr) ? &tmp : nullptr),
                 __ENQUEUE_WRITE_BUFFER_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7035,19 +7035,19 @@ public:
         size_type src_offset,
         size_type dst_offset,
         size_type size,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) const
     {
         cl_event tmp;
         cl_int err = detail::errHandler(
             ::clEnqueueCopyBuffer(
                 object_, src(), dst(), src_offset, dst_offset, size,
-                (events != NULL) ? (cl_uint) events->size() : 0,
-                (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                (event != NULL) ? &tmp : NULL),
+                (events != nullptr) ? (cl_uint) events->size() : 0,
+                (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                (event != nullptr) ? &tmp : nullptr),
             __ENQEUE_COPY_BUFFER_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7064,8 +7064,8 @@ public:
         size_type host_row_pitch,
         size_type host_slice_pitch,
         void *ptr,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) const
     {
         cl_event tmp;
         cl_int err = detail::errHandler(
@@ -7081,12 +7081,12 @@ public:
                 host_row_pitch,
                 host_slice_pitch,
                 ptr,
-                (events != NULL) ? (cl_uint) events->size() : 0,
-                (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                (event != NULL) ? &tmp : NULL),
+                (events != nullptr) ? (cl_uint) events->size() : 0,
+                (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                (event != nullptr) ? &tmp : nullptr),
                 __ENQUEUE_READ_BUFFER_RECT_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7103,8 +7103,8 @@ public:
         size_type host_row_pitch,
         size_type host_slice_pitch,
         void *ptr,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) const
     {
         cl_event tmp;
         cl_int err = detail::errHandler(
@@ -7120,12 +7120,12 @@ public:
                 host_row_pitch,
                 host_slice_pitch,
                 ptr,
-                (events != NULL) ? (cl_uint) events->size() : 0,
-                (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                (event != NULL) ? &tmp : NULL),
+                (events != nullptr) ? (cl_uint) events->size() : 0,
+                (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                (event != nullptr) ? &tmp : nullptr),
                 __ENQUEUE_WRITE_BUFFER_RECT_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7141,8 +7141,8 @@ public:
         size_type src_slice_pitch,
         size_type dst_row_pitch,
         size_type dst_slice_pitch,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) const
     {
         cl_event tmp;
         cl_int err = detail::errHandler(
@@ -7157,12 +7157,12 @@ public:
                 src_slice_pitch,
                 dst_row_pitch,
                 dst_slice_pitch,
-                (events != NULL) ? (cl_uint) events->size() : 0,
-                (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                (event != NULL) ? &tmp : NULL),
+                (events != nullptr) ? (cl_uint) events->size() : 0,
+                (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                (event != nullptr) ? &tmp : nullptr),
             __ENQEUE_COPY_BUFFER_RECT_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7186,8 +7186,8 @@ public:
         PatternType pattern,
         size_type offset,
         size_type size,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) const
     {
         cl_event tmp;
         cl_int err = detail::errHandler(
@@ -7198,12 +7198,12 @@ public:
                 sizeof(PatternType), 
                 offset, 
                 size,
-                (events != NULL) ? (cl_uint) events->size() : 0,
-                (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                (event != NULL) ? &tmp : NULL),
+                (events != nullptr) ? (cl_uint) events->size() : 0,
+                (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                (event != nullptr) ? &tmp : nullptr),
                 __ENQUEUE_FILL_BUFFER_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7218,8 +7218,8 @@ public:
         size_type row_pitch,
         size_type slice_pitch,
         void* ptr,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) const
     {
         cl_event tmp;
         cl_int err = detail::errHandler(
@@ -7232,12 +7232,12 @@ public:
                 row_pitch, 
                 slice_pitch, 
                 ptr,
-                (events != NULL) ? (cl_uint) events->size() : 0,
-                (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                (event != NULL) ? &tmp : NULL),
+                (events != nullptr) ? (cl_uint) events->size() : 0,
+                (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                (event != nullptr) ? &tmp : nullptr),
             __ENQUEUE_READ_IMAGE_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7251,8 +7251,8 @@ public:
         size_type row_pitch,
         size_type slice_pitch,
         void* ptr,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) const
     {
         cl_event tmp;
         cl_int err = detail::errHandler(
@@ -7265,12 +7265,12 @@ public:
                 row_pitch, 
                 slice_pitch, 
                 ptr,
-                (events != NULL) ? (cl_uint) events->size() : 0,
-                (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                (event != NULL) ? &tmp : NULL),
+                (events != nullptr) ? (cl_uint) events->size() : 0,
+                (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                (event != nullptr) ? &tmp : nullptr),
             __ENQUEUE_WRITE_IMAGE_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7282,8 +7282,8 @@ public:
         const array<size_type, 3>& src_origin,
         const array<size_type, 3>& dst_origin,
         const array<size_type, 3>& region,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) const
     {
         cl_event tmp;
         cl_int err = detail::errHandler(
@@ -7294,12 +7294,12 @@ public:
                 src_origin.data(),
                 dst_origin.data(), 
                 region.data(),
-                (events != NULL) ? (cl_uint) events->size() : 0,
-                (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                (event != NULL) ? &tmp : NULL),
+                (events != nullptr) ? (cl_uint) events->size() : 0,
+                (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                (event != nullptr) ? &tmp : nullptr),
             __ENQUEUE_COPY_IMAGE_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7318,8 +7318,8 @@ public:
         cl_float4 fillColor,
         const array<size_type, 3>& origin,
         const array<size_type, 3>& region,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) const
     {
         cl_event tmp;
         cl_int err = detail::errHandler(
@@ -7329,12 +7329,12 @@ public:
                 static_cast<void*>(&fillColor), 
                 origin.data(),
                 region.data(),
-                (events != NULL) ? (cl_uint) events->size() : 0,
-                (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                (event != NULL) ? &tmp : NULL),
+                (events != nullptr) ? (cl_uint) events->size() : 0,
+                (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                (event != nullptr) ? &tmp : nullptr),
                 __ENQUEUE_FILL_IMAGE_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7352,8 +7352,8 @@ public:
         cl_int4 fillColor,
         const array<size_type, 3>& origin,
         const array<size_type, 3>& region,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) const
     {
         cl_event tmp;
         cl_int err = detail::errHandler(
@@ -7363,12 +7363,12 @@ public:
                 static_cast<void*>(&fillColor), 
                 origin.data(),
                 region.data(),
-                (events != NULL) ? (cl_uint) events->size() : 0,
-                (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                (event != NULL) ? &tmp : NULL),
+                (events != nullptr) ? (cl_uint) events->size() : 0,
+                (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                (event != nullptr) ? &tmp : nullptr),
                 __ENQUEUE_FILL_IMAGE_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7386,8 +7386,8 @@ public:
         cl_uint4 fillColor,
         const array<size_type, 3>& origin,
         const array<size_type, 3>& region,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) const
     {
         cl_event tmp;
         cl_int err = detail::errHandler(
@@ -7397,12 +7397,12 @@ public:
                 static_cast<void*>(&fillColor), 
                 origin.data(),
                 region.data(),
-                (events != NULL) ? (cl_uint) events->size() : 0,
-                (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                (event != NULL) ? &tmp : NULL),
+                (events != nullptr) ? (cl_uint) events->size() : 0,
+                (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                (event != nullptr) ? &tmp : nullptr),
                 __ENQUEUE_FILL_IMAGE_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7415,8 +7415,8 @@ public:
         const array<size_type, 3>& src_origin,
         const array<size_type, 3>& region,
         size_type dst_offset,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) const
     {
         cl_event tmp;
         cl_int err = detail::errHandler(
@@ -7427,12 +7427,12 @@ public:
                 src_origin.data(),
                 region.data(), 
                 dst_offset,
-                (events != NULL) ? (cl_uint) events->size() : 0,
-                (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                (event != NULL) ? &tmp : NULL),
+                (events != nullptr) ? (cl_uint) events->size() : 0,
+                (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                (event != nullptr) ? &tmp : nullptr),
             __ENQUEUE_COPY_IMAGE_TO_BUFFER_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7444,8 +7444,8 @@ public:
         size_type src_offset,
         const array<size_type, 3>& dst_origin,
         const array<size_type, 3>& region,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) const
     {
         cl_event tmp;
         cl_int err = detail::errHandler(
@@ -7456,12 +7456,12 @@ public:
                 src_offset,
                 dst_origin.data(), 
                 region.data(),
-                (events != NULL) ? (cl_uint) events->size() : 0,
-                (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                (event != NULL) ? &tmp : NULL),
+                (events != nullptr) ? (cl_uint) events->size() : 0,
+                (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                (event != nullptr) ? &tmp : nullptr),
             __ENQUEUE_COPY_BUFFER_TO_IMAGE_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7473,24 +7473,24 @@ public:
         cl_map_flags flags,
         size_type offset,
         size_type size,
-        const vector<Event>* events = NULL,
-        Event* event = NULL,
-        cl_int* err = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr,
+        cl_int* err = nullptr) const
     {
         cl_event tmp;
         cl_int error;
         void * result = ::clEnqueueMapBuffer(
             object_, buffer(), blocking, flags, offset, size,
-            (events != NULL) ? (cl_uint) events->size() : 0,
-            (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-            (event != NULL) ? &tmp : NULL,
+            (events != nullptr) ? (cl_uint) events->size() : 0,
+            (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+            (event != nullptr) ? &tmp : nullptr,
             &error);
 
         detail::errHandler(error, __ENQUEUE_MAP_BUFFER_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
-        if (event != NULL && error == CL_SUCCESS)
+        if (event != nullptr && error == CL_SUCCESS)
             *event = tmp;
 
         return result;
@@ -7504,9 +7504,9 @@ public:
         const array<size_type, 3>& region,
         size_type * row_pitch,
         size_type * slice_pitch,
-        const vector<Event>* events = NULL,
-        Event* event = NULL,
-        cl_int* err = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr,
+        cl_int* err = nullptr) const
     {
         cl_event tmp;
         cl_int error;
@@ -7515,16 +7515,16 @@ public:
             origin.data(), 
             region.data(),
             row_pitch, slice_pitch,
-            (events != NULL) ? (cl_uint) events->size() : 0,
-            (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-            (event != NULL) ? &tmp : NULL,
+            (events != nullptr) ? (cl_uint) events->size() : 0,
+            (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+            (event != nullptr) ? &tmp : nullptr,
             &error);
 
         detail::errHandler(error, __ENQUEUE_MAP_IMAGE_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
               *err = error;
         }
-        if (event != NULL && error == CL_SUCCESS)
+        if (event != nullptr && error == CL_SUCCESS)
             *event = tmp;
         return result;
     }
@@ -7540,18 +7540,18 @@ public:
         cl_bool blocking,
         cl_map_flags flags,
         size_type size,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) const
     {
         cl_event tmp;
         cl_int err = detail::errHandler(::clEnqueueSVMMap(
             object_, blocking, flags, static_cast<void*>(ptr), size,
-            (events != NULL) ? (cl_uint)events->size() : 0,
-            (events != NULL && events->size() > 0) ? (cl_event*)&events->front() : NULL,
-            (event != NULL) ? &tmp : NULL),
+            (events != nullptr) ? (cl_uint)events->size() : 0,
+            (events != nullptr && events->size() > 0) ? (cl_event*)&events->front() : nullptr,
+            (event != nullptr) ? &tmp : nullptr),
             __ENQUEUE_MAP_BUFFER_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7568,18 +7568,18 @@ public:
         cl_bool blocking,
         cl_map_flags flags,
         size_type size,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) const
     {
         cl_event tmp;
         cl_int err = detail::errHandler(::clEnqueueSVMMap(
             object_, blocking, flags, static_cast<void*>(ptr.get()), size,
-            (events != NULL) ? (cl_uint)events->size() : 0,
-            (events != NULL && events->size() > 0) ? (cl_event*)&events->front() : NULL,
-            (event != NULL) ? &tmp : NULL),
+            (events != nullptr) ? (cl_uint)events->size() : 0,
+            (events != nullptr && events->size() > 0) ? (cl_event*)&events->front() : nullptr,
+            (event != nullptr) ? &tmp : nullptr),
             __ENQUEUE_MAP_BUFFER_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7594,18 +7594,18 @@ public:
         cl::vector<T, Alloc> &container,
         cl_bool blocking,
         cl_map_flags flags,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) const
     {
         cl_event tmp;
         cl_int err = detail::errHandler(::clEnqueueSVMMap(
             object_, blocking, flags, static_cast<void*>(container.data()), container.size(),
-            (events != NULL) ? (cl_uint)events->size() : 0,
-            (events != NULL && events->size() > 0) ? (cl_event*)&events->front() : NULL,
-            (event != NULL) ? &tmp : NULL),
+            (events != nullptr) ? (cl_uint)events->size() : 0,
+            (events != nullptr && events->size() > 0) ? (cl_event*)&events->front() : nullptr,
+            (event != nullptr) ? &tmp : nullptr),
             __ENQUEUE_MAP_BUFFER_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7615,19 +7615,19 @@ public:
     cl_int enqueueUnmapMemObject(
         const Memory& memory,
         void* mapped_ptr,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) const
     {
         cl_event tmp;
         cl_int err = detail::errHandler(
             ::clEnqueueUnmapMemObject(
                 object_, memory(), mapped_ptr,
-                (events != NULL) ? (cl_uint) events->size() : 0,
-                (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                (event != NULL) ? &tmp : NULL),
+                (events != nullptr) ? (cl_uint) events->size() : 0,
+                (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                (event != nullptr) ? &tmp : nullptr),
             __ENQUEUE_UNMAP_MEM_OBJECT_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7642,19 +7642,19 @@ public:
     template<typename T>
     cl_int enqueueUnmapSVM(
         T* ptr,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) const
     {
         cl_event tmp;
         cl_int err = detail::errHandler(
             ::clEnqueueSVMUnmap(
             object_, static_cast<void*>(ptr),
-            (events != NULL) ? (cl_uint)events->size() : 0,
-            (events != NULL && events->size() > 0) ? (cl_event*)&events->front() : NULL,
-            (event != NULL) ? &tmp : NULL),
+            (events != nullptr) ? (cl_uint)events->size() : 0,
+            (events != nullptr && events->size() > 0) ? (cl_event*)&events->front() : nullptr,
+            (event != nullptr) ? &tmp : nullptr),
             __ENQUEUE_UNMAP_MEM_OBJECT_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7667,19 +7667,19 @@ public:
     template<typename T, class D>
     cl_int enqueueUnmapSVM(
         cl::pointer<T, D> &ptr,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) const
     {
         cl_event tmp;
         cl_int err = detail::errHandler(
             ::clEnqueueSVMUnmap(
             object_, static_cast<void*>(ptr.get()),
-            (events != NULL) ? (cl_uint)events->size() : 0,
-            (events != NULL && events->size() > 0) ? (cl_event*)&events->front() : NULL,
-            (event != NULL) ? &tmp : NULL),
+            (events != nullptr) ? (cl_uint)events->size() : 0,
+            (events != nullptr && events->size() > 0) ? (cl_event*)&events->front() : nullptr,
+            (event != nullptr) ? &tmp : nullptr),
             __ENQUEUE_UNMAP_MEM_OBJECT_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7692,19 +7692,19 @@ public:
     template<typename T, class Alloc>
     cl_int enqueueUnmapSVM(
         cl::vector<T, Alloc> &container,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) const
     {
         cl_event tmp;
         cl_int err = detail::errHandler(
             ::clEnqueueSVMUnmap(
             object_, static_cast<void*>(container.data()),
-            (events != NULL) ? (cl_uint)events->size() : 0,
-            (events != NULL && events->size() > 0) ? (cl_event*)&events->front() : NULL,
-            (event != NULL) ? &tmp : NULL),
+            (events != nullptr) ? (cl_uint)events->size() : 0,
+            (events != nullptr && events->size() > 0) ? (cl_event*)&events->front() : nullptr,
+            (event != nullptr) ? &tmp : nullptr),
             __ENQUEUE_UNMAP_MEM_OBJECT_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7731,12 +7731,12 @@ public:
         cl_int err = detail::errHandler(
             ::clEnqueueMarkerWithWaitList(
                 object_,
-                (events != NULL) ? (cl_uint) events->size() : 0,
-                (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                (event != NULL) ? &tmp : NULL),
+                (events != nullptr) ? (cl_uint) events->size() : 0,
+                (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                (event != nullptr) ? &tmp : nullptr),
             __ENQUEUE_MARKER_WAIT_LIST_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7761,12 +7761,12 @@ public:
         cl_int err = detail::errHandler(
             ::clEnqueueBarrierWithWaitList(
                 object_,
-                (events != NULL) ? (cl_uint) events->size() : 0,
-                (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                (event != NULL) ? &tmp : NULL),
+                (events != nullptr) ? (cl_uint) events->size() : 0,
+                (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                (event != nullptr) ? &tmp : nullptr),
             __ENQUEUE_BARRIER_WAIT_LIST_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7779,8 +7779,8 @@ public:
     cl_int enqueueMigrateMemObjects(
         const vector<Memory> &memObjects,
         cl_mem_migration_flags flags,
-        const vector<Event>* events = NULL,
-        Event* event = NULL
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr
         )
     {
         cl_event tmp;
@@ -7798,12 +7798,12 @@ public:
                 (cl_uint)memObjects.size(), 
                 localMemObjects.data(),
                 flags,
-                (events != NULL) ? (cl_uint) events->size() : 0,
-                (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                (event != NULL) ? &tmp : NULL),
+                (events != nullptr) ? (cl_uint) events->size() : 0,
+                (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                (event != nullptr) ? &tmp : nullptr),
             __ENQUEUE_UNMAP_MEM_OBJECT_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7815,22 +7815,22 @@ public:
         const NDRange& offset,
         const NDRange& global,
         const NDRange& local = NullRange,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) const
     {
         cl_event tmp;
         cl_int err = detail::errHandler(
             ::clEnqueueNDRangeKernel(
                 object_, kernel(), (cl_uint) global.dimensions(),
-                offset.dimensions() != 0 ? (const size_type*) offset : NULL,
+                offset.dimensions() != 0 ? (const size_type*) offset : nullptr,
                 (const size_type*) global,
-                local.dimensions() != 0 ? (const size_type*) local : NULL,
-                (events != NULL) ? (cl_uint) events->size() : 0,
-                (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                (event != NULL) ? &tmp : NULL),
+                local.dimensions() != 0 ? (const size_type*) local : nullptr,
+                (events != nullptr) ? (cl_uint) events->size() : 0,
+                (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                (event != nullptr) ? &tmp : nullptr),
             __ENQUEUE_NDRANGE_KERNEL_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7839,19 +7839,19 @@ public:
 #if defined(CL_USE_DEPRECATED_OPENCL_1_2_APIS)
     CL_EXT_PREFIX__VERSION_1_2_DEPRECATED cl_int enqueueTask(
         const Kernel& kernel,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) CL_EXT_SUFFIX__VERSION_1_2_DEPRECATED const
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) CL_EXT_SUFFIX__VERSION_1_2_DEPRECATED const
     {
         cl_event tmp;
         cl_int err = detail::errHandler(
             ::clEnqueueTask(
                 object_, kernel(),
-                (events != NULL) ? (cl_uint) events->size() : 0,
-                (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                (event != NULL) ? &tmp : NULL),
+                (events != nullptr) ? (cl_uint) events->size() : 0,
+                (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                (event != nullptr) ? &tmp : nullptr),
             __ENQUEUE_TASK_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7861,13 +7861,13 @@ public:
     cl_int enqueueNativeKernel(
         void (CL_CALLBACK *userFptr)(void *),
         std::pair<void*, size_type> args,
-        const vector<Memory>* mem_objects = NULL,
-        const vector<const void*>* mem_locs = NULL,
-        const vector<Event>* events = NULL,
-        Event* event = NULL) const
+        const vector<Memory>* mem_objects = nullptr,
+        const vector<const void*>* mem_locs = nullptr,
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr) const
     {
         size_type elements = 0;
-        if (mem_objects != NULL) {
+        if (mem_objects != nullptr) {
             elements = mem_objects->size();
         }
         vector<cl_mem> mems(elements);
@@ -7879,15 +7879,15 @@ public:
         cl_int err = detail::errHandler(
             ::clEnqueueNativeKernel(
                 object_, userFptr, args.first, args.second,
-                (mem_objects != NULL) ? (cl_uint) mem_objects->size() : 0,
+                (mem_objects != nullptr) ? (cl_uint) mem_objects->size() : 0,
                 mems.data(),
-                (mem_locs != NULL && mem_locs->size() > 0) ? (const void **) &mem_locs->front() : NULL,
-                (events != NULL) ? (cl_uint) events->size() : 0,
-                (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                (event != NULL) ? &tmp : NULL),
+                (mem_locs != nullptr && mem_locs->size() > 0) ? (const void **) &mem_locs->front() : nullptr,
+                (events != nullptr) ? (cl_uint) events->size() : 0,
+                (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                (event != nullptr) ? &tmp : nullptr),
             __ENQUEUE_NATIVE_KERNEL);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7898,16 +7898,16 @@ public:
  */
 #if defined(CL_USE_DEPRECATED_OPENCL_1_1_APIS)
     CL_EXT_PREFIX__VERSION_1_1_DEPRECATED 
-    cl_int enqueueMarker(Event* event = NULL) const CL_EXT_SUFFIX__VERSION_1_1_DEPRECATED
+    cl_int enqueueMarker(Event* event = nullptr) const CL_EXT_SUFFIX__VERSION_1_1_DEPRECATED
     {
         cl_event tmp;
         cl_int err = detail::errHandler(
             ::clEnqueueMarker(
                 object_, 
-                (event != NULL) ? &tmp : NULL),
+                (event != nullptr) ? &tmp : nullptr),
             __ENQUEUE_MARKER_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7920,50 +7920,50 @@ public:
             ::clEnqueueWaitForEvents(
                 object_,
                 (cl_uint) events.size(),
-                events.size() > 0 ? (const cl_event*) &events.front() : NULL),
+                events.size() > 0 ? (const cl_event*) &events.front() : nullptr),
             __ENQUEUE_WAIT_FOR_EVENTS_ERR);
     }
 #endif // defined(CL_USE_DEPRECATED_OPENCL_1_1_APIS)
 
     cl_int enqueueAcquireGLObjects(
-         const vector<Memory>* mem_objects = NULL,
-         const vector<Event>* events = NULL,
-         Event* event = NULL) const
+         const vector<Memory>* mem_objects = nullptr,
+         const vector<Event>* events = nullptr,
+         Event* event = nullptr) const
      {
         cl_event tmp;
         cl_int err = detail::errHandler(
              ::clEnqueueAcquireGLObjects(
                  object_,
-                 (mem_objects != NULL) ? (cl_uint) mem_objects->size() : 0,
-                 (mem_objects != NULL && mem_objects->size() > 0) ? (const cl_mem *) &mem_objects->front(): NULL,
-                 (events != NULL) ? (cl_uint) events->size() : 0,
-                 (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                 (event != NULL) ? &tmp : NULL),
+                 (mem_objects != nullptr) ? (cl_uint) mem_objects->size() : 0,
+                 (mem_objects != nullptr && mem_objects->size() > 0) ? (const cl_mem *) &mem_objects->front(): nullptr,
+                 (events != nullptr) ? (cl_uint) events->size() : 0,
+                 (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                 (event != nullptr) ? &tmp : nullptr),
              __ENQUEUE_ACQUIRE_GL_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
      }
 
     cl_int enqueueReleaseGLObjects(
-         const vector<Memory>* mem_objects = NULL,
-         const vector<Event>* events = NULL,
-         Event* event = NULL) const
+         const vector<Memory>* mem_objects = nullptr,
+         const vector<Event>* events = nullptr,
+         Event* event = nullptr) const
      {
         cl_event tmp;
         cl_int err = detail::errHandler(
              ::clEnqueueReleaseGLObjects(
                  object_,
-                 (mem_objects != NULL) ? (cl_uint) mem_objects->size() : 0,
-                 (mem_objects != NULL && mem_objects->size() > 0) ? (const cl_mem *) &mem_objects->front(): NULL,
-                 (events != NULL) ? (cl_uint) events->size() : 0,
-                 (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                 (event != NULL) ? &tmp : NULL),
+                 (mem_objects != nullptr) ? (cl_uint) mem_objects->size() : 0,
+                 (mem_objects != nullptr && mem_objects->size() > 0) ? (const cl_mem *) &mem_objects->front(): nullptr,
+                 (events != nullptr) ? (cl_uint) events->size() : 0,
+                 (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                 (event != nullptr) ? &tmp : nullptr),
              __ENQUEUE_RELEASE_GL_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -7980,11 +7980,11 @@ typedef CL_API_ENTRY cl_int (CL_API_CALL *PFN_clEnqueueReleaseD3D10ObjectsKHR)(
     const cl_event* event_wait_list, cl_event* event);
 
     cl_int enqueueAcquireD3D10Objects(
-         const vector<Memory>* mem_objects = NULL,
-         const vector<Event>* events = NULL,
-         Event* event = NULL) const
+         const vector<Memory>* mem_objects = nullptr,
+         const vector<Event>* events = nullptr,
+         Event* event = nullptr) const
     {
-        static PFN_clEnqueueAcquireD3D10ObjectsKHR pfn_clEnqueueAcquireD3D10ObjectsKHR = NULL;
+        static PFN_clEnqueueAcquireD3D10ObjectsKHR pfn_clEnqueueAcquireD3D10ObjectsKHR = nullptr;
 #if CL_HPP_TARGET_OPENCL_VERSION >= 120
         cl_context context = getInfo<CL_QUEUE_CONTEXT>();
         cl::Device device(getInfo<CL_QUEUE_DEVICE>());
@@ -7999,25 +7999,25 @@ typedef CL_API_ENTRY cl_int (CL_API_CALL *PFN_clEnqueueReleaseD3D10ObjectsKHR)(
         cl_int err = detail::errHandler(
              pfn_clEnqueueAcquireD3D10ObjectsKHR(
                  object_,
-                 (mem_objects != NULL) ? (cl_uint) mem_objects->size() : 0,
-                 (mem_objects != NULL && mem_objects->size() > 0) ? (const cl_mem *) &mem_objects->front(): NULL,
-                 (events != NULL) ? (cl_uint) events->size() : 0,
-                 (events != NULL) ? (cl_event*) &events->front() : NULL,
-                 (event != NULL) ? &tmp : NULL),
+                 (mem_objects != nullptr) ? (cl_uint) mem_objects->size() : 0,
+                 (mem_objects != nullptr && mem_objects->size() > 0) ? (const cl_mem *) &mem_objects->front(): nullptr,
+                 (events != nullptr) ? (cl_uint) events->size() : 0,
+                 (events != nullptr) ? (cl_event*) &events->front() : nullptr,
+                 (event != nullptr) ? &tmp : nullptr),
              __ENQUEUE_ACQUIRE_GL_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
      }
 
     cl_int enqueueReleaseD3D10Objects(
-         const vector<Memory>* mem_objects = NULL,
-         const vector<Event>* events = NULL,
-         Event* event = NULL) const
+         const vector<Memory>* mem_objects = nullptr,
+         const vector<Event>* events = nullptr,
+         Event* event = nullptr) const
     {
-        static PFN_clEnqueueReleaseD3D10ObjectsKHR pfn_clEnqueueReleaseD3D10ObjectsKHR = NULL;
+        static PFN_clEnqueueReleaseD3D10ObjectsKHR pfn_clEnqueueReleaseD3D10ObjectsKHR = nullptr;
 #if CL_HPP_TARGET_OPENCL_VERSION >= 120
         cl_context context = getInfo<CL_QUEUE_CONTEXT>();
         cl::Device device(getInfo<CL_QUEUE_DEVICE>());
@@ -8032,14 +8032,14 @@ typedef CL_API_ENTRY cl_int (CL_API_CALL *PFN_clEnqueueReleaseD3D10ObjectsKHR)(
         cl_int err = detail::errHandler(
             pfn_clEnqueueReleaseD3D10ObjectsKHR(
                 object_,
-                (mem_objects != NULL) ? (cl_uint) mem_objects->size() : 0,
-                (mem_objects != NULL && mem_objects->size() > 0) ? (const cl_mem *) &mem_objects->front(): NULL,
-                (events != NULL) ? (cl_uint) events->size() : 0,
-                (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
-                (event != NULL) ? &tmp : NULL),
+                (mem_objects != nullptr) ? (cl_uint) mem_objects->size() : 0,
+                (mem_objects != nullptr && mem_objects->size() > 0) ? (const cl_mem *) &mem_objects->front(): nullptr,
+                (events != nullptr) ? (cl_uint) events->size() : 0,
+                (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
+                (event != nullptr) ? &tmp : nullptr),
             __ENQUEUE_RELEASE_GL_ERR);
 
-        if (event != NULL && err == CL_SUCCESS)
+        if (event != nullptr && err == CL_SUCCESS)
             *event = tmp;
 
         return err;
@@ -8102,7 +8102,7 @@ public:
     /*!
      * Default construct device command queue on default context and device
      */
-    DeviceCommandQueue(DeviceQueueProperties properties, cl_int* err = NULL)
+    DeviceCommandQueue(DeviceQueueProperties properties, cl_int* err = nullptr)
     {
         cl_int error;
         cl::Context context = cl::Context::getDefault();
@@ -8117,7 +8117,7 @@ public:
             context(), device(), queue_properties, &error);
 
         detail::errHandler(error, __CREATE_COMMAND_QUEUE_WITH_PROPERTIES_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
@@ -8129,7 +8129,7 @@ public:
         const Context& context,
         const Device& device,
         DeviceQueueProperties properties = DeviceQueueProperties::None,
-        cl_int* err = NULL)
+        cl_int* err = nullptr)
     {
         cl_int error;
 
@@ -8141,7 +8141,7 @@ public:
             context(), device(), queue_properties, &error);
 
         detail::errHandler(error, __CREATE_COMMAND_QUEUE_WITH_PROPERTIES_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
@@ -8154,7 +8154,7 @@ public:
         const Device& device,
         cl_uint queueSize,
         DeviceQueueProperties properties = DeviceQueueProperties::None,
-        cl_int* err = NULL)
+        cl_int* err = nullptr)
     {
         cl_int error;
 
@@ -8168,7 +8168,7 @@ public:
             context(), device(), queue_properties, &error);
 
         detail::errHandler(error, __CREATE_COMMAND_QUEUE_WITH_PROPERTIES_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
@@ -8227,12 +8227,12 @@ public:
 
     template <cl_int name> typename
         detail::param_traits<detail::cl_command_queue_info, name>::param_type
-        getInfo(cl_int* err = NULL) const
+        getInfo(cl_int* err = nullptr) const
     {
         typename detail::param_traits<
             detail::cl_command_queue_info, name>::param_type param;
         cl_int result = getInfo(name, &param);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = result;
         }
         return param;
@@ -8261,7 +8261,7 @@ public:
             context(), device(), queue_properties, &error));
 
         detail::errHandler(error, __CREATE_COMMAND_QUEUE_WITH_PROPERTIES_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
 
@@ -8289,7 +8289,7 @@ public:
             context(), device(), queue_properties, &error));
 
         detail::errHandler(error, __CREATE_COMMAND_QUEUE_WITH_PROPERTIES_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
 
@@ -8318,7 +8318,7 @@ public:
                 context(), device(), queue_properties, &error));
 
         detail::errHandler(error, __CREATE_COMMAND_QUEUE_WITH_PROPERTIES_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
 
@@ -8372,20 +8372,20 @@ Buffer::Buffer(
     }
 
     detail::errHandler(error, __CREATE_BUFFER_ERR);
-    if (err != NULL) {
+    if (err != nullptr) {
         *err = error;
     }
 
     if( !useHostPtr ) {
         CommandQueue queue(context, 0, &error);
         detail::errHandler(error, __CREATE_BUFFER_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
 
         error = cl::copy(queue, startIterator, endIterator, *this);
         detail::errHandler(error, __CREATE_BUFFER_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
@@ -8426,14 +8426,14 @@ Buffer::Buffer(
     }
 
     detail::errHandler(error, __CREATE_BUFFER_ERR);
-    if (err != NULL) {
+    if (err != nullptr) {
         *err = error;
     }
 
     if (!useHostPtr) {
         error = cl::copy(queue, startIterator, endIterator, *this);
         detail::errHandler(error, __CREATE_BUFFER_ERR);
-        if (err != NULL) {
+        if (err != nullptr) {
             *err = error;
         }
     }
@@ -8445,8 +8445,8 @@ inline cl_int enqueueReadBuffer(
     size_type offset,
     size_type size,
     void* ptr,
-    const vector<Event>* events = NULL,
-    Event* event = NULL)
+    const vector<Event>* events = nullptr,
+    Event* event = nullptr)
 {
     cl_int error;
     CommandQueue queue = CommandQueue::getDefault(&error);
@@ -8464,8 +8464,8 @@ inline cl_int enqueueWriteBuffer(
         size_type offset,
         size_type size,
         const void* ptr,
-        const vector<Event>* events = NULL,
-        Event* event = NULL)
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr)
 {
     cl_int error;
     CommandQueue queue = CommandQueue::getDefault(&error);
@@ -8483,26 +8483,26 @@ inline void* enqueueMapBuffer(
         cl_map_flags flags,
         size_type offset,
         size_type size,
-        const vector<Event>* events = NULL,
-        Event* event = NULL,
-        cl_int* err = NULL)
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr,
+        cl_int* err = nullptr)
 {
     cl_int error;
     CommandQueue queue = CommandQueue::getDefault(&error);
     detail::errHandler(error, __ENQUEUE_MAP_BUFFER_ERR);
-    if (err != NULL) {
+    if (err != nullptr) {
         *err = error;
     }
 
     void * result = ::clEnqueueMapBuffer(
             queue(), buffer(), blocking, flags, offset, size,
-            (events != NULL) ? (cl_uint) events->size() : 0,
-            (events != NULL && events->size() > 0) ? (cl_event*) &events->front() : NULL,
+            (events != nullptr) ? (cl_uint) events->size() : 0,
+            (events != nullptr && events->size() > 0) ? (cl_event*) &events->front() : nullptr,
             (cl_event*) event,
             &error);
 
     detail::errHandler(error, __ENQUEUE_MAP_BUFFER_ERR);
-    if (err != NULL) {
+    if (err != nullptr) {
         *err = error;
     }
     return result;
@@ -8545,8 +8545,8 @@ inline cl_int enqueueMapSVM(
     cl_bool blocking,
     cl_map_flags flags,
     size_type size,
-    const vector<Event>* events = NULL,
-    Event* event = NULL)
+    const vector<Event>* events = nullptr,
+    Event* event = nullptr)
 {
     cl_int error;
     CommandQueue queue = CommandQueue::getDefault(&error);
@@ -8568,8 +8568,8 @@ inline cl_int enqueueMapSVM(
     cl::vector<T, Alloc> container,
     cl_bool blocking,
     cl_map_flags flags,
-    const vector<Event>* events = NULL,
-    Event* event = NULL)
+    const vector<Event>* events = nullptr,
+    Event* event = nullptr)
 {
     cl_int error;
     CommandQueue queue = CommandQueue::getDefault(&error);
@@ -8586,8 +8586,8 @@ inline cl_int enqueueMapSVM(
 inline cl_int enqueueUnmapMemObject(
     const Memory& memory,
     void* mapped_ptr,
-    const vector<Event>* events = NULL,
-    Event* event = NULL)
+    const vector<Event>* events = nullptr,
+    Event* event = nullptr)
 {
     cl_int error;
     CommandQueue queue = CommandQueue::getDefault(&error);
@@ -8600,12 +8600,12 @@ inline cl_int enqueueUnmapMemObject(
     cl_int err = detail::errHandler(
         ::clEnqueueUnmapMemObject(
         queue(), memory(), mapped_ptr,
-        (events != NULL) ? (cl_uint)events->size() : 0,
-        (events != NULL && events->size() > 0) ? (cl_event*)&events->front() : NULL,
-        (event != NULL) ? &tmp : NULL),
+        (events != nullptr) ? (cl_uint)events->size() : 0,
+        (events != nullptr && events->size() > 0) ? (cl_event*)&events->front() : nullptr,
+        (event != nullptr) ? &tmp : nullptr),
         __ENQUEUE_UNMAP_MEM_OBJECT_ERR);
 
-    if (event != NULL && err == CL_SUCCESS)
+    if (event != nullptr && err == CL_SUCCESS)
         *event = tmp;
 
     return err;
@@ -8620,8 +8620,8 @@ inline cl_int enqueueUnmapMemObject(
 template<typename T>
 inline cl_int enqueueUnmapSVM(
     T* ptr,
-    const vector<Event>* events = NULL,
-    Event* event = NULL)
+    const vector<Event>* events = nullptr,
+    Event* event = nullptr)
 {
     cl_int error;
     CommandQueue queue = CommandQueue::getDefault(&error);
@@ -8642,8 +8642,8 @@ inline cl_int enqueueUnmapSVM(
 template<typename T, class D>
 inline cl_int enqueueUnmapSVM(
     cl::pointer<T, D> &ptr,
-    const vector<Event>* events = NULL,
-    Event* event = NULL)
+    const vector<Event>* events = nullptr,
+    Event* event = nullptr)
 {
     cl_int error;
     CommandQueue queue = CommandQueue::getDefault(&error);
@@ -8663,8 +8663,8 @@ inline cl_int enqueueUnmapSVM(
 template<typename T, class Alloc>
 inline cl_int enqueueUnmapSVM(
     cl::vector<T, Alloc> &container,
-    const vector<Event>* events = NULL,
-    Event* event = NULL)
+    const vector<Event>* events = nullptr,
+    Event* event = nullptr)
 {
     cl_int error;
     CommandQueue queue = CommandQueue::getDefault(&error);
@@ -8684,8 +8684,8 @@ inline cl_int enqueueCopyBuffer(
         size_type src_offset,
         size_type dst_offset,
         size_type size,
-        const vector<Event>* events = NULL,
-        Event* event = NULL)
+        const vector<Event>* events = nullptr,
+        Event* event = nullptr)
 {
     cl_int error;
     CommandQueue queue = CommandQueue::getDefault(&error);
@@ -8833,8 +8833,8 @@ inline cl_int enqueueReadBufferRect(
     size_type host_row_pitch,
     size_type host_slice_pitch,
     void *ptr,
-    const vector<Event>* events = NULL,
-    Event* event = NULL)
+    const vector<Event>* events = nullptr,
+    Event* event = nullptr)
 {
     cl_int error;
     CommandQueue queue = CommandQueue::getDefault(&error);
@@ -8869,8 +8869,8 @@ inline cl_int enqueueWriteBufferRect(
     size_type host_row_pitch,
     size_type host_slice_pitch,
     void *ptr,
-    const vector<Event>* events = NULL,
-    Event* event = NULL)
+    const vector<Event>* events = nullptr,
+    Event* event = nullptr)
 {
     cl_int error;
     CommandQueue queue = CommandQueue::getDefault(&error);
@@ -8904,8 +8904,8 @@ inline cl_int enqueueCopyBufferRect(
     size_type src_slice_pitch,
     size_type dst_row_pitch,
     size_type dst_slice_pitch,
-    const vector<Event>* events = NULL,
-    Event* event = NULL)
+    const vector<Event>* events = nullptr,
+    Event* event = nullptr)
 {
     cl_int error;
     CommandQueue queue = CommandQueue::getDefault(&error);
@@ -8937,8 +8937,8 @@ inline cl_int enqueueReadImage(
     size_type row_pitch,
     size_type slice_pitch,
     void* ptr,
-    const vector<Event>* events = NULL,
-    Event* event = NULL) 
+    const vector<Event>* events = nullptr,
+    Event* event = nullptr) 
 {
     cl_int error;
     CommandQueue queue = CommandQueue::getDefault(&error);
@@ -8967,8 +8967,8 @@ inline cl_int enqueueWriteImage(
     size_type row_pitch,
     size_type slice_pitch,
     void* ptr,
-    const vector<Event>* events = NULL,
-    Event* event = NULL)
+    const vector<Event>* events = nullptr,
+    Event* event = nullptr)
 {
     cl_int error;
     CommandQueue queue = CommandQueue::getDefault(&error);
@@ -8995,8 +8995,8 @@ inline cl_int enqueueCopyImage(
     const array<size_type, 3>& src_origin,
     const array<size_type, 3>& dst_origin,
     const array<size_type, 3>& region,
-    const vector<Event>* events = NULL,
-    Event* event = NULL)
+    const vector<Event>* events = nullptr,
+    Event* event = nullptr)
 {
     cl_int error;
     CommandQueue queue = CommandQueue::getDefault(&error);
@@ -9021,8 +9021,8 @@ inline cl_int enqueueCopyImageToBuffer(
     const array<size_type, 3>& src_origin,
     const array<size_type, 3>& region,
     size_type dst_offset,
-    const vector<Event>* events = NULL,
-    Event* event = NULL)
+    const vector<Event>* events = nullptr,
+    Event* event = nullptr)
 {
     cl_int error;
     CommandQueue queue = CommandQueue::getDefault(&error);
@@ -9047,8 +9047,8 @@ inline cl_int enqueueCopyBufferToImage(
     size_type src_offset,
     const array<size_type, 3>& dst_origin,
     const array<size_type, 3>& region,
-    const vector<Event>* events = NULL,
-    Event* event = NULL)
+    const vector<Event>* events = nullptr,
+    Event* event = nullptr)
 {
     cl_int error;
     CommandQueue queue = CommandQueue::getDefault(&error);
@@ -9315,7 +9315,7 @@ public:
     KernelFunctor(
         const Program& program,
         const string name,
-        cl_int * err = NULL) :
+        cl_int * err = nullptr) :
         kernel_(program, name.c_str(), err)
     {}
 
@@ -9404,7 +9404,7 @@ namespace compatibility {
         make_kernel(
             const Program& program,
             const string name,
-            cl_int * err = NULL) :
+            cl_int * err = nullptr) :
             functor_(FunctorType(program, name, err))
         {}
 
