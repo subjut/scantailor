@@ -512,10 +512,12 @@ SET(
 	TiffReader.cpp TiffReader.h
 	TiffWriter.cpp TiffWriter.h
 	JP2Reader.cpp JP2Reader.h
+	PdfReader.cpp PdfReader.h
 	PngMetadataLoader.cpp PngMetadataLoader.h
 	TiffMetadataLoader.cpp TiffMetadataLoader.h
 	JpegMetadataLoader.cpp JpegMetadataLoader.h
 	JP2MetadataLoader.cpp JP2MetadataLoader.h
+	PdfMetadataLoader.cpp PdfMetadataLoader.h
 	ImageLoader.cpp ImageLoader.h
 	ErrorWidget.cpp ErrorWidget.h
 	OrthogonalRotation.cpp OrthogonalRotation.h

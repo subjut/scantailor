@@ -52,6 +52,10 @@ ImageLoader::load(QIODevice& io_dev, int const page_num)
 		return JP2Reader::readImage(io_dev);
 	}
 
+	if (PdfReader::isPdf(io_dev)) {
+		return PdfReader::readImage(io_dev, page_num);
+	}
+
 	QImage image;
 	image.load(&io_dev, 0);
 	return image;

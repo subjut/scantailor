@@ -63,6 +63,10 @@ FILE(GLOB tiff_dirs1 "${build_outer_dir}/tiff-[0-9]*.[0-9]*.[0-9]*")
 FILE(GLOB tiff_dirs2 "${source_outer_dir}/tiff-[0-9]*.[0-9]*.[0-9]*")
 FILE(GLOB openjpeg_dirs1 "${build_outer_dir}/openjpeg-[0-9]*.[0-9]*.[0-9]*")
 FILE(GLOB openjpeg_dirs2 "${source_outer_dir}/openjpeg-[0-9]*.[0-9]*.[0-9]*")
+FILE(GLOB freetype2_dirs1 "${build_outer_dir}/freetype-[0-9]*.[0-9]*.[0-9]*")
+FILE(GLOB freetype2_dirs2 "${source_outer_dir}/freetype-[0-9]*.[0-9]*.[0-9]*")
+FILE(GLOB podofo_dirs1 "${build_outer_dir}/podofo-[0-9]*.[0-9]*.[0-9]*")
+FILE(GLOB podofo_dirs2 "${source_outer_dir}/podofo-[0-9]*.[0-9]*.[0-9]*")
 FILE(GLOB qt_dirs1 "${build_outer_dir}/qt-win-*-5.[0-9]*")
 FILE(GLOB qt_dirs2 "${build_outer_dir}/qt-everywhere-*-5.[0-9]*")
 FILE(GLOB qt_dirs3 "${source_outer_dir}/qt-win-*-5.[0-9]*")
@@ -92,6 +96,14 @@ FIND_PATH(
 	DOC "Path to top-level openjpeg source directory."
 )
 FIND_PATH(
+	FREETYPE2_DIR ChangeLog.20 HINTS ${freetype2_dirs1} ${freetype2_dirs2}
+	DOC "Path to top-level freetype2 source directory."
+)
+FIND_PATH(
+	PODOFO_DIR src/podofo.h HINTS ${podofo_dirs1} ${podofo_dirs2}
+	DOC "Path to top-level podofo source directory."
+)
+FIND_PATH(
 	QT_SRC_DIR NAMES qtbase/qtbase.pro HINTS ${qt_dirs1} ${qt_dirs2}
 	${qt_dirs3} ${qt_dirs4} ${qt_dirs5}
 	DOC "Path to top-level Qt5 source directory. If you installed a binary version, it will be something like C:\\Qt\\Qt5.0.2\\5.0.2\\Src"
@@ -111,6 +123,10 @@ ELSEIF(NOT TIFF_DIR)
 	MESSAGE(FATAL_ERROR "TIFF source directory not found. You may specify it manually.")
 ELSEIF(NOT OPENJPEG_DIR)
 	MESSAGE(FATAL_ERROR "OpenJPEG source directory not found. You may specify it manually.")
+ELSEIF(NOT FREETYPE2_DIR)
+	MESSAGE(FATAL_ERROR "Freetype2 source directory not found. You may specify it manually.")	
+ELSEIF(NOT PODOFO_DIR)
+	MESSAGE(FATAL_ERROR "Podofo source directory not found. You may specify it manually.")
 ELSEIF(NOT QT_SRC_DIR)
 	MESSAGE(FATAL_ERROR "Qt5 source directory not found. You may specify it manually. If you installed a binary version, it will be something like C:\\Qt\\Qt5.0.2\\5.0.2\\Src")
 ELSEIF(NOT BOOST_DIR)
@@ -130,6 +146,8 @@ SET(PNG_LIBRARY_NAME libpng)
 SET(JPEG_LIBRARY_NAME libjpeg)
 SET(TIFF_LIBRARY_NAME libtiff)
 SET(OPENJPEG_LIBRARY_NAME openjp2)
+set(FREETYPE2_LIBRARY_NAME freetype)
+SET(PODOFO_LIBRARY_NAME podofo)
 
 MACRO(LIST_ITEMS_PREPEND LIST PREFIX)
 	SET(tmp_list_)
@@ -335,6 +353,7 @@ add_definitions(-DOPJ_EXPORTS)
 ADD_LIBRARY(${OPENJPEG_LIBRARY_NAME} SHARED ${openjpeg_sources})
 
 TARGET_LINK_LIBRARIES(
+	${OPENJPEG_LIBRARY_NAME}
   ${PNG_LIBRARY_NAME} ${TIFF_LIBRARY_NAME}
 )
 
@@ -350,6 +369,337 @@ SET_TARGET_PROPERTIES(
 	RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${QTBASE_DIR}/bin"
 	RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${QTBASE_DIR}/bin"
 )
+
+
+#================================= FREETYPE =================================#
+
+INCLUDE_DIRECTORIES(${PNG_DIR})
+
+INCLUDE_DIRECTORIES("${FREETYPE2_DIR}/include")
+INCLUDE_DIRECTORIES("${FREETYPE2_DIR}/include/freetype")
+INCLUDE_DIRECTORIES("${FREETYPE2_DIR}/include/freetype/config")
+INCLUDE_DIRECTORIES("${FREETYPE2_DIR}/include/freetype/internal")
+
+file(READ "${FREETYPE2_DIR}/include/freetype/config/ftoption.h"
+  FTOPTION_H)
+string(REGEX REPLACE
+  "/\\* +(#define +FT_CONFIG_OPTION_SYSTEM_ZLIB) +\\*/" "\\1"
+  FTOPTION_H "${FTOPTION_H}")
+string(REGEX REPLACE
+  "/\\* +(#define +FT_CONFIG_OPTION_USE_PNG) +\\*/" "\\1"
+  FTOPTION_H "${FTOPTION_H}")
+file(WRITE "${FREETYPE2_DIR}/include/freetype/config/ftoption.h-new"
+  "${FTOPTION_H}")
+execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
+  "${FREETYPE2_DIR}/include/freetype/config/ftoption.h-new"
+  "${FREETYPE2_DIR}/include/freetype/config/ftoption.h")
+	
+set(freetype_sources
+	"include/freetype/internal/ftdebug.h"
+	"include/freetype/internal/internal.h"
+  src/autofit/autofit.c
+  src/base/ftbase.c
+  src/base/ftbbox.c
+  src/base/ftbdf.c
+  src/base/ftbitmap.c
+  src/base/ftcid.c
+  src/base/ftfntfmt.c
+  src/base/ftfstype.c
+  src/base/ftgasp.c
+  src/base/ftglyph.c
+  src/base/ftgxval.c
+  src/base/ftinit.c
+  src/base/ftlcdfil.c
+  src/base/ftmm.c
+  src/base/ftotval.c
+  src/base/ftpatent.c
+  src/base/ftpfr.c
+  src/base/ftstroke.c
+  src/base/ftsynth.c
+  src/base/ftsystem.c
+  src/base/fttype1.c
+  src/base/ftwinfnt.c
+  src/bdf/bdf.c
+  src/bzip2/ftbzip2.c
+  src/cache/ftcache.c
+  src/cff/cff.c
+  src/cid/type1cid.c
+  src/gzip/ftgzip.c
+  src/lzw/ftlzw.c
+  src/pcf/pcf.c
+  src/pfr/pfr.c
+  src/psaux/psaux.c
+  src/pshinter/pshinter.c
+  src/psnames/psnames.c
+  src/raster/raster.c
+  src/sfnt/sfnt.c
+  src/smooth/smooth.c
+  src/truetype/truetype.c
+  src/type1/type1.c
+  src/type42/type42.c
+  src/winfonts/winfnt.c
+)
+
+if (WIN32)
+  set(freetype_sources ${freetype_sources} builds/windows/ftdebug.c)
+else ()
+  set(freetype_sources ${freetype_sources} src/base/ftdebug.c)
+endif ()
+
+LIST_ITEMS_PREPEND(freetype_sources "${FREETYPE2_DIR}/")
+
+ADD_LIBRARY(${FREETYPE2_LIBRARY_NAME} SHARED ${freetype_sources})
+
+target_link_libraries(
+	${FREETYPE2_LIBRARY_NAME}
+	${ZLIB_LIBRARY_NAME} ${PNG_LIBRARY_NAME}
+)
+
+SET_TARGET_PROPERTIES(
+	${FREETYPE2_LIBRARY_NAME} PROPERTIES
+	DEFINE_SYMBOL FREETYPE_DLL
+	ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/staging/libs"
+	ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/staging/libs"
+	ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/staging/libs"
+	ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL "${CMAKE_BINARY_DIR}/staging/libs"
+	RUNTIME_OUTPUT_DIRECTORY_DEBUG "${QTBASE_DIR}/bin"
+	RUNTIME_OUTPUT_DIRECTORY_RELEASE "${QTBASE_DIR}/bin"
+	RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${QTBASE_DIR}/bin"
+	RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${QTBASE_DIR}/bin"
+)
+
+
+#================================== PODOFO ==================================#
+
+SET(podofo_sources
+  base/PdfArray.cpp
+  base/PdfCanvas.cpp
+  base/PdfColor.cpp
+  base/PdfContentsTokenizer.cpp
+  base/PdfData.cpp
+  base/PdfDataType.cpp
+  base/PdfDate.cpp
+  base/PdfDictionary.cpp
+  base/PdfEncoding.cpp
+  base/PdfEncodingFactory.cpp
+  base/PdfEncrypt.cpp
+  base/PdfError.cpp
+  base/PdfFileStream.cpp
+  base/PdfFilter.cpp
+  base/PdfFiltersPrivate.cpp
+  base/PdfImmediateWriter.cpp
+  base/PdfInputDevice.cpp
+  base/PdfInputStream.cpp
+  base/PdfLocale.cpp
+  base/PdfMemStream.cpp
+  base/PdfMemoryManagement.cpp
+  base/PdfName.cpp
+  base/PdfObject.cpp
+  base/PdfObjectStreamParserObject.cpp
+  base/PdfOutputDevice.cpp
+  base/PdfOutputStream.cpp
+  base/PdfParser.cpp
+  base/PdfParserObject.cpp
+  base/PdfRect.cpp
+  base/PdfRefCountedBuffer.cpp
+  base/PdfRefCountedInputDevice.cpp
+  base/PdfReference.cpp
+  base/PdfStream.cpp
+  base/PdfString.cpp
+  base/PdfTokenizer.cpp
+  base/PdfVariant.cpp
+  base/PdfVecObjects.cpp
+  base/PdfWriter.cpp
+  base/PdfXRef.cpp
+  base/PdfXRefStream.cpp
+  base/PdfXRefStreamParserObject.cpp
+  doc/PdfAcroForm.cpp
+  doc/PdfAction.cpp
+  doc/PdfAnnotation.cpp
+  doc/PdfCMapEncoding.cpp
+  doc/PdfContents.cpp
+  doc/PdfDestination.cpp
+  doc/PdfDifferenceEncoding.cpp
+  doc/PdfDocument.cpp
+  doc/PdfElement.cpp
+  doc/PdfEncodingObjectFactory.cpp
+  doc/PdfExtGState.cpp
+  doc/PdfField.cpp
+  doc/PdfFileSpec.cpp
+  doc/PdfFont.cpp
+  doc/PdfFontCID.cpp
+  doc/PdfFontCache.cpp
+  doc/PdfFontConfigWrapper.cpp
+  doc/PdfFontFactory.cpp
+  doc/PdfFontMetrics.cpp
+  doc/PdfFontMetricsBase14.cpp
+  doc/PdfFontMetricsFreetype.cpp
+  doc/PdfFontMetricsObject.cpp
+  doc/PdfFontSimple.cpp
+  doc/PdfFontTTFSubset.cpp
+  doc/PdfFontTrueType.cpp
+  doc/PdfFontType1.cpp
+  doc/PdfFontType3.cpp
+  doc/PdfFontType1Base14.cpp
+  doc/PdfFunction.cpp
+  doc/PdfHintStream.cpp
+  doc/PdfIdentityEncoding.cpp
+  doc/PdfImage.cpp
+  doc/PdfInfo.cpp
+  doc/PdfMemDocument.cpp
+  doc/PdfNamesTree.cpp
+  doc/PdfOutlines.cpp
+  doc/PdfPage.cpp
+  doc/PdfPagesTree.cpp
+  doc/PdfPagesTreeCache.cpp
+  doc/PdfPainter.cpp
+  doc/PdfPainterMM.cpp
+  doc/PdfShadingPattern.cpp
+  doc/PdfSignOutputDevice.cpp
+  doc/PdfSignatureField.cpp
+  doc/PdfStreamedDocument.cpp
+  doc/PdfTable.cpp
+  doc/PdfTilingPattern.cpp
+  doc/PdfXObject.cpp
+  podofo-base.h
+  podofo.h
+	base/Pdf3rdPtyForwardDecl.h
+	base/PdfArray.h
+	base/PdfCanvas.h
+	base/PdfColor.h
+	base/PdfCompilerCompat.h
+	base/PdfCompilerCompatPrivate.h
+	base/PdfContentsTokenizer.h
+	base/PdfData.h
+	base/PdfDataType.h
+	base/PdfDate.h
+	base/PdfDefines.h
+	base/PdfDefinesPrivate.h
+	base/PdfDictionary.h
+	base/PdfEncoding.h
+	base/PdfEncodingFactory.h
+	base/PdfEncrypt.h
+	base/PdfExtension.h
+	base/PdfError.h
+	base/PdfFileStream.h
+	base/PdfFilter.h
+	base/PdfFiltersPrivate.h
+	base/PdfImmediateWriter.h
+	base/PdfInputDevice.h
+	base/PdfInputStream.h
+	base/PdfLocale.h
+	base/PdfMemStream.h
+	base/PdfMemoryManagement.h
+	base/PdfName.h
+	base/PdfObject.h
+	base/PdfObjectStreamParserObject.h
+	base/PdfOutputDevice.h
+	base/PdfOutputStream.h
+	base/PdfParser.h
+	base/PdfParserObject.h
+	base/PdfRect.h
+	base/PdfRefCountedBuffer.h
+	base/PdfRefCountedInputDevice.h
+	base/PdfReference.h
+	base/PdfStream.h
+	base/PdfString.h
+	base/PdfTokenizer.h
+	base/PdfVariant.h
+	base/PdfVecObjects.h
+	base/PdfVersion.h
+	base/PdfWriter.h
+	base/PdfXRef.h
+	base/PdfXRefStream.h
+	base/PdfXRefStreamParserObject.h
+	base/podofoapi.h
+	base/util/PdfMutex.h
+	base/util/PdfMutexImpl_noop.h
+	base/util/PdfMutexImpl_win32.h
+	base/util/PdfMutexImpl_pthread.h
+	base/util/PdfMutexWrapper.h
+  doc/PdfAcroForm.h
+  doc/PdfAction.h
+  doc/PdfAnnotation.h
+  doc/PdfCMapEncoding.h
+  doc/PdfContents.h
+  doc/PdfDestination.h
+  doc/PdfDifferenceEncoding.h
+  doc/PdfDocument.h
+  doc/PdfElement.h
+  doc/PdfEncodingObjectFactory.h
+  doc/PdfExtGState.h
+  doc/PdfField.h
+  doc/PdfFileSpec.h
+  doc/PdfFont.h
+  doc/PdfFontCID.h
+  doc/PdfFontCache.h
+  doc/PdfFontConfigWrapper.h
+  doc/PdfFontFactory.h
+  doc/PdfFontFactoryBase14Data.h
+  doc/PdfFontMetrics.h
+  doc/PdfFontMetricsBase14.h
+  doc/PdfFontMetricsFreetype.h
+  doc/PdfFontMetricsObject.h
+  doc/PdfFontSimple.h
+  doc/PdfFontTTFSubset.h
+  doc/PdfFontTrueType.h
+  doc/PdfFontType1.h
+  doc/PdfFontType3.h
+  doc/PdfFontType1Base14.h
+  doc/PdfFunction.h
+  doc/PdfHintStream.h
+  doc/PdfIdentityEncoding.h
+  doc/PdfImage.h
+  doc/PdfInfo.h
+  doc/PdfMemDocument.h
+  doc/PdfNamesTree.h
+  doc/PdfOutlines.h
+  doc/PdfPage.h
+  doc/PdfPagesTree.h
+  doc/PdfPagesTreeCache.h
+  doc/PdfPainter.h
+  doc/PdfPainterMM.h
+  doc/PdfShadingPattern.h
+  doc/PdfSignOutputDevice.h
+  doc/PdfSignatureField.h
+  doc/PdfStreamedDocument.h
+  doc/PdfTable.h
+  doc/PdfTilingPattern.h
+  doc/PdfXObject.h
+#   ${PoDoFo_BINARY_DIR}/podofo_config.h
+  )
+	
+IF(WIN32)
+    # If we build for windows systems, we also include the resource file
+    SET(podofo_sources ${podofo_sources} doc/podofo-doc.rc)
+ENDIF(WIN32)
+
+LIST_ITEMS_PREPEND(podofo_sources "${PODOFO_DIR}/src/")
+
+INCLUDE_DIRECTORIES(${TIFF_DIR})
+INCLUDE_DIRECTORIES(${FREETYPE2_DIR})
+
+ADD_LIBRARY(${PODOFO_LIBRARY_NAME} SHARED ${podofo_sources})
+
+TARGET_LINK_LIBRARIES(
+	${PODOFO_LIBRARY_NAME}
+  ${JPEG_LIBRARY_NAME} ${PNG_LIBRARY_NAME} ${TIFF_LIBRARY_NAME}
+	${ZLIB_LIBRARY_NAME} ${FREETYPE2_LIBRARY_NAME}
+)
+
+SET_TARGET_PROPERTIES(
+	${PODOFO_LIBRARY_NAME} PROPERTIES
+	DEFINE_SYMBOL PODOFO_DLL
+	ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/staging/libs"
+	ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/staging/libs"
+	ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/staging/libs"
+	ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL "${CMAKE_BINARY_DIR}/staging/libs"
+	RUNTIME_OUTPUT_DIRECTORY_DEBUG "${QTBASE_DIR}/bin"
+	RUNTIME_OUTPUT_DIRECTORY_RELEASE "${QTBASE_DIR}/bin"
+	RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${QTBASE_DIR}/bin"
+	RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${QTBASE_DIR}/bin"
+)
+
 
 
 #================================= Boost ================================#
