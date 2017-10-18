@@ -359,6 +359,42 @@ IF(NOT OPENJPEG_LIBRARY)
 ENDIF()
 
 
+FILE(GLOB podofo_dir "${source_outer_dir}/podofo-*")
+
+FIND_PATH(
+	PODOFO_INCLUDE_DIR podofo.h
+	PATHS ${PODOFO_DIR} # PODOFO_DIR may come from export-vars.cmake
+	PATH_SUFFIXES /podofo
+	DOC "Path to podofo headers."
+)
+IF(NOT PODOFO_INCLUDE_DIR)
+	MESSAGE(
+		FATAL_ERROR
+		"Could not find podofo headers.\n"
+		"You may need to install a package named podofo or similarly."
+	)
+ENDIF()
+
+INCLUDE_DIRECTORIES("${PODOFO_INCLUDE_DIR}/../"
+	"${PODOFO_INCLUDE_DIR}/base"
+	"${build_outer_dir}/scantailor-deps-build/podofo-build"
+)
+	
+FIND_LIBRARY(
+	PODOFO_LIBRARY NAMES podofo
+	PATHS /usr/local/lib /usr/lib
+	HINTS ${STAGING_LIBS_DIR}
+	DOC "Path to podofo library."
+)
+IF(NOT PODOFO_LIBRARY)
+	MESSAGE(
+		FATAL_ERROR
+		"Could not find podofo library.\n"
+		"You may need to install a package named podofo or similarly."
+	)
+ENDIF()
+
+
 IF(WIN32)
 	ADD_DEFINITIONS(-DUSE_LIBTIFF_DLL)
 ENDIF()
@@ -734,7 +770,8 @@ IF(WIN32)
 	COPY_TO_BUILD_DIR(
 		"${DLL_DIR}/libpng.dll" "${DLL_DIR}/libjpeg.dll"
 		"${DLL_DIR}/libtiff.dll" "${DLL_DIR}/zdll.dll"
-		"${DLL_DIR}/openjp2.dll"
+		"${DLL_DIR}/openjp2.dll" "${DLL_DIR}/podofo.dll"
+		"${DLL_DIR}/freetype.dll"
 	)
 
 	# Qt's plugins.
