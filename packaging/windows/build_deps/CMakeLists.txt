@@ -419,6 +419,8 @@ LIST_ITEMS_PREPEND(freetype_sources "${FREETYPE_DIR}/")
 
 add_definitions(-DFT2_BUILD_LIBRARY)
 
+INCLUDE_DIRECTORIES("${FREETYPE_DIR}/include")
+
 ADD_LIBRARY(${FREETYPE_LIBRARY_NAME} SHARED ${freetype_sources})
 
 target_link_libraries(
