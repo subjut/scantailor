@@ -345,7 +345,7 @@ ENDIF()
 INCLUDE_DIRECTORIES("${OPENJPEG_INCLUDE_DIR}")
 
 FIND_LIBRARY(
-	OPENJPEG_LIBRARY NAMES openjp2
+	OPENJPEG_LIBRARY NAMES openjp2 openjp2.lib
 	PATHS /usr/local/lib /usr/lib
 	HINTS ${STAGING_LIBS_DIR}
 	DOC "Path to openjpeg library."
@@ -376,12 +376,12 @@ IF(NOT PODOFO_INCLUDE_DIR)
 ENDIF()
 
 INCLUDE_DIRECTORIES("${PODOFO_INCLUDE_DIR}/../"
-	"${PODOFO_INCLUDE_DIR}/base"
+#	"${PODOFO_INCLUDE_DIR}/base"
 	"${build_outer_dir}/scantailor-deps-build/podofo-build"
 )
 	
 FIND_LIBRARY(
-	PODOFO_LIBRARY NAMES podofo
+	PODOFO_LIBRARY NAMES podofo podofo.lib
 	PATHS /usr/local/lib /usr/lib
 	HINTS ${STAGING_LIBS_DIR}
 	DOC "Path to podofo library."
