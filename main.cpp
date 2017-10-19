@@ -23,6 +23,7 @@
 #include "TiffMetadataLoader.h"
 #include "JpegMetadataLoader.h"
 #include "JP2MetadataLoader.h"
+#include "PdfMetadataLoader.h"
 #include <boost/range/adaptor/reversed.hpp>
 #include <QMetaType>
 #include <QtPlugin>
@@ -204,6 +205,7 @@ int main(int argc, char** argv)
 	TiffMetadataLoader::registerMyself();
 	JpegMetadataLoader::registerMyself();
 	JP2MetadataLoader::registerMyself();
+	PdfMetadataLoader::registerMyself();
 	
 	MainWindow* main_wnd = new MainWindow();
 	main_wnd->setAttribute(Qt::WA_DeleteOnClose);

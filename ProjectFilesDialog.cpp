@@ -217,6 +217,7 @@ ProjectFilesDialog::ProjectFilesDialog(QWidget* parent)
 	m_supportedExtensions.insert("jpeg");
 	m_supportedExtensions.insert("tif");
 	m_supportedExtensions.insert("tiff");
+	m_supportedExtensions.insert("pdf");
 	
 	setupUi(this);
 	offProjectList->setModel(m_ptrOffProjectFilesSorted->model());

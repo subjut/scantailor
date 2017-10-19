@@ -37,6 +37,8 @@ PdfMetadataLoader::loadMetadata(
 	QIODevice& io_device,
 	VirtualFunction1<void, ImageMetadata const&>& out)
 {
+	if (!PdfReader::seemsLikePdf(io_device))
+		return ImageMetadataLoader::FORMAT_NOT_RECOGNIZED;
 	if (!PdfReader::readMetadata(io_device, out))
 		return ImageMetadataLoader::GENERIC_ERROR;
 	return ImageMetadataLoader::LOADED;
