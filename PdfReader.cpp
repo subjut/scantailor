@@ -25,27 +25,24 @@
 #include <QDataStream>
 #include <podofo/podofo.h>
 
-using namespace PoDoFo;
-
 bool PdfReader::readMetadata(QIODevice& device,
 	VirtualFunction1<void, ImageMetadata const&>& out)
 {
-	return false;
-}
-
-bool PdfReader::canRead(QIODevice & device, QString const& file_path)
-{
-	PdfMemDocument pdfDoc(file_path.toStdString().c_str());
-
-	if (!pdfDoc.GetPdfVersion()) {
-		return false;
-	}
-
 	return true;
 }
 
+bool PdfReader::seemsLikePdf(QIODevice & device)
+{
+	// first few bytes of a pdf file: %PDF-1. (in ascii)
+	const char start_header[] = "\x25\x50\x44\x46\x2D\x31\x2E";
+	char buffer[8];
+
+	qint64 seen = device.peek(buffer, 8);
+	return	(seen >= 7 && memcmp(buffer, start_header, 7) == 0);
+}
+
 QImage
-PdfReader::readImage(QIODevice& device, int const page_num, QString const& file_path)
+PdfReader::readImage(QIODevice& device, int const page_num)
 {
 	return QImage();
 }

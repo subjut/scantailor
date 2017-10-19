@@ -38,13 +38,13 @@ public:
 		VirtualFunction1<void, ImageMetadata const&>& out);
 	
 	/**
-	* \brief Checks, if io device is a valid pdf file.
+	* \brief Checks, if io device seems like a pdf file.
 	*
 	* \param device The device to read from.  This device must be
 	*        opened for reading and must be seekable.
-	* \return true, if file is a valid pdf file, false otherwise.
+	* \return true, if file seems like a valid pdf file, false otherwise.
 	*/
-	static bool canRead(QIODevice& device, QString const& file_path);
+	static bool seemsLikePdf(QIODevice& device);
 
 	/**
 	* \brief Reads the image from io device to QImage.
@@ -55,7 +55,7 @@ public:
 	*        Pdf file.
 	* \return The resulting image, or a null image in case of failure.
 	*/
-	static QImage readImage(QIODevice& dev, int page_num = 0, QString const& file_path);
+	static QImage readImage(QIODevice& dev, int page_num = 0);
 };
 
 #endif
