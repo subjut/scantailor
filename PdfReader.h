@@ -26,13 +26,36 @@ class QIODevice;
 class QImage;
 class ImageMetadata;
 
+/**
+* \brief Extracts Images from pdf files.
+*
+* Only Images larger than 1000x1000 pixels are extracted.
+*/
 class PdfReader
 {
 public:	
 	static bool readMetadata(QIODevice& dev,
 		VirtualFunction1<void, ImageMetadata const&>& out);
 	
-	static QImage readImage(QIODevice& dev);
+	/**
+	* \brief Checks, if io device is a valid pdf file.
+	*
+	* \param device The device to read from.  This device must be
+	*        opened for reading and must be seekable.
+	* \return true, if file is a valid pdf file, false otherwise.
+	*/
+	static bool canRead(QIODevice& device, QString const& file_path);
+
+	/**
+	* \brief Reads the image from io device to QImage.
+	*
+	* \param device The device to read from.  This device must be
+	*        opened for reading and must be seekable.
+	* \param page_num A zero-based page number within a multi-page
+	*        Pdf file.
+	* \return The resulting image, or a null image in case of failure.
+	*/
+	static QImage readImage(QIODevice& dev, int page_num = 0, QString const& file_path);
 };
 
 #endif

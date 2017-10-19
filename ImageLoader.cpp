@@ -19,6 +19,7 @@
 #include "ImageLoader.h"
 #include "TiffReader.h"
 #include "JP2Reader.h"
+#include "PdfReader.h"
 #include "ImageId.h"
 #include <QImage>
 #include <QString>
@@ -42,7 +43,7 @@ ImageLoader::load(QString const& file_path, int const page_num)
 }
 
 QImage
-ImageLoader::load(QIODevice& io_dev, int const page_num)
+ImageLoader::load(QIODevice& io_dev, int const page_num, QString const& file_path)
 {
 	if (TiffReader::canRead(io_dev)) {
 		return TiffReader::readImage(io_dev, page_num);
@@ -52,8 +53,8 @@ ImageLoader::load(QIODevice& io_dev, int const page_num)
 		return JP2Reader::readImage(io_dev);
 	}
 
-	if (PdfReader::isPdf(io_dev)) {
-		return PdfReader::readImage(io_dev, page_num);
+	if (PdfReader::canRead(io_dev)) {
+		return PdfReader::readImage(io_dev, page_num, file_path);
 	}
 
 	QImage image;

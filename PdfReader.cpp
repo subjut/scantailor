@@ -21,7 +21,11 @@
 #include "ImageMetadata.h"
 #include <QIODevice>
 #include <QImage>
-#include <podofo.h>
+#include <QFile>
+#include <QDataStream>
+#include <podofo/podofo.h>
+
+using namespace PoDoFo;
 
 bool PdfReader::readMetadata(QIODevice& device,
 	VirtualFunction1<void, ImageMetadata const&>& out)
@@ -29,8 +33,19 @@ bool PdfReader::readMetadata(QIODevice& device,
 	return false;
 }
 
+bool PdfReader::canRead(QIODevice & device, QString const& file_path)
+{
+	PdfMemDocument pdfDoc(file_path.toStdString().c_str());
+
+	if (!pdfDoc.GetPdfVersion()) {
+		return false;
+	}
+
+	return true;
+}
+
 QImage
-PdfReader::readImage(QIODevice& device)
+PdfReader::readImage(QIODevice& device, int const page_num, QString const& file_path)
 {
 	return QImage();
 }

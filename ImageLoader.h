@@ -31,7 +31,7 @@ public:
 
 	static QImage load(ImageId const& image_id);
 	
-	static QImage load(QIODevice& io_dev, int page_num);
+	static QImage load(QIODevice& io_dev, int page_num, QString const& file_path = "");
 };
 
 #endif
