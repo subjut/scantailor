@@ -23,7 +23,10 @@
 #include <QImage>
 #include <QFile>
 #include <QDataStream>
+#include <QString>
 #include <podofo/podofo.h>
+
+using namespace PoDoFo;
 
 bool PdfReader::readMetadata(QIODevice& device,
 	VirtualFunction1<void, ImageMetadata const&>& out)
@@ -33,7 +36,7 @@ bool PdfReader::readMetadata(QIODevice& device,
 
 bool PdfReader::seemsLikePdf(QIODevice & device)
 {
-	// first few bytes of a pdf file: %PDF-1. (in ascii)
+	// first few bytes of a pdf file: "%PDF-1."
 	const char start_header[] = "\x25\x50\x44\x46\x2D\x31\x2E";
 	char buffer[8];
 
@@ -44,5 +47,7 @@ bool PdfReader::seemsLikePdf(QIODevice & device)
 QImage
 PdfReader::readImage(QIODevice& device, int const page_num)
 {
+	QString pdfFilename = QFile(device.parent()).fileName();
+	PdfMemDocument pdfDoc(pdfFilename.toStdString().c_str());
 	return QImage();
 }
