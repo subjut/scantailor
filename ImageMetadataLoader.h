@@ -34,6 +34,7 @@ public:
 	enum Status {
 		LOADED, /**< Loaded successfully */
 		NO_IMAGES, /**< File contained no images. */
+		IMAGE_TOO_SMALL, /**< Image is too small: less than 1000 x 1000px. */
 		FORMAT_NOT_RECOGNIZED, /**< File format not recognized. */
 		GENERIC_ERROR /**< Some other error has occured. */
 	};

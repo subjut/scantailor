@@ -20,7 +20,11 @@
 #ifndef PDFREADER_H_
 #define PDFREADER_H_
 
+#include "ImageMetadataLoader.h"
 #include "VirtualFunction.h"
+#include "podofo/podofo.h"
+
+#include <unordered_map>
 
 class QIODevice;
 class QImage;
@@ -34,7 +38,7 @@ class ImageMetadata;
 class PdfReader
 {
 public:	
-	static bool readMetadata(QIODevice& dev,
+	static ImageMetadataLoader::Status readMetadata(QIODevice& dev,
 		VirtualFunction1<void, ImageMetadata const&>& out);
 	
 	/**
@@ -56,6 +60,8 @@ public:
 	* \return The resulting image, or a null image in case of failure.
 	*/
 	static QImage readImage(QIODevice& dev, int page_num = 0);
+private:
+	unordered_map<int, PdfObject*> getImageList(PoDoFo::PdfMemDocument * pdfDoc);
 };
 
 #endif

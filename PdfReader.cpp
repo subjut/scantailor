@@ -28,10 +28,51 @@
 
 using namespace PoDoFo;
 
-bool PdfReader::readMetadata(QIODevice& device,
+ImageMetadataLoader::Status
+PdfReader::readMetadata(QIODevice& device,
 	VirtualFunction1<void, ImageMetadata const&>& out)
 {
-	return true;
+	QString pdfFilename = QFile(device.parent()).fileName();
+	PdfMemDocument pdfDoc(pdfFilename.toStdString().c_str());
+
+	PdfObject*  pObj = nullptr;
+	TCIVecObjects iterator = pdfDoc.GetObjects().begin();
+
+	while (iterator != pdfDoc.GetObjects().end())
+	{
+		if ((*iterator)->IsDictionary())
+		{
+			PdfObject* pObjType = (*iterator)->GetDictionary().GetKey(PdfName::KeyType);
+			PdfObject* pObjSubType = (*iterator)->GetDictionary().GetKey(PdfName::KeySubtype);
+			if ((pObjType && pObjType->IsName() && (pObjType->GetName().GetName() == "XObject")) ||
+				(pObjSubType && pObjSubType->IsName() && (pObjSubType->GetName().GetName() == "Image")))
+			{
+				pObj = (*iterator)->GetDictionary().GetKey(PdfName::KeyFilter);
+
+				qint64 width = pObj->GetDictionary().GetKey(PdfName("Width"))->GetNumber();
+				qint64 height = pObj->GetDictionary().GetKey(PdfName("Height"))->GetNumber();
+
+				// check size
+				if (width >= 1000 && height >= 1000) {
+
+					QSize dimensions(width, height);
+					if (dimensions.isValid) {
+						out(ImageMetadata(dimensions));
+						return ImageMetadataLoader::LOADED;
+					}
+					else {
+						return ImageMetadataLoader::GENERIC_ERROR;
+					}
+				} else {
+					return ImageMetadataLoader::GENERIC_ERROR;
+				}
+			}
+		}
+
+		++iterator;
+	}
+
+	return ImageMetadataLoader::GENERIC_ERROR;
 }
 
 bool PdfReader::seemsLikePdf(QIODevice & device)
