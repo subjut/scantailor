@@ -26,18 +26,28 @@
 
 #include <unordered_map>
 
+using namespace PoDoFo;
+
 class QIODevice;
 class QImage;
 class ImageMetadata;
 
 /**
-* \brief Extracts Images from pdf files.
+* \brief Extracts Images from a pdf file.
 *
-* Only Images larger than 1000x1000 pixels are extracted.
+* Only images larger than 1000x1000 pixels and
+* only the largest image on a page are extracted.
 */
 class PdfReader
 {
-public:	
+public:
+	/**
+	* \brief Searches for the largest image dimensions in the pdf.
+	*
+	* \param device The device to read from.  This device must be
+	*        opened for reading and must be seekable.
+	* \return LOADED, if an image larger than 1000 x 1000 px was found.
+	*/
 	static ImageMetadataLoader::Status readMetadata(QIODevice& dev,
 		VirtualFunction1<void, ImageMetadata const&>& out);
 	
@@ -61,7 +71,7 @@ public:
 	*/
 	static QImage readImage(QIODevice& dev, int page_num = 0);
 private:
-	unordered_map<int, PdfObject*> getImageList(PoDoFo::PdfMemDocument * pdfDoc);
+	std::unordered_map<int, PdfObject*>* getImageList(PdfMemDocument * pdfDoc);
 };
 
 #endif

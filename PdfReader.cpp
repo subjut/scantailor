@@ -22,21 +22,20 @@
 #include <QIODevice>
 #include <QImage>
 #include <QFile>
-#include <QDataStream>
-#include <QString>
-#include <podofo/podofo.h>
-
-using namespace PoDoFo;
+#include <QByteArray>
 
 ImageMetadataLoader::Status
 PdfReader::readMetadata(QIODevice& device,
 	VirtualFunction1<void, ImageMetadata const&>& out)
 {
-	QString pdfFilename = QFile(device.parent()).fileName();
-	PdfMemDocument pdfDoc(pdfFilename.toStdString().c_str());
-
-	PdfObject*  pObj = nullptr;
+	QByteArray buffer(device.readAll());
+	PdfMemDocument pdfDoc;
+	pdfDoc.Load(buffer.constData(), (long)buffer.length());
 	TCIVecObjects iterator = pdfDoc.GetObjects().begin();
+
+	QSize dimensions(0, 0);
+	qint64 width = 0;
+	qint64 height = 0;
 
 	while (iterator != pdfDoc.GetObjects().end())
 	{
@@ -47,31 +46,32 @@ PdfReader::readMetadata(QIODevice& device,
 			if ((pObjType && pObjType->IsName() && (pObjType->GetName().GetName() == "XObject")) ||
 				(pObjSubType && pObjSubType->IsName() && (pObjSubType->GetName().GetName() == "Image")))
 			{
-				pObj = (*iterator)->GetDictionary().GetKey(PdfName::KeyFilter);
+				width = (*iterator)->GetDictionary().GetKey(PdfName("Width"))->GetNumber();
+				height = (*iterator)->GetDictionary().GetKey(PdfName("Height"))->GetNumber();
 
-				qint64 width = pObj->GetDictionary().GetKey(PdfName("Width"))->GetNumber();
-				qint64 height = pObj->GetDictionary().GetKey(PdfName("Height"))->GetNumber();
-
-				// check size
-				if (width >= 1000 && height >= 1000) {
-
-					QSize dimensions(width, height);
-					if (dimensions.isValid) {
-						out(ImageMetadata(dimensions));
-						return ImageMetadataLoader::LOADED;
-					}
-					else {
-						return ImageMetadataLoader::GENERIC_ERROR;
-					}
-				} else {
-					return ImageMetadataLoader::GENERIC_ERROR;
+				if (dimensions.width() < width && dimensions.height() < height) {
+					dimensions.setWidth(width);
+					dimensions.setHeight(height);
 				}
+
+				pdfDoc.FreeObjectMemory(*iterator, true);
 			}
 		}
-
 		++iterator;
 	}
 
+	pdfDoc.~PdfMemDocument();
+	buffer.~QByteArray();
+	
+	// check size
+	if (dimensions.width() >= 1000 && dimensions.height() >= 1000) {
+		out(ImageMetadata(dimensions));
+		return ImageMetadataLoader::LOADED;
+	} else if (dimensions.width() == 0 && dimensions.height() == 0) {
+		return ImageMetadataLoader::NO_IMAGES;
+	} else {
+		return ImageMetadataLoader::IMAGE_TOO_SMALL;
+	}
 	return ImageMetadataLoader::GENERIC_ERROR;
 }
 
@@ -88,7 +88,12 @@ bool PdfReader::seemsLikePdf(QIODevice & device)
 QImage
 PdfReader::readImage(QIODevice& device, int const page_num)
 {
-	QString pdfFilename = QFile(device.parent()).fileName();
-	PdfMemDocument pdfDoc(pdfFilename.toStdString().c_str());
 	return QImage();
+}
+
+std::unordered_map<int, PdfObject*>*
+PdfReader::getImageList(PoDoFo::PdfMemDocument * pdfDoc)
+{
+
+	return nullptr;
 }
