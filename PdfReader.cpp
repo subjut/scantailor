@@ -59,9 +59,6 @@ PdfReader::readMetadata(QIODevice& device,
 		}
 		++iterator;
 	}
-
-	pdfDoc.~PdfMemDocument();
-	buffer.~QByteArray();
 	
 	// check size
 	if (dimensions.width() >= 1000 && dimensions.height() >= 1000) {
@@ -88,6 +85,27 @@ bool PdfReader::seemsLikePdf(QIODevice & device)
 QImage
 PdfReader::readImage(QIODevice& device, int const page_num)
 {
+	QByteArray buffer(device.readAll());
+	PdfMemDocument pdfDoc;
+	pdfDoc.Load(buffer.constData(), (long)buffer.length());
+
+	PoDoFo::PdfPagesTree* pTree = pdfDoc.GetPagesTree();
+	PoDoFo::PdfPage* pPage = pTree->GetPage(page_num);
+
+	PdfObject * resources = nullptr;
+
+	// get the resource object
+	resources = pPage->GetResources();
+
+	// get all names in the XObject key
+
+	// go through all referenced names like below and extract the biggest image
+
+
+	PdfObject * pObj = nullptr;
+
+	pObj = pPage->GetFromResources(PdfName("XObject"), PdfName("QuickPDFIm36D3CD04"));
+
 	return QImage();
 }
 
