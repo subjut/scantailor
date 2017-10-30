@@ -70,8 +70,6 @@ public:
 	* \return The resulting image, or a null image in case of failure.
 	*/
 	static QImage readImage(QIODevice& dev, int page_num = 0);
-private:
-	std::unordered_map<int, PdfObject*>* getImageList(PdfMemDocument * pdfDoc);
 };
 
 #endif

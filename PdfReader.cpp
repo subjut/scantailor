@@ -90,28 +90,61 @@ PdfReader::readImage(QIODevice& device, int const page_num)
 	pdfDoc.Load(buffer.constData(), (long)buffer.length());
 
 	PoDoFo::PdfPagesTree* pTree = pdfDoc.GetPagesTree();
-	PoDoFo::PdfPage* pPage = pTree->GetPage(page_num);
+	PoDoFo::PdfPage* pPage = pTree->GetPage(page_num - 1);
 
-	PdfObject * resources = nullptr;
+	PdfDictionary resources(
+		pPage->GetResources()->GetIndirectKey(PdfName("XObject"))->GetDictionary()
+	);
 
 	// get the resource object
-	resources = pPage->GetResources();
+	//resources = pPage->GetResources()->GetIndirectKey(PdfName("XObject"))->GetDictionary();
 
 	// get all names in the XObject key
-
-	// go through all referenced names like below and extract the biggest image
-
+	
+	TKeyMap imageReferences = resources.GetKeys();
 
 	PdfObject * pObj = nullptr;
 
-	pObj = pPage->GetFromResources(PdfName("XObject"), PdfName("QuickPDFIm36D3CD04"));
+	// stores the image to extract; only the largst one on the page is chosen
+	PdfObject * pdfImage = nullptr;
+	QSize dimensions(0, 0);
+	qint64 width = 0;
+	qint64 height = 0;
+
+	// go through all references and extract the largest image
+	for (PoDoFo::TKeyMap::iterator it = imageReferences.begin(); it != imageReferences.end(); ++it) {
+		pObj = it->second;
+		PdfObject* pObjType = pObj->GetDictionary().GetKey(PdfName::KeyType);
+		PdfObject* pObjSubType = pObj->GetDictionary().GetKey(PdfName::KeySubtype);
+
+		if ((pObjType && pObjType->IsName() && (pObjType->GetName().GetName() == "XObject")) ||
+			(pObjSubType && pObjSubType->IsName() && (pObjSubType->GetName().GetName() == "Image")))
+		{
+			
+			width = pObj->GetDictionary().GetKey(PdfName("Width"))->GetNumber();
+			height = pObj->GetDictionary().GetKey(PdfName("Height"))->GetNumber();
+
+			if (dimensions.width() < width && dimensions.height() < height) {
+				dimensions.setWidth(width);
+				dimensions.setHeight(height);
+				pdfImage = pObj;
+			}
+		}
+		//pdfDoc.FreeObjectMemory(pObj);
+	}
+
+
+
+	QImage image;
+
+	// extract image and set correct metadata
+	if (pdfImage && dimensions.width() >= 1000 && dimensions.height() >= 1000) {
+
+	} else {
+		// image is too small or no images found on page
+		return QImage();
+	}
 
 	return QImage();
 }
 
-std::unordered_map<int, PdfObject*>*
-PdfReader::getImageList(PoDoFo::PdfMemDocument * pdfDoc)
-{
-
-	return nullptr;
-}
