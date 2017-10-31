@@ -90,17 +90,14 @@ PdfReader::readImage(QIODevice& device, int const page_num)
 	pdfDoc.Load(buffer.constData(), (long)buffer.length());
 
 	PoDoFo::PdfPagesTree* pTree = pdfDoc.GetPagesTree();
-	PoDoFo::PdfPage* pPage = pTree->GetPage(page_num - 1);
+	PoDoFo::PdfPage* pPage = pTree->GetPage(page_num);
 
+	// get the resource object for images on this page
 	PdfDictionary resources(
 		pPage->GetResources()->GetIndirectKey(PdfName("XObject"))->GetDictionary()
 	);
 
-	// get the resource object
-	//resources = pPage->GetResources()->GetIndirectKey(PdfName("XObject"))->GetDictionary();
-
-	// get all names in the XObject key
-	
+	// get the references to all image objects on this page
 	TKeyMap imageReferences = resources.GetKeys();
 
 	PdfObject * pObj = nullptr;
@@ -111,26 +108,29 @@ PdfReader::readImage(QIODevice& device, int const page_num)
 	qint64 width = 0;
 	qint64 height = 0;
 
-	// go through all references and extract the largest image
+	// go through all references and extract dimensions of each image
 	for (PoDoFo::TKeyMap::iterator it = imageReferences.begin(); it != imageReferences.end(); ++it) {
-		pObj = it->second;
-		PdfObject* pObjType = pObj->GetDictionary().GetKey(PdfName::KeyType);
-		PdfObject* pObjSubType = pObj->GetDictionary().GetKey(PdfName::KeySubtype);
+		// get image object dictionary
+		pObj = pPage->GetFromResources(PdfName("XObject"), it->first);
 
-		if ((pObjType && pObjType->IsName() && (pObjType->GetName().GetName() == "XObject")) ||
-			(pObjSubType && pObjSubType->IsName() && (pObjSubType->GetName().GetName() == "Image")))
-		{
-			
-			width = pObj->GetDictionary().GetKey(PdfName("Width"))->GetNumber();
-			height = pObj->GetDictionary().GetKey(PdfName("Height"))->GetNumber();
+		if (pObj->IsDictionary()) {
+			PdfObject* pObjType = pObj->GetDictionary().GetKey(PdfName::KeyType);
+			PdfObject* pObjSubType = pObj->GetDictionary().GetKey(PdfName::KeySubtype);
 
-			if (dimensions.width() < width && dimensions.height() < height) {
-				dimensions.setWidth(width);
-				dimensions.setHeight(height);
-				pdfImage = pObj;
+			if ((pObjType && pObjType->IsName() && (pObjType->GetName().GetName() == "XObject")) ||
+				(pObjSubType && pObjSubType->IsName() && (pObjSubType->GetName().GetName() == "Image")))
+			{
+
+				width = pObj->GetDictionary().GetKey(PdfName("Width"))->GetNumber();
+				height = pObj->GetDictionary().GetKey(PdfName("Height"))->GetNumber();
+
+				if (dimensions.width() < width && dimensions.height() < height) {
+					dimensions.setWidth(width);
+					dimensions.setHeight(height);
+					pdfImage = pObj;
+				}
 			}
 		}
-		//pdfDoc.FreeObjectMemory(pObj);
 	}
 
 
