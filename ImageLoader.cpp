@@ -22,9 +22,11 @@
 #include "PdfReader.h"
 #include "ImageId.h"
 #include <QImage>
+#include <QImageReader>
 #include <QString>
 #include <QIODevice>
 #include <QFile>
+#include <QDebug>
 
 QImage
 ImageLoader::load(ImageId const& image_id)
@@ -57,7 +59,10 @@ ImageLoader::load(QIODevice& io_dev, int const page_num)
 		return PdfReader::readImage(io_dev, page_num);
 	}
 
+	QImageReader reader;
+	qDebug() << "Supported image formats: " << reader.supportedImageFormats();
+
 	QImage image;
-	image.load(&io_dev, 0);
+	QImageReader(&io_dev).read(&image);
 	return image;
 }
