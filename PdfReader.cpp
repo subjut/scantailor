@@ -19,6 +19,7 @@
 
 #include "PdfReader.h"
 #include "ImageMetadata.h"
+#include "ImageLoader.h"
 #include <QIODevice>
 #include <QImage>
 #include <QFile>
@@ -139,6 +140,12 @@ PdfReader::readImage(QIODevice& device, int const page_num)
 
 	// extract image and set correct metadata
 	if (pdfImage && dimensions.width() >= 1000 && dimensions.height() >= 1000) {
+		// We'll just try to get the binary stream into a QIODevice and send it through ImageLoader::load
+		PdfMemStream* pStream = dynamic_cast<PdfMemStream*>(pdfImage->GetStream());
+		QByteArray imageBuffer(pStream->Get(), pStream->GetLength());
+		QDataStream newImage(imageBuffer);
+
+		return ImageLoader::load(*newImage.device(), 0);
 
 	} else {
 		// image is too small or no images found on page
