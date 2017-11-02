@@ -59,9 +59,6 @@ ImageLoader::load(QIODevice& io_dev, int const page_num)
 		return PdfReader::readImage(io_dev, page_num);
 	}
 
-	QImageReader reader;
-	qDebug() << "Supported image formats: " << reader.supportedImageFormats();
-
 	QImage image;
 	QImageReader(&io_dev).read(&image);
 	return image;
