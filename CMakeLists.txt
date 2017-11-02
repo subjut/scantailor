@@ -786,6 +786,15 @@ IF(WIN32)
 		CONFIGURATIONS Debug
 	)
 
+	COPY_TO_BUILD_DIR(
+		"${PLUGINS_DIR}/imageformats/qjpeg.dll" SUBDIR imageformats
+		CONFIGURATIONS Release MinSizeRel RelWithDebInfo
+	)
+	COPY_TO_BUILD_DIR(
+		"${PLUGINS_DIR}/imageformats/qjpegd.dll" SUBDIR imageformats
+		CONFIGURATIONS Debug
+	)
+	
 	IF(EXISTS "${PLUGINS_DIR}/accessible/qtaccessiblewidgets.dll")
 		COPY_TO_BUILD_DIR(
 			"${PLUGINS_DIR}/accessible/qtaccessiblewidgets.dll" SUBDIR accessible
