@@ -8,7 +8,7 @@ FILE(
 	"cmd /c ${QTBASE_DIR}\\configure -platform ${PLATFORM}"
 	" -debug-and-release -shared -force-debug-info"
 	" -no-gif -system-zlib -system-libpng -system-libjpeg -no-openssl"
-	" -opengl desktop -nomake examples -opensource -confirm-license -no-ltcg"
+	" -opengl desktop -nomake examples -nomake tests -opensource -confirm-license -no-ltcg"
 	" -I \"${JPEG_INCLUDE_DIR}\" -I \"${ZLIB_INCLUDE_DIR}\""
 	" -I \"${PNG_INCLUDE_DIR}\" -I \"${FREETYPE_INCLUDE_DIR}\""
 	" -L \"${JPEG_LINK_DIR}\" -L \"${ZLIB_LINK_DIR}\""
@@ -18,11 +18,20 @@ FILE(
 	"if errorlevel 1 goto exit\n"
 	"${MAKE_COMMAND}\n"
 	"if errorlevel 1 goto exit\n"
+	# Build qttools if not yet done
 	"${MAYBE_SKIP_BUILDING_TOOLS}\n"
-	"cd \"${QTBASE_DIR}\\..\\qttools\"\n"
+	"mkdir \"${QTBUILD_DIR}\\..\\qttools-build\"\n"
+	"cd \"${QTBUILD_DIR}\\..\\qttools-build\"\n"
 	"if errorlevel 1 goto exit\n"
-	"\"${QTBUILD_DIR}\\bin\\qmake.exe\" -makefile -after \"CONFIG += release force_debug_info\" qttools.pro\n"
+	"\"${QTBUILD_DIR}\\bin\\qmake.exe\" -makefile -after \"CONFIG += release force_debug_info\" \"${QTBASE_DIR}\\..\\qttools\\qttools.pro\"\n"
 	"if errorlevel 1 goto exit\n"
 	"${MAKE_COMMAND}\n"
+	"if errorlevel 1 goto exit\n"
+	# move qttools over to qt-build dir
+	"move /Y \"${QTBUILD_DIR}\\..\\qttools-build\\bin\\*\" \"${QTBUILD_DIR}\\bin\"\n"
+	"robocopy \"${QTBUILD_DIR}\\..\\qttools-build\\lib" \"${QTBUILD_DIR}\\lib /move /s\"\n"
+	# copy platform file for windows so qdesigner etc. work
+	"mkdir \"${QTBUILD_DIR}\\bin\\platforms\"\n"
+	"copy /Y \"${QTBUILD_DIR}\\plugins\\platforms\\qwindows*" \"${QTBUILD_DIR}\\bin\\platforms\"\n"
 	":exit\n"
 )

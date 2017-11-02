@@ -136,10 +136,11 @@ ENDIF()
 SET(QTBASE_DIR "${QT_SRC_DIR}/qtbase")
 SET(QTBUILD_DIR "${PROJECT_BINARY_DIR}/qt-build")
 
-FILE(GLOB qt_possible_prebuilt_dirs "${QT_SRC_DIR}/../*")
+FILE(GLOB qt_possible_prebuilt_dirs "${QTBUILD_DIR}/*")
+UNSET(QT_PREBUILT_DIR)
 FIND_PATH(
-	QT_PREBUILT_DIR bin/qmake.exe HINTS ${qt_possible_prebuilt_dirs}
-	DOC "[optional] Installation path of a pre-built version of Qt5. If you installed a binary version, it will be something like C:\\Qt\\Qt5.0.2\\5.0.2\\msvc2012"
+	QT_PREBUILT_DIR bin/linguist.exe HINTS ${qt_possible_prebuilt_dirs}
+	DOC "[optional] Installation path of a pre-built version of Qt5 including qttools. If you installed a binary version, it will be something like C:\\Qt\\Qt5.0.2\\5.0.2\\msvc2012"
 )
 
 SET(ZLIB_LIBRARY_NAME zdll)
@@ -147,7 +148,7 @@ SET(PNG_LIBRARY_NAME libpng)
 SET(JPEG_LIBRARY_NAME libjpeg)
 SET(TIFF_LIBRARY_NAME libtiff)
 SET(OPENJPEG_LIBRARY_NAME openjp2)
-set(FREETYPE_LIBRARY_NAME freetype)
+SET(FREETYPE_LIBRARY_NAME freetype)
 SET(PODOFO_LIBRARY_NAME podofo)
 
 MACRO(LIST_ITEMS_PREPEND LIST PREFIX)
