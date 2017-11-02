@@ -162,18 +162,18 @@ IF(WIN32)
 	SET(STAGING_LIBS_DIR "${DEPS_BUILD_DIR}/staging/libs")
 	INCLUDE("${DEPS_BUILD_DIR}/export-vars.cmake")
 
-	SET(Qt5Core_DIR "${QT_SRC_DIR}/qtbase/lib/cmake/Qt5Core")
-	SET(Qt5Gui_DIR "${QT_SRC_DIR}/qtbase/lib/cmake/Qt5Gui")
-	SET(Qt5Widgets_DIR "${QT_SRC_DIR}/qtbase/lib/cmake/Qt5Widgets")
-	SET(Qt5Xml_DIR "${QT_SRC_DIR}/qtbase/lib/cmake/Qt5Xml")
-	SET(Qt5Network_DIR "${QT_SRC_DIR}/qtbase/lib/cmake/Qt5Network")
-	SET(Qt5OpenGL_DIR "${QT_SRC_DIR}/qtbase/lib/cmake/Qt5OpenGL")
+	SET(Qt5Core_DIR "${QT_BUILD_DIR}/lib/cmake/Qt5Core")
+	SET(Qt5Gui_DIR "${QT_BUILD_DIR}/lib/cmake/Qt5Gui")
+	SET(Qt5Widgets_DIR "${QT_BUILD_DIR}/lib/cmake/Qt5Widgets")
+	SET(Qt5Xml_DIR "${QT_BUILD_DIR}/lib/cmake/Qt5Xml")
+	SET(Qt5Network_DIR "${QT_BUILD_DIR}/lib/cmake/Qt5Network")
+	SET(Qt5OpenGL_DIR "${QT_BUILD_DIR}/lib/cmake/Qt5OpenGL")
 	IF(QT_PREBUILT_DIR)
 		SET(Qt5LinguistTools_DIR "${QT_PREBUILT_DIR}/lib/cmake/Qt5LinguistTools")
 	ELSE()
 	  # This has changed from qtbase to qttools probably in Qt version 5.9.
 		# Might also be required above.
-		SET(Qt5LinguistTools_DIR "${QT_SRC_DIR}/qttools/lib/cmake/Qt5LinguistTools")
+		SET(Qt5LinguistTools_DIR "${QT_BUILD_DIR}/lib/cmake/Qt5LinguistTools")
 	ENDIF()
 ENDIF()
 
@@ -767,7 +767,7 @@ IF(WIN32)
 		COPY_TO_BUILD_DIR("${release_loc}" CONFIGURATIONS Release MinSizeRel RelWithDebInfo)
 	ENDFOREACH()
 		
-	SET(DLL_DIR "${QT_SRC_DIR}/qtbase/bin")
+	SET(DLL_DIR "${QT_BUILD_DIR}/bin")
 	COPY_TO_BUILD_DIR(
 		"${DLL_DIR}/libpng.dll" "${DLL_DIR}/libjpeg.dll"
 		"${DLL_DIR}/libtiff.dll" "${DLL_DIR}/zdll.dll"
@@ -776,7 +776,7 @@ IF(WIN32)
 	)
 
 	# Qt's plugins.
-	SET(PLUGINS_DIR "${QT_SRC_DIR}/qtbase/plugins")
+	SET(PLUGINS_DIR "${QT_BUILD_DIR}/plugins")
 	COPY_TO_BUILD_DIR(
 		"${PLUGINS_DIR}/platforms/qwindows.dll" SUBDIR platforms
 		CONFIGURATIONS Release MinSizeRel RelWithDebInfo
