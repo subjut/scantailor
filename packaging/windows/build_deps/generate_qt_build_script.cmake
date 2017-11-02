@@ -29,9 +29,9 @@ FILE(
 	"if errorlevel 1 goto exit\n"
 	# move qttools over to qt-build dir
 	"move /Y \"${QTBUILD_DIR}\\..\\qttools-build\\bin\\*\" \"${QTBUILD_DIR}\\bin\"\n"
-	"robocopy \"${QTBUILD_DIR}\\..\\qttools-build\\lib" \"${QTBUILD_DIR}\\lib /move /s\"\n"
+	"robocopy \"${QTBUILD_DIR}\\..\\qttools-build\\lib\" \"${QTBUILD_DIR}\\lib\" /move /s\n"
 	# copy platform file for windows so qdesigner etc. work
 	"mkdir \"${QTBUILD_DIR}\\bin\\platforms\"\n"
-	"copy /Y \"${QTBUILD_DIR}\\plugins\\platforms\\qwindows*" \"${QTBUILD_DIR}\\bin\\platforms\"\n"
+	"copy /Y \"${QTBUILD_DIR}\\plugins\\platforms\\qwindows*\" \"${QTBUILD_DIR}\\bin\\platforms\"\n"
 	":exit\n"
 )
