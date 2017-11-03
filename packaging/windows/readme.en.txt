@@ -11,9 +11,9 @@ features, making Visual Studio versions below 2013 not supported.
 First, download the following software.  Unless stated otherwise, take the
 latest stable version.
 
-1. Visual Studio Express 2013 for Windows Desktop.
+1. Visual Studio Express 2013/2015 for Windows Desktop.
    Homepage: http://www.microsoft.com/visualstudio/eng/products/visual-studio-express-products
-2. CMake >= 2.8.9
+2. CMake >= 3.1.0
    Homepage: http://www.cmake.org
 3. jpeg library
    Homepage: http://www.ijg.org/
@@ -27,50 +27,68 @@ latest stable version.
    We need a file named like libpng-x.x.x.tar.gz, where x.x.x represents
    the version number.
 6. libtiff
-   Homepage: http://www.remotesensing.org/libtiff/
-   Because libtiff is updated rarely, but vulnerabilities in it are found often,
-   it's better to patch it right away.  In that case, take it from here:
-   http://packages.debian.org/source/sid/tiff
-   There you will find both the original libtiff and a set of patches for it.
-   The process of patching libtiff is described later in this document.
-   If you aren't going to distribute your Scan Tailor build and aren't going
-   to open files from untrusted sources, then you don't really need patching it.
-7. Qt5 >= 5.3 (tested with 5.3.2, 5.4.1)
+   Homepage: http://www.simplesystems.org/libtiff/
+   Get the source package from ftp://download.osgeo.org/libtiff/ .
+	 The file is named tiff-x.x.x.tar.gz, where x.x.x represents the
+	 version number.
+7. freetype (tested with 2.8.1; needed for podofo)
+   Homepage: https://sourceforge.net/projects/freetype/files/freetype2/
+	 We need a file named like freetype-x.x.x.tar.gz, where x.x.x represents
+   the version number.
+8. podofo (tested with 0.9.5)
+   Homepage: http://podofo.sourceforge.net/download.html
+	 We need a file named like podofo-x.x.x.tar.gz, where x.x.x represents
+   the version number.
+9. openjpeg	(tested with 2.2.0 and 2.3.0)
+   Homepage: http://www.openjpeg.org/
+	 This is needed for JPG2000 input image support.
+10. Qt5 >= 5.3 (tested with 5.9.1 and 5.9.2)
    Homepage: http://qt-project.org/
    Either a source-only or any of the binary versions will do. In either case
    a custom build of Qt will be made, though a binary version will result in
    less things to build.
-8. ActivePerl (necessary to build Qt5)
+11. ActivePerl (necessary to build Qt5)
    Homepage: http://www.activestate.com/activeperl/downloads
    A 32-bit version is suggested. Whether or not 64-bit version would work
    is unclear. When installing make sure that "Add Perl to the PATH environment
    variable" option is set.
-9. Boost (tested with 1.56.0)
+	 Note: Perl seems not to be required for the source build of Qt 5.9.
+12. Boost (tested with 1.56.0, 1.65.1)
    Homepage: http://boost.org/
    You can download it in any file format, provided you know how to unpack it.
-10. Eigen3 (tested with 3.2.5)
+13. Eigen3 (tested with 3.2.5)
    Homepage: http://eigen.tuxfamily.org/
-11. NSIS 2.x (tested with 2.46)
+14. NSIS 2.x (tested with 2.46)
    Homepage: http://nsis.sourceforge.net/
-12. For OpenCL support, install an OpenCL SDK from Intel, AMD or CUDA Toolkit
+15. For OpenCL support, install an OpenCL SDK from Intel, AMD or CUDA Toolkit
    from Nvidia.
+	 Note: You don't actually have to install it. Scantailor will find the
+	 header files and library if you set them up as follows (see below for
+	 directory structure):
+	 c:\build
+      | opencl -> [opencl.lib goes here]
+			   | CL -> [headers go here]
 
                                     Instructions
 
 1. Create a build directory. Its full path should have no spaces. From now on
    this document will be assuming the build directory is C:\build
 
-2. Unpack jpeg, libpng, libtiff, zlib, boost, Eigen, and scantailor
-   itself to the build directory.  You should get a directory structure like
-   this:
+2. Unpack jpeg, libpng, libtiff, zlib, openjpeg, freetype, podofo, boost,
+   Eigen, and scantailor itself to the build directory.  You should get a
+	 directory structure like this:
    C:\build
-     | boost_1_56_0
-     | eigen-eigen-bdd17ee3b1b3
-     | jpeg-9
-     | libpng-1.6.2
-     | scantailor-0.9.11
-     | tiff-4.0.2
-     | zlib-1.2.8
+     | boost_1_65_1
+     | eigen-eigen-5a0156e40feb
+     | jpeg-9b
+     | libpng-1.6.32
+		 | opencl [optional, if no sdk is installed and you want opencl support]
+		 | openjpeg-2.3.0
+		 | podofo-0.9.5
+		 | qt-everywhere-opensource-src-5.9.2 [if building qt from source]
+     | scantailor
+     | tiff-4.0.8
+     | zlib-1.2.11
    
    If you went for a source-only version of Qt, unpack it there as well.
    Otherwise, install Qt into whatever directory its installer suggests.
@@ -87,22 +105,23 @@ latest stable version.
 
 5. Launch CMake and specify the following:
 
-   Where is the source code: C:\build\scantailor-0.9.11\packaging\windows\build-deps
+   Where is the source code: C:\build\scantailor\packaging\windows\build-deps
    Where to build the binaries: C:\build\scantailor-deps-build
 
-   Click "Configure". Select the project type "Visual Studio 12" or
-   "Visual Studio 12 Win64" for 64-bit builds. Keep in mind that 64-bit
+   Click "Configure". Select the project type "Visual Studio 12/14" or
+   "Visual Studio 12/14 Win64" for 64-bit builds. Keep in mind that 64-bit
    builds are only possible on a 64-bit version of Windows. Visual Studio 12
-   is the same as Visual Studio 2013. If any of the paths weren't found,
+   is the same as Visual Studio 2013 and Visual Studio 14 is the same as
+	 Visual Studio 2015. If any of the paths weren't found,
    enter them manually, then click "Configure" again. If everything went right,
    the "Generate" button will become clickable. Click it. Sometimes it's
    necessary to click "Configure" more than once before "Generate" becomes
    clickable.
 
-6. We will be building Scan Tailor's dependencies here.  This step is the
+6. We will be building Scan Tailor's dependencies here. This step is the
    longest one (may take a few hours), but fortunately it only has to be done
-   once.  When building newer versions of Scan Tailor, you won't need to
-   redo this step.
+   once. When building newer versions of Scan Tailor, you won't need to
+   redo this step unless you want to update any libraries.
    
    Go to C:\build\scantailor-deps-build and open file
    "Scan Tailor Dependencies.sln".  It will open in Visual Studio.
@@ -120,15 +139,10 @@ latest stable version.
 
 7. Launch CMake again and specify following:
 
-   Where is the source code: C:\build\scantailor-0.9.11
+   Where is the source code: C:\build\scantailor
    Where to build the binaries: C:\build\scantailor-build
 
    Click "Configure", then "Generate", just like on step 5.
-	 
-	 Note: With Qt 5.9, there is an error in the cmake configure step where the
-	 path to win32-msvc is garbled, if Qt is build from source. This has to be
-	 manually corrected in the file
-	 *Qt5sources*\qtbase\lib\cmake\Qt5Core\Qt5CoreConfigExtrasMkspecDir.cmake.
 
 8. Now we are going to build Scan Tailor itself.  On subsequent build of the
    same (possibly modified) version, you can start right from this step.
@@ -142,58 +156,8 @@ latest stable version.
    
    Make sure the building process finishes without errors. Warnings may
    be ignored.
-   
-	 Note: If you use the source only Qt5 option, the translations may not be
-	 built, because some Qt5 core files are missing. Copy Qt5Core.dll, Qt5Xml.dll
-	 and zdll.dll from qtbase/bin to qttools/bin.
-	 
+   	 
    If everything went right, the installer named scantailor-VERSION-install.exe
    will appear in C:\build\scantailor-build. The VERSION part of the name will
    be replaced by the actual version, taken from the version.h file in the root
    of the source directory.
-
-
-                               Patching libtiff
-
-These instructions assume you've got Debian's patches for libtiff from:
-http://packages.debian.org/source/sid/tiff
-There you will find both the original libtiff sources (filename like
-tiff_4.0.2orig.tar.gz) and a patch set for it (filename like
-tiff_4.0.2-6.debian.tar.gz).  Download both and follow the instructions:
-
-1. Get the command line patch utility from here:
-   http://gnuwin32.sourceforge.net/packages/patch.htm
-
-   Better use the version with the installer.  In that case CMake will
-   find the location of patch.exe by itself.
-
-2. Extract the original libtiff sources into C:\build to get a directory
-   structure like this:
-   C:\build
-     | tiff-4.0.2
-     +-- build
-       | config
-       | contrib
-       | ...
-
-   Then extract the patchset inside the tiff directory, to get the "debian"
-   directory on the same level as "build", "config" and "contrib".
-
-3. Create another subdirectory under C:\build
-   Call it "tiff-patch-dir".
-
-4. Launch CMake and specify the following:
-
-   Where is the source code:    C:\build\scantailor-0.9.11\packaging\windows\patch_libtiff
-   Where to build the binaries: C:\build\tiff-patch-dir
-
-   Click "Configure" then "Generate", just like in previous section, step 5.
-
-5. Go to C:\build\tiff-patch-dir and open file "patch_libtiff.sln".
-   It will open in Visual Studio. The build type doesn't matter in this case.
-   
-   Now do Build -> Build Solution.
-
-   If no errors were reported, you have successfully patched your libtiff.
-   If you ever need to patch it again, first revert it to the original version,
-   the one from the .tar.gz file and delete the "debian" subdirectory.
