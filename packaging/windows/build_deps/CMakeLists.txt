@@ -137,9 +137,10 @@ SET(QTBASE_DIR "${QT_SRC_DIR}/qtbase")
 SET(QTBUILD_DIR "${PROJECT_BINARY_DIR}/qt-build")
 
 FILE(GLOB qt_possible_prebuilt_dirs "${QTBUILD_DIR}/*")
+
 UNSET(QT_PREBUILT_DIR)
 FIND_PATH(
-	QT_PREBUILT_DIR bin/linguist.exe HINTS ${qt_possible_prebuilt_dirs}
+	QT_PREBUILT_DIR linguist.exe HINTS ${qt_possible_prebuilt_dirs}
 	DOC "[optional] Installation path of a pre-built version of Qt5 including qttools. If you installed a binary version, it will be something like C:\\Qt\\Qt5.0.2\\5.0.2\\msvc2012"
 )
 
