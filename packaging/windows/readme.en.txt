@@ -29,19 +29,19 @@ latest stable version.
 6. libtiff
    Homepage: http://www.simplesystems.org/libtiff/
    Get the source package from ftp://download.osgeo.org/libtiff/ .
-	 The file is named tiff-x.x.x.tar.gz, where x.x.x represents the
-	 version number.
+   The file is named tiff-x.x.x.tar.gz, where x.x.x represents the
+   version number.
 7. freetype (tested with 2.8.1; needed for podofo)
    Homepage: https://sourceforge.net/projects/freetype/files/freetype2/
-	 We need a file named like freetype-x.x.x.tar.gz, where x.x.x represents
+   We need a file named like freetype-x.x.x.tar.gz, where x.x.x represents
    the version number.
 8. podofo (tested with 0.9.5)
    Homepage: http://podofo.sourceforge.net/download.html
-	 We need a file named like podofo-x.x.x.tar.gz, where x.x.x represents
+   We need a file named like podofo-x.x.x.tar.gz, where x.x.x represents
    the version number.
-9. openjpeg	(tested with 2.2.0 and 2.3.0)
+9. openjpeg  (tested with 2.2.0 and 2.3.0)
    Homepage: http://www.openjpeg.org/
-	 This is needed for JPG2000 input image support.
+   This is needed for JPG2000 input image support.
 10. Qt5 >= 5.3 (tested with 5.9.1 and 5.9.2)
    Homepage: http://qt-project.org/
    Either a source-only or any of the binary versions will do. In either case
@@ -52,7 +52,7 @@ latest stable version.
    A 32-bit version is suggested. Whether or not 64-bit version would work
    is unclear. When installing make sure that "Add Perl to the PATH environment
    variable" option is set.
-	 Note: Perl seems not to be required for the source build of Qt 5.9.
+   Note: Perl seems not to be required for the source build of Qt 5.9.
 12. Boost (tested with 1.56.0, 1.65.1)
    Homepage: http://boost.org/
    You can download it in any file format, provided you know how to unpack it.
@@ -62,12 +62,12 @@ latest stable version.
    Homepage: http://nsis.sourceforge.net/
 15. For OpenCL support, install an OpenCL SDK from Intel, AMD or CUDA Toolkit
    from Nvidia.
-	 Note: You don't actually have to install it. Scantailor will find the
-	 header files and library if you set them up as follows (see below for
-	 directory structure):
-	 c:\build
+   Note: You don't actually have to install it. Scantailor will find the
+   header files and library if you set them up as follows (see below for
+   directory structure):
+   c:\build
       | opencl -> [opencl.lib goes here]
-			   | CL -> [headers go here]
+         | CL -> [headers go here]
 
                                     Instructions
 
@@ -76,16 +76,16 @@ latest stable version.
 
 2. Unpack jpeg, libpng, libtiff, zlib, openjpeg, freetype, podofo, boost,
    Eigen, and scantailor itself to the build directory.  You should get a
-	 directory structure like this:
+   directory structure like this:
    C:\build
      | boost_1_65_1
      | eigen-eigen-5a0156e40feb
      | jpeg-9b
      | libpng-1.6.32
-		 | opencl [optional, if no sdk is installed and you want opencl support]
-		 | openjpeg-2.3.0
-		 | podofo-0.9.5
-		 | qt-everywhere-opensource-src-5.9.2 [if building qt from source]
+     | opencl [optional, if no sdk is installed and you want opencl support]
+     | openjpeg-2.3.0
+     | podofo-0.9.5
+     | qt-everywhere-opensource-src-5.9.2 [if building qt from source]
      | scantailor
      | tiff-4.0.8
      | zlib-1.2.11
@@ -112,7 +112,7 @@ latest stable version.
    "Visual Studio 12/14 Win64" for 64-bit builds. Keep in mind that 64-bit
    builds are only possible on a 64-bit version of Windows. Visual Studio 12
    is the same as Visual Studio 2013 and Visual Studio 14 is the same as
-	 Visual Studio 2015. If any of the paths weren't found,
+   Visual Studio 2015. If any of the paths weren't found,
    enter them manually, then click "Configure" again. If everything went right,
    the "Generate" button will become clickable. Click it. Sometimes it's
    necessary to click "Configure" more than once before "Generate" becomes
@@ -156,7 +156,7 @@ latest stable version.
    
    Make sure the building process finishes without errors. Warnings may
    be ignored.
-   	 
+      
    If everything went right, the installer named scantailor-VERSION-install.exe
    will appear in C:\build\scantailor-build. The VERSION part of the name will
    be replaced by the actual version, taken from the version.h file in the root
