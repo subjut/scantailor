@@ -4,8 +4,9 @@ FIND_PROGRAM(
 )
 IF(NOT MAKENSIS_EXE)
 	MESSAGE(
-		FATAL_ERROR
+		STATUS
 		"makensis.exe could not be found.\n"
+		"Installer will not be built.\n"
 		"makensis.exe is a part of NSIS. Get NSIS from http://nsis.sf.net/"
 	)
 ENDIF(NOT MAKENSIS_EXE)
@@ -123,49 +124,51 @@ IF(ENABLE_CRASH_REPORTER)
 	)
 ENDIF(ENABLE_CRASH_REPORTER)
 
-CONFIGURE_FILE(
-	"${CMAKE_SOURCE_DIR}/cmake/generate_nsi_file.cmake.in"
-	"${CMAKE_BINARY_DIR}/generate_nsi_file.cmake" @ONLY
-)
+IF (MAKENSIS_EXE)
+	CONFIGURE_FILE(
+		"${CMAKE_SOURCE_DIR}/cmake/generate_nsi_file.cmake.in"
+		"${CMAKE_BINARY_DIR}/generate_nsi_file.cmake" @ONLY
+	)
 
-SET(
-	scantailor_nsi_command
-	OUTPUT "${CMAKE_BINARY_DIR}/scantailor.nsi"
-	COMMAND "${CMAKE_COMMAND}" "-DCFG=$<CONFIGURATION>"
-)
-IF(ENABLE_CRASH_REPORTER)
+	SET(
+		scantailor_nsi_command
+		OUTPUT "${CMAKE_BINARY_DIR}/scantailor.nsi"
+		COMMAND "${CMAKE_COMMAND}" "-DCFG=$<CONFIGURATION>"
+	)
+	IF(ENABLE_CRASH_REPORTER)
+		LIST(
+			APPEND scantailor_nsi_command
+			"-DCRASHREPORTER_EXE=$<TARGET_FILE:CrashReporter>"
+		)
+	ENDIF()
 	LIST(
 		APPEND scantailor_nsi_command
-		"-DCRASHREPORTER_EXE=$<TARGET_FILE:CrashReporter>"
+		-P "${CMAKE_BINARY_DIR}/generate_nsi_file.cmake"
+		DEPENDS scantailor.nsi.in
+		"${CMAKE_SOURCE_DIR}/cmake/generate_nsi_file.cmake.in"
+		VERBATIM
 	)
-ENDIF()
-LIST(
-	APPEND scantailor_nsi_command
-	-P "${CMAKE_BINARY_DIR}/generate_nsi_file.cmake"
-	DEPENDS scantailor.nsi.in
-	"${CMAKE_SOURCE_DIR}/cmake/generate_nsi_file.cmake.in"
-	VERBATIM
-)
-ADD_CUSTOM_COMMAND(${scantailor_nsi_command})
+	ADD_CUSTOM_COMMAND(${scantailor_nsi_command})
 
-ADD_CUSTOM_COMMAND(
-	OUTPUT "${INSTALLER_FILENAME}"
-	${DUMP_SYMBOLS_COMMANDS}
-	COMMAND "${MAKENSIS_EXE}" /V2 scantailor.nsi
-	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-	MAIN_DEPENDENCY "${CMAKE_BINARY_DIR}/scantailor.nsi"
-	DEPENDS ${extra_deps}
-	VERBATIM
-)
+	ADD_CUSTOM_COMMAND(
+		OUTPUT "${INSTALLER_FILENAME}"
+		${DUMP_SYMBOLS_COMMANDS}
+		COMMAND "${MAKENSIS_EXE}" /V2 scantailor.nsi
+		WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+		MAIN_DEPENDENCY "${CMAKE_BINARY_DIR}/scantailor.nsi"
+		DEPENDS ${extra_deps}
+		VERBATIM
+	)
 
-OPTION(BUILD_INSTALLER_BY_DEFAULT "Wheter the \"installer\" target gets built by default" ON)
-SET(maybe_all "")
-IF(BUILD_INSTALLER_BY_DEFAULT)
-	SET(maybe_all ALL)
-ENDIF()
-ADD_CUSTOM_TARGET(
-	installer ${maybe_all}
-	SOURCES ${SOURCES}
-	DEPENDS "${INSTALLER_FILENAME}"
-)
-ADD_DEPENDENCIES(installer prepare_staging_dir)
+	OPTION(BUILD_INSTALLER_BY_DEFAULT "Wheter the \"installer\" target gets built by default" ON)
+	SET(maybe_all "")
+	IF(BUILD_INSTALLER_BY_DEFAULT)
+		SET(maybe_all ALL)
+	ENDIF()
+	ADD_CUSTOM_TARGET(
+		installer ${maybe_all}
+		SOURCES ${SOURCES}
+		DEPENDS "${INSTALLER_FILENAME}"
+	)
+	ADD_DEPENDENCIES(installer prepare_staging_dir)
+ENDIF (MAKENSIS_EXE)
