@@ -90,6 +90,8 @@ IMAGEPROC_EXPORT BinaryImage binarizeWolf(
 	QImage const& src, QSize window_size,
 	unsigned char lower_bound = 1, unsigned char upper_bound = 254);
 
+BinaryImage peakThreshold(QImage const& image);
+
 } // namespace imageproc
 
 #endif

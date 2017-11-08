@@ -334,21 +334,29 @@ ConsoleBatch::setupSelectContent(std::set<PageId> allPages)
 
 	for (std::set<PageId>::iterator i=allPages.begin(); i!=allPages.end(); i++) {
 		PageId page = *i;
+		select_content::Dependencies deps;
+
+		select_content::Params params(deps);
+		std::auto_ptr<select_content::Params> old_params = select_content->getSettings()->getPageParams(page);
+
+		if (old_params.get()) {
+			params = *old_params;
+		}
+
 
 		// SELECT CONTENT FILTER
-		if (cli.hasContentRect()) {
-#if 0
-			QRectF rect(cli.getContentRect());
-			QSizeF size_mm(rect.width(), rect.height());
-			select_content::Dependencies deps;
-			select_content::Params params(rect, size_mm, deps, MODE_MANUAL);
-			select_content->getSettings()->setPageParams(page, params);
-#endif
-		}
+		if (cli.hasContentRect())
+			params.setContentRect(cli.getContentRect());
+		
+		params.setContentDetect(cli.isContentDetectionEnabled());
+		params.setPageDetect(cli.isPageDetectionEnabled());
+		params.setFineTuneCorners(cli.isFineTuningEnabled());
+
+		select_content->getSettings()->setPageParams(page, params);
 	}
 }
 
-#if 0
+
 void
 ConsoleBatch::setupPageLayout(std::set<PageId> allPages)
 {
@@ -379,10 +387,6 @@ ConsoleBatch::setupOutput(std::set<PageId> allPages)
 
 		// OUTPUT FILTER
 		output::Params params(output->getSettings()->getParams(page));
-		if (cli.hasOutputDpi()) {
-			Dpi outputDpi = cli.getOutputDpi();
-			params.setOutputDpi(outputDpi);
-		}
 
 		output::ColorParams colorParams = params.colorParams();
 		if (cli.hasColorMode())
@@ -408,12 +412,6 @@ ConsoleBatch::setupOutput(std::set<PageId> allPages)
 		if (cli.hasDespeckle())
 			params.setDespeckleLevel(cli.getDespeckleLevel());
 
-		if (cli.hasDewarping())
-			params.setDewarpingMode(cli.getDewarpingMode());
-		if (cli.hasDepthPerception())
-			params.setDepthPerception(cli.getDepthPerception());
-
 		output->getSettings()->setParams(page, params);
 	}
 }
-#endif

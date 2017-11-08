@@ -49,10 +49,11 @@ public:
 	static CommandLine const& get() { return m_globalInstance; }
 	static void set(CommandLine const& cl);
 
-	CommandLine(QStringList const& argv, bool g=true) : m_gui(g), m_global(false) { CommandLine::parseCli(argv); }
+	CommandLine(QStringList const& argv, bool g=true) : m_error(false), m_gui(g), m_global(false) { CommandLine::parseCli(argv); }
 
 	bool isGui() const { return m_gui; }
 	bool isVerbose() const { return contains("verbose"); }
+	bool isError() const { return m_error; }
 
 	std::vector<ImageFileInfo> const& images() const { return m_images; }
 	QString const& outputDirectory() const { return m_outputDirectory; }
@@ -105,6 +106,7 @@ private:
 
 	static CommandLine m_globalInstance;
 
+	bool m_error;
 	bool m_gui;
 	bool m_global;
 
@@ -136,7 +138,7 @@ private:
 	//output::DespeckleLevel m_despeckleLevel;
 	//output::DepthPerception m_depthPerception;
 
-	void parseCli(QStringList const& argv);
+	bool parseCli(QStringList const& argv);
 	void addImage(QString const& path);
 	void setup();
 	page_split::LayoutType fetchLayoutType();

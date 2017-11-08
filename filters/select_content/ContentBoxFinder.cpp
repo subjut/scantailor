@@ -109,7 +109,7 @@ struct PreferVertical
 QRectF
 ContentBoxFinder::findContentBox(TaskStatus const& status,
 	std::shared_ptr<AcceleratableOperations> const& accel_ops,
-	AffineTransformedImage const& image, DebugImages* dbg)
+	AffineTransformedImage const& image, QRectF const& page_rect, DebugImages* dbg)
 {
 	AffineImageTransform downscaled_transform(image.xform());
 	downscaled_transform.scaleTo(QSize(1500, 1500), Qt::KeepAspectRatio);
@@ -146,6 +146,11 @@ ContentBoxFinder::findContentBox(TaskStatus const& status,
 		dbg->add(bw150, "bw150");
 	}
 	
+	QRectF page_rect150(xform_150dpi.transform().map(page_rect).boundingRect());
+	PolygonRasterizer::fillExcept(
+		bw150, BLACK, page_rect150, Qt::WindingFill
+	);
+
 	PolygonRasterizer::fillExcept(
 		bw150, BLACK, downscaled_transform.transformedCropArea(), Qt::WindingFill
 	);

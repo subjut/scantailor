@@ -46,6 +46,7 @@ public:
 		TaskStatus const& status,
 		std::shared_ptr<AcceleratableOperations> const& accel_ops,
 		imageproc::AffineTransformedImage const& image,
+		QRectF const& page_rect,
 		DebugImages* dbg = 0);
 private:
 	class Garbage;

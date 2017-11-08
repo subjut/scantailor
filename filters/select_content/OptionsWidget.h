@@ -54,12 +54,15 @@ public:
 public slots:
 	void manualContentBoxSet(
 		ContentBox const& content_box, QSizeF const& content_size_px);
+	//TODO Implement manually setting page border detection rectangle
 private slots:
 	void showApplyToDialog();
 
 	void applySelection(std::set<PageId> const& pages);
 
 	void modeChanged(bool auto_mode);
+
+	void fineTunePageToggled(bool tuning_mode);
 private:
 	void updateModeIndication(AutoManualMode const mode);
 	

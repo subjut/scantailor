@@ -42,9 +42,13 @@ public:
 	 * @param deps Dependencies are used to decide when we need to
 	 *        re-process the image due to changes made in previous stages.
 	 * @param mode Tells whether the content box was detected automatically or set manually.
+	 * @param contentDetect Tells whether the content box should be detected.
+	 * @param pageDetect Tells whether physical page should be detected.
+	 * @param mode Tells whether page corners should be fine tuned.
 	 */
 	Params(ContentBox const& content_box, QSizeF const& content_size_px,
-		Dependencies const& deps, AutoManualMode mode);
+		Dependencies const& deps, AutoManualMode mode, bool contentDetect = true,
+		bool pageDetect = false, bool fineTuning = false);
 	
 	Params(Dependencies const& deps);
 	
@@ -69,12 +73,28 @@ public:
 
 	void setMode(AutoManualMode mode) { m_mode = mode; }
 	
+	QRectF const& pageRect() const { return m_pageRect;  }
+
+	void setPageRect(QRectF const& rect) { m_pageRect = rect; };
+	
+	void setContentDetect(bool detect) { m_contentDetect = detect; };
+	void setPageDetect(bool detect) { m_pageDetect = detect; };
+	void setFineTuneCorners(bool fine_tune) { m_fineTuneCorners = fine_tune; };
+
+	bool isContentDetectionEnabled() const { return m_contentDetect; };
+	bool isPageDetectionEnabled() const { return m_pageDetect; };
+	bool isFineTuningEnabled() const { return m_fineTuneCorners; };
+
 	QDomElement toXml(QDomDocument& doc, QString const& name) const;
 private:
 	ContentBox m_contentBox;
+	QRectF m_pageRect;
 	QSizeF m_contentSizePx;
 	Dependencies m_deps;
 	AutoManualMode m_mode;
+	bool m_contentDetect;
+	bool m_pageDetect;
+	bool m_fineTuneCorners;
 };
 
 } // namespace select_content

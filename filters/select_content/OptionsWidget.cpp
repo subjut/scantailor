@@ -36,6 +36,9 @@ OptionsWidget::OptionsWidget(
 	setupUi(this);
 	
 	connect(autoBtn, SIGNAL(toggled(bool)), this, SLOT(modeChanged(bool)));
+	connect(disabledBtn, SIGNAL(toggled(bool)), this, SLOT(modeChanged(bool)));
+	connect(pageBtn, SIGNAL(toggled(bool)), this, SLOT(modeChanged(bool)));
+	connect(fineTunePage, SIGNAL(clicked(bool)), this, SLOT(fineTunePageToggled(bool)));
 	connect(applyToBtn, SIGNAL(clicked()), this, SLOT(showApplyToDialog()));
 }
 
@@ -52,6 +55,9 @@ OptionsWidget::preUpdateUI(PageId const& page_id)
 	autoBtn->setChecked(true);
 	autoBtn->setEnabled(false);
 	manualBtn->setEnabled(false);
+	disabledBtn->setEnabled(false);
+	pageBtn->setEnabled(false);
+	fineTunePage->setEnabled(false);
 }
 
 void
@@ -61,6 +67,8 @@ OptionsWidget::postUpdateUI(Params const& params)
 	updateModeIndication(params.mode());
 	autoBtn->setEnabled(true);
 	manualBtn->setEnabled(true);
+	disabledBtn->setEnabled(true);
+	pageBtn->setEnabled(true);
 }
 
 void
@@ -79,13 +87,43 @@ OptionsWidget::manualContentBoxSet(
 }
 
 void
+OptionsWidget::disabledContentBoxSet(
+	ContentBox const& content_box, QSizeF const& content_size_px)
+{
+	assert(m_params);
+
+	m_params->setContentBox(content_box);
+	m_params->setContentSizePx(content_size_px);
+	m_params->setMode(MODE_DISABLED);
+	updateModeIndication(MODE_DISABLED);
+	commitCurrentParams();
+
+	emit reloadRequested();
+}
+
+void
+OptionsWidget::pageContentBoxSet(
+	ContentBox const& content_box, QSizeF const& content_size_px)
+{
+	assert(m_params);
+
+	m_params->setContentBox(content_box);
+	m_params->setContentSizePx(content_size_px);
+	m_params->setMode(MODE_PAGE);
+	updateModeIndication(MODE_PAGE);
+	commitCurrentParams();
+
+	emit reloadRequested();
+}
+
+void
 OptionsWidget::modeChanged(bool const auto_mode)
 {
 	if (m_ignoreAutoManualToggle) {
 		return;
 	}
 	
-	if (auto_mode) {
+	if (auto_mode == MODE_AUTO) {
 		m_params.reset();
 		m_ptrSettings->clearPageParams(m_pageId);
 		emit reloadRequested();
@@ -95,6 +133,13 @@ OptionsWidget::modeChanged(bool const auto_mode)
 		commitCurrentParams();
 	}
 }
+
+void
+OptionsWidget::fineTunePageToggled(bool const tuning_mode)
+{
+	
+}
+
 
 void
 OptionsWidget::updateModeIndication(AutoManualMode const mode)
