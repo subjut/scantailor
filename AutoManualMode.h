@@ -24,7 +24,7 @@ enum AutoManualMode
 	MODE_AUTO,
 	MODE_MANUAL,
 	MODE_PAGE,
-	MODE_DISABLED
+	MODE_IMAGE
 };
 
 #endif

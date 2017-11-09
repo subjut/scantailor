@@ -36,7 +36,7 @@ OptionsWidget::OptionsWidget(
 	setupUi(this);
 	
 	connect(autoBtn, SIGNAL(toggled(bool)), this, SLOT(modeChanged(bool)));
-	connect(disabledBtn, SIGNAL(toggled(bool)), this, SLOT(modeChanged(bool)));
+	connect(imageBtn, SIGNAL(toggled(bool)), this, SLOT(modeChanged(bool)));
 	connect(pageBtn, SIGNAL(toggled(bool)), this, SLOT(modeChanged(bool)));
 	connect(fineTunePage, SIGNAL(clicked(bool)), this, SLOT(fineTunePageToggled(bool)));
 	connect(applyToBtn, SIGNAL(clicked()), this, SLOT(showApplyToDialog()));
@@ -55,7 +55,7 @@ OptionsWidget::preUpdateUI(PageId const& page_id)
 	autoBtn->setChecked(true);
 	autoBtn->setEnabled(false);
 	manualBtn->setEnabled(false);
-	disabledBtn->setEnabled(false);
+	imageBtn->setEnabled(false);
 	pageBtn->setEnabled(false);
 	fineTunePage->setEnabled(false);
 }
@@ -67,7 +67,7 @@ OptionsWidget::postUpdateUI(Params const& params)
 	updateModeIndication(params.mode());
 	autoBtn->setEnabled(true);
 	manualBtn->setEnabled(true);
-	disabledBtn->setEnabled(true);
+	imageBtn->setEnabled(true);
 	pageBtn->setEnabled(true);
 }
 
@@ -87,15 +87,15 @@ OptionsWidget::manualContentBoxSet(
 }
 
 void
-OptionsWidget::disabledContentBoxSet(
+OptionsWidget::imageContentBoxSet(
 	ContentBox const& content_box, QSizeF const& content_size_px)
 {
 	assert(m_params);
 
 	m_params->setContentBox(content_box);
 	m_params->setContentSizePx(content_size_px);
-	m_params->setMode(MODE_DISABLED);
-	updateModeIndication(MODE_DISABLED);
+	m_params->setMode(MODE_IMAGE);
+	updateModeIndication(MODE_IMAGE);
 	commitCurrentParams();
 
 	emit reloadRequested();
@@ -117,19 +117,28 @@ OptionsWidget::pageContentBoxSet(
 }
 
 void
-OptionsWidget::modeChanged(bool const auto_mode)
+OptionsWidget::modeChanged(bool const mode)
 {
 	if (m_ignoreAutoManualToggle) {
 		return;
 	}
 	
-	if (auto_mode == MODE_AUTO) {
+	if (mode == MODE_AUTO || mode == MODE_IMAGE) {
 		m_params.reset();
 		m_ptrSettings->clearPageParams(m_pageId);
+		fineTunePage->setEnabled(false);
+		emit reloadRequested();
+		fineTunePage->setEnabled(false);
+	} else if (mode == MODE_PAGE) {
+		m_params.reset();
+		m_ptrSettings->clearPageParams(m_pageId);
+		fineTunePage->setEnabled(true);
 		emit reloadRequested();
 	} else {
+		//manual mode
 		assert(m_params);
 		m_params->setMode(MODE_MANUAL);
+		fineTunePage->setEnabled(false);
 		commitCurrentParams();
 	}
 }
@@ -137,7 +146,10 @@ OptionsWidget::modeChanged(bool const auto_mode)
 void
 OptionsWidget::fineTunePageToggled(bool const tuning_mode)
 {
-	
+	m_params.reset();
+	m_ptrSettings->clearPageParams(m_pageId);
+	fineTunePage->setChecked(tuning_mode);
+	emit reloadRequested();
 }
 
 
@@ -148,7 +160,12 @@ OptionsWidget::updateModeIndication(AutoManualMode const mode)
 	
 	if (mode == MODE_AUTO) {
 		autoBtn->setChecked(true);
+	} else if (mode == MODE_PAGE) {
+		pageBtn->setChecked(true);
+	} else if (mode == MODE_IMAGE) {
+		imageBtn->setChecked(true);
 	} else {
+		//manual mode
 		manualBtn->setChecked(true);
 	}
 }

@@ -26,6 +26,7 @@
 #include "Settings.h"
 #include "TaskStatus.h"
 #include "ContentBoxFinder.h"
+#include "PageFinder.h"
 #include "FilterUiInterface.h"
 #include "ImageView.h"
 #include "OrthogonalRotation.h"
@@ -108,7 +109,7 @@ Task::process(
 	std::auto_ptr<Params> params(m_ptrSettings->getPageParams(m_pageId));
 	if (params.get() && !params->dependencies().matches(deps)) {
 		// Dependency mismatch.
-		if (params->mode() == MODE_AUTO) {
+		if (params->mode() == MODE_AUTO || params->mode() == MODE_PAGE || params->mode() == MODE_IMAGE) {
 			params.reset();
 		} else {
 			// If the content box was set manually, we don't want to lose it

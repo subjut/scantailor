@@ -47,8 +47,7 @@ public:
 	 * @param mode Tells whether page corners should be fine tuned.
 	 */
 	Params(ContentBox const& content_box, QSizeF const& content_size_px,
-		Dependencies const& deps, AutoManualMode mode, bool contentDetect = true,
-		bool pageDetect = false, bool fineTuning = false);
+		Dependencies const& deps, AutoManualMode mode, bool fineTuning = false);
 	
 	Params(Dependencies const& deps);
 	
@@ -77,12 +76,8 @@ public:
 
 	void setPageRect(QRectF const& rect) { m_pageRect = rect; };
 	
-	void setContentDetect(bool detect) { m_contentDetect = detect; };
-	void setPageDetect(bool detect) { m_pageDetect = detect; };
-	void setFineTuneCorners(bool fine_tune) { m_fineTuneCorners = fine_tune; };
+	void setFineTuning(bool fine_tune) { m_fineTuneCorners = fine_tune; };
 
-	bool isContentDetectionEnabled() const { return m_contentDetect; };
-	bool isPageDetectionEnabled() const { return m_pageDetect; };
 	bool isFineTuningEnabled() const { return m_fineTuneCorners; };
 
 	QDomElement toXml(QDomDocument& doc, QString const& name) const;

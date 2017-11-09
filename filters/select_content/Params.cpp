@@ -27,15 +27,12 @@ namespace select_content
 
 Params::Params(
 	ContentBox const& content_box, QSizeF const& content_size_px,
-	Dependencies const& deps, AutoManualMode const mode,
-	bool const contentDetect, bool const pageDetect, bool const fineTuning)
+	Dependencies const& deps, AutoManualMode const mode, bool const fineTuning)
 :	m_contentBox(content_box),
 	// m_pageRect(content_rect->toTransformedRect),  // TODO: initialize
 	m_contentSizePx(content_size_px),
 	m_deps(deps),
 	m_mode(mode),
-	m_contentDetect(contentDetect),
-	m_pageDetect(pageDetect),
 	m_fineTuneCorners(fineTuning)
 {
 }
@@ -43,8 +40,6 @@ Params::Params(
 Params::Params(Dependencies const& deps)
 :	m_deps(deps),
 	m_mode(MODE_AUTO),
-	m_contentDetect(true),
-	m_pageDetect(false),
 	m_fineTuneCorners(false)
 {
 }
@@ -58,10 +53,22 @@ Params::Params(QDomElement const& filter_el)
 	)
 ,	m_deps(filter_el.namedItem("dependencies").toElement())
 ,	m_mode(filter_el.attribute("mode") == "manual" ? MODE_MANUAL : MODE_AUTO)
-,	m_contentDetect(filter_el.attribute("content-detect") == "false" ? false : true)
-,	m_pageDetect(filter_el.attribute("page-detect") == "true" ? true : false)
 ,	m_fineTuneCorners(filter_el.attribute("fine-tune-corners") == "true" ? true : false)
 {
+	switch (filter_el.attribute("mode")) {
+	case "auto":
+		m_mode = MODE_AUTO;
+		break;
+	case "page":
+		m_mode = MODE_PAGE;
+		break;
+	case "image":
+		m_mode = MODE_IMAGE;
+		break;
+	case "manual":
+		m_mode = MODE_MANUAL;
+		break;
+	}
 }
 
 Params::~Params()
@@ -74,9 +81,20 @@ Params::toXml(QDomDocument& doc, QString const& name) const
 	XmlMarshaller marshaller(doc);
 	
 	QDomElement el(doc.createElement(name));
-	el.setAttribute("mode", m_mode == MODE_AUTO ? "auto" : "manual");
-	el.setAttribute("content-detect", m_contentDetect ? "true" : "false");
-	el.setAttribute("page-detect", m_pageDetect ? "true" : "false");
+	switch (m_mode) {
+	case MODE_AUTO:
+		el.setAttribute("mode", "auto");
+		break;
+	case MODE_PAGE:
+		el.setAttribute("mode", "page");
+		break;
+	case MODE_IMAGE:
+		el.setAttribute("mode", "image");
+		break;
+	case MODE_MANUAL:
+		el.setAttribute("mode", "manual");
+		break;
+	}
 	el.setAttribute("fine-tune-corners", m_fineTuneCorners ? "true" : "false");
 	el.appendChild(m_contentBox.toXml(doc, "content-box"));
 	el.appendChild(marshaller.sizeF(m_contentSizePx, "content-size-px"));
