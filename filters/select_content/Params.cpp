@@ -55,19 +55,14 @@ Params::Params(QDomElement const& filter_el)
 ,	m_mode(filter_el.attribute("mode") == "manual" ? MODE_MANUAL : MODE_AUTO)
 ,	m_fineTuneCorners(filter_el.attribute("fine-tune-corners") == "true" ? true : false)
 {
-	switch (filter_el.attribute("mode")) {
-	case "auto":
+	if (filter_el.attribute("mode") == "auto") {
 		m_mode = MODE_AUTO;
-		break;
-	case "page":
+	} else if (filter_el.attribute("mode") == "page") {
 		m_mode = MODE_PAGE;
-		break;
-	case "image":
+	} else if (filter_el.attribute("mode") == "image") {
 		m_mode = MODE_IMAGE;
-		break;
-	case "manual":
+	} else if (filter_el.attribute("mode") == "manual") {
 		m_mode = MODE_MANUAL;
-		break;
 	}
 }
 

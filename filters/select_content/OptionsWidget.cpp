@@ -87,6 +87,21 @@ OptionsWidget::manualContentBoxSet(
 }
 
 void
+OptionsWidget::autoContentBoxSet(
+	ContentBox const& content_box, QSizeF const& content_size_px)
+{
+	assert(m_params);
+
+	m_params->setContentBox(content_box);
+	m_params->setContentSizePx(content_size_px);
+	m_params->setMode(MODE_AUTO);
+	updateModeIndication(MODE_AUTO);
+	commitCurrentParams();
+
+	emit reloadRequested();
+}
+
+void
 OptionsWidget::imageContentBoxSet(
 	ContentBox const& content_box, QSizeF const& content_size_px)
 {

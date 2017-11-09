@@ -23,6 +23,7 @@
 #include "AutoManualMode.h"
 #include "ContentBox.h"
 #include <QSizeF>
+#include <QRectF>
 
 class QDomDocument;
 class QDomElement;
@@ -74,11 +75,11 @@ public:
 	
 	QRectF const& pageRect() const { return m_pageRect;  }
 
-	void setPageRect(QRectF const& rect) { m_pageRect = rect; };
+	void setPageRect(QRectF const& rect) { m_pageRect = rect; }
 	
-	void setFineTuning(bool fine_tune) { m_fineTuneCorners = fine_tune; };
+	void setFineTuning(bool fine_tune) { m_fineTuneCorners = fine_tune; }
 
-	bool isFineTuningEnabled() const { return m_fineTuneCorners; };
+	bool isFineTuningEnabled() const { return m_fineTuneCorners; }
 
 	QDomElement toXml(QDomDocument& doc, QString const& name) const;
 private:
@@ -87,8 +88,6 @@ private:
 	QSizeF m_contentSizePx;
 	Dependencies m_deps;
 	AutoManualMode m_mode;
-	bool m_contentDetect;
-	bool m_pageDetect;
 	bool m_fineTuneCorners;
 };
 

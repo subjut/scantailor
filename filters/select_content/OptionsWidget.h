@@ -54,6 +54,15 @@ public:
 public slots:
 	void manualContentBoxSet(
 		ContentBox const& content_box, QSizeF const& content_size_px);
+
+	void autoContentBoxSet(
+		ContentBox const & content_box, QSizeF const & content_size_px);
+
+	void pageContentBoxSet(
+		ContentBox const & content_box, QSizeF const & content_size_px);
+	
+	void imageContentBoxSet(
+		ContentBox const & content_box, QSizeF const & content_size_px);
 	//TODO Implement manually setting page border detection rectangle
 private slots:
 	void showApplyToDialog();
