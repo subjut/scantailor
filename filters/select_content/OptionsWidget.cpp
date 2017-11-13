@@ -19,7 +19,7 @@
 #include "OptionsWidget.h"
 #include "ApplyDialog.h"
 #include "Settings.h"
-#include "Params.h"
+#include "DetectionMode.h"
 #include "ScopedIncDec.h"
 #include <cassert>
 
@@ -31,15 +31,21 @@ OptionsWidget::OptionsWidget(
 	PageSelectionAccessor const& page_selection_accessor)
 :	m_ptrSettings(settings),
 	m_pageSelectionAccessor(page_selection_accessor),
-	m_ignoreAutoManualToggle(0)
+	m_ignoreSignalsFromUiControls(0)
 {
+	using namespace select_content;
+
 	setupUi(this);
+	setupDetectionModeButtons();
 	
-	connect(autoBtn, SIGNAL(toggled(bool)), this, SLOT(modeChanged(bool)));
-	connect(imageBtn, SIGNAL(toggled(bool)), this, SLOT(modeChanged(bool)));
-	connect(pageBtn, SIGNAL(toggled(bool)), this, SLOT(modeChanged(bool)));
-	connect(fineTunePage, SIGNAL(clicked(bool)), this, SLOT(fineTunePageToggled(bool)));
-	connect(applyToBtn, SIGNAL(clicked()), this, SLOT(showApplyToDialog()));
+	connect(ui.manualBtn, SIGNAL(toggled(bool)), SLOT(manualModeToggled(bool)));
+	connect(ui.autoBtn, SIGNAL(toggled(bool)), SLOT(contentModeToggled(bool)));
+	connect(ui.pageBtn, SIGNAL(toggled(bool)), SLOT(pageModeToggled(bool)));
+	connect(ui.imageBtn, SIGNAL(toggled(bool)), SLOT(imageModeToggled(bool)));
+	
+	connect(ui.fineTunePage, SIGNAL(clicked(bool)), SLOT(fineTunePageToggled(bool)));
+	
+	connect(ui.applyToBtn, SIGNAL(clicked()), this, SLOT(showApplyToDialog()));
 }
 
 OptionsWidget::~OptionsWidget()
@@ -47,149 +53,129 @@ OptionsWidget::~OptionsWidget()
 }
 
 void
-OptionsWidget::preUpdateUI(PageId const& page_id)
+OptionsWidget::preUpdateUI(PageId const& page_id,
+	DetectionMode const& detection_mode)
 {
-	ScopedIncDec<int> guard(m_ignoreAutoManualToggle);
+	ScopedIncDec<int> guard(m_ignoreSignalsFromUiControls);
 	
 	m_pageId = page_id;
-	autoBtn->setChecked(true);
-	autoBtn->setEnabled(false);
-	manualBtn->setEnabled(false);
-	imageBtn->setEnabled(false);
-	pageBtn->setEnabled(false);
-	fineTunePage->setEnabled(false);
+	m_pageParams.setDetectionMode(detection_mode);
+
+	setupUiForDetectionMode(detection_mode);
 }
 
 void
 OptionsWidget::postUpdateUI(Params const& params)
 {
-	m_params = params;
-	updateModeIndication(params.mode());
-	autoBtn->setEnabled(true);
-	manualBtn->setEnabled(true);
-	imageBtn->setEnabled(true);
-	pageBtn->setEnabled(true);
+	ScopedIncDec<int> guard(m_ignoreSignalsFromUiControls);
+
+	m_pageParams = params;
+	
+	setupUiForDetectionMode(params.detectionMode());
+	if (params.detectionMode() == DetectionMode::PAGE) {
+		//enable fine tuning check box?
+	}
 }
 
 void
-OptionsWidget::manualContentBoxSet(
-	ContentBox const& content_box, QSizeF const& content_size_px)
+OptionsWidget::manualModeToggled(bool checked)
 {
-	assert(m_params);
+	if (!checked || m_ignoreSignalsFromUiControls) {
+		return;
+	}
 
-	m_params->setContentBox(content_box);
-	m_params->setContentSizePx(content_size_px);
-	m_params->setMode(MODE_MANUAL);
-	updateModeIndication(MODE_MANUAL);
-	commitCurrentParams();
+	m_pageParams.setDetectionMode(DetectionMode::MANUAL);
+	m_ptrSettings->setPageParams(m_pageId, m_pageParams);
+	setupUiForDetectionMode(DetectionMode::MANUAL);
 	
 	emit invalidateThumbnail(m_pageId);
 }
 
 void
-OptionsWidget::autoContentBoxSet(
-	ContentBox const& content_box, QSizeF const& content_size_px)
+OptionsWidget::manualDetectionModeSetExternally(select_content::DetectionMode const & mode)
 {
-	assert(m_params);
-
-	m_params->setContentBox(content_box);
-	m_params->setContentSizePx(content_size_px);
-	m_params->setMode(MODE_AUTO);
-	updateModeIndication(MODE_AUTO);
-	commitCurrentParams();
-
-	emit reloadRequested();
 }
 
 void
-OptionsWidget::imageContentBoxSet(
-	ContentBox const& content_box, QSizeF const& content_size_px)
+OptionsWidget::contentModeToggled(bool checked)
 {
-	assert(m_params);
-
-	m_params->setContentBox(content_box);
-	m_params->setContentSizePx(content_size_px);
-	m_params->setMode(MODE_IMAGE);
-	updateModeIndication(MODE_IMAGE);
-	commitCurrentParams();
-
-	emit reloadRequested();
-}
-
-void
-OptionsWidget::pageContentBoxSet(
-	ContentBox const& content_box, QSizeF const& content_size_px)
-{
-	assert(m_params);
-
-	m_params->setContentBox(content_box);
-	m_params->setContentSizePx(content_size_px);
-	m_params->setMode(MODE_PAGE);
-	updateModeIndication(MODE_PAGE);
-	commitCurrentParams();
-
-	emit reloadRequested();
-}
-
-void
-OptionsWidget::modeChanged(bool const mode)
-{
-	if (m_ignoreAutoManualToggle) {
+	
+	if (!checked || m_ignoreSignalsFromUiControls) {
 		return;
 	}
-	
-	if (mode == MODE_AUTO || mode == MODE_IMAGE) {
-		m_params.reset();
-		m_ptrSettings->clearPageParams(m_pageId);
-		fineTunePage->setEnabled(false);
-		emit reloadRequested();
-		fineTunePage->setEnabled(false);
-	} else if (mode == MODE_PAGE) {
-		m_params.reset();
-		m_ptrSettings->clearPageParams(m_pageId);
-		fineTunePage->setEnabled(true);
-		emit reloadRequested();
-	} else {
-		//manual mode
-		assert(m_params);
-		m_params->setMode(MODE_MANUAL);
-		fineTunePage->setEnabled(false);
-		commitCurrentParams();
-	}
-}
 
-void
-OptionsWidget::fineTunePageToggled(bool const tuning_mode)
-{
-	m_params.reset();
-	m_ptrSettings->clearPageParams(m_pageId);
-	fineTunePage->setChecked(tuning_mode);
+	m_pageParams.setDetectionMode(DetectionMode::CONTENT);
+	m_ptrSettings->setPageParams(m_pageId, m_pageParams);
+	setupUiForDetectionMode(DetectionMode::CONTENT);
+
 	emit reloadRequested();
 }
 
 
 void
-OptionsWidget::updateModeIndication(AutoManualMode const mode)
+OptionsWidget::pageModeToggled(bool checked)
 {
-	ScopedIncDec<int> guard(m_ignoreAutoManualToggle);
-	
-	if (mode == MODE_AUTO) {
-		autoBtn->setChecked(true);
-	} else if (mode == MODE_PAGE) {
-		pageBtn->setChecked(true);
-	} else if (mode == MODE_IMAGE) {
-		imageBtn->setChecked(true);
-	} else {
-		//manual mode
-		manualBtn->setChecked(true);
+	if (!checked || m_ignoreSignalsFromUiControls) {
+		return;
 	}
+
+	m_pageParams.setDetectionMode(DetectionMode::PAGE);
+	m_ptrSettings->setPageParams(m_pageId, m_pageParams);
+	setupUiForDetectionMode(DetectionMode::PAGE);
+
+	// TODO enable/disable finetune checkbox
+	if (!checked) {
+		
+	}
+
+	emit reloadRequested();
 }
 
 void
-OptionsWidget::commitCurrentParams()
+OptionsWidget::imageModeToggled(bool checked)
 {
-	assert(m_params);
-	m_ptrSettings->setPageParams(m_pageId, *m_params);
+	if (!checked || m_ignoreSignalsFromUiControls) {
+		return;
+	}
+
+	m_pageParams.setDetectionMode(DetectionMode::IMAGE);
+	m_ptrSettings->setPageParams(m_pageId, m_pageParams);
+	setupUiForDetectionMode(DetectionMode::IMAGE);
+
+	emit reloadRequested();
+}
+
+void
+OptionsWidget::fineTunePageToggled(bool checked)
+{
+	m_pageParams.setFineTuning(checked);
+	m_ptrSettings->setPageParams(m_pageId, m_pageParams);
+
+	emit reloadRequested();
+}
+
+void
+OptionsWidget::setupDetectionModeButtons()
+{
+	static_assert(
+		DetectionMode::LAST + 1 - DetectionMode::FIRST == 4,
+		"Unexpected number of content detection modes"
+		);
+	
+	m_detectionModeButtons[DetectionMode::MANUAL] = ui.manualBtn;
+	m_detectionModeButtons[DetectionMode::CONTENT] = ui.autoBtn;
+	m_detectionModeButtons[DetectionMode::PAGE] = ui.pageBtn;
+	m_detectionModeButtons[DetectionMode::IMAGE] = ui.imageBtn;
+}
+
+
+void
+OptionsWidget::setupUiForDetectionMode(DetectionMode::Mode mode)
+{
+	ScopedIncDec<int> guard(m_ignoreSignalsFromUiControls);
+
+	m_detectionModeButtons[mode]->setChecked(true);
+	ui.fineTunePage->setEnabled(mode == DetectionMode::PAGE);
 }
 
 void
@@ -216,7 +202,7 @@ OptionsWidget::applySelection(std::set<PageId> const& pages)
 	assert(m_params);
 
 	for (PageId const& page_id : pages) {
-		m_ptrSettings->setPageParams(page_id, *m_params);
+		m_ptrSettings->setPageParams(page_id, m_pageParams);
 		emit invalidateThumbnail(page_id);
 	}
 }

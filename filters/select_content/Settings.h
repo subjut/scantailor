@@ -23,14 +23,18 @@
 #include "NonCopyable.h"
 #include "PageId.h"
 #include "Params.h"
+#include "DetectionMode.h"
 #include <QMutex>
 #include <memory>
 #include <map>
+#include <set>
 
 class AbstractRelinker;
 
 namespace select_content
 {
+
+class DetectionMode;
 
 class Settings : public RefCountable
 {
@@ -46,14 +50,20 @@ public:
 
 	void setPageParams(PageId const& page_id, Params const& params);
 	
-	void clearPageParams(PageId const& page_id);
-	
 	std::auto_ptr<Params> getPageParams(PageId const& page_id) const;
+	
+	DetectionMode getDetectionMode(PageId const& page_id) const;
+
+	void setDetectionMode(
+		std::set<PageId> const& pages, DetectionMode const& detection_mode);
+
+//	void clearPageParams(PageId const& page_id);
+	
 private:
-	typedef std::map<PageId, Params> PageParams;
+	typedef std::map<PageId, Params> PerPageParams;
 	
 	mutable QMutex m_mutex;
-	PageParams m_pageParams;
+	PerPageParams m_perPageParams;
 };
 
 } // namespace select_content

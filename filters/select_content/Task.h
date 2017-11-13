@@ -22,8 +22,8 @@
 #include "NonCopyable.h"
 #include "RefCountable.h"
 #include "FilterResult.h"
-#include "CachingFactory.h"
 #include "PageId.h"
+#include "CachingFactory.h"
 #include "acceleration/AcceleratableOperations.h"
 #include <QSizeF>
 #include <QRectF>
@@ -35,8 +35,10 @@ class QImage;
 
 namespace imageproc
 {
+	class BinaryImage;
 	class GrayImage;
-	class AbstractImageTransform;
+	class AffineImageTransform;
+	class AffineTransformedImage;
 }
 
 namespace page_layout
@@ -49,14 +51,15 @@ namespace select_content
 
 class Filter;
 class Settings;
+class Params;
 
 class Task : public RefCountable
 {
 	DECLARE_NON_COPYABLE(Task)
 public:
 	Task(IntrusivePtr<Filter> const& filter,
-		IntrusivePtr<page_layout::Task> const& next_task,
 		IntrusivePtr<Settings> const& settings,
+		IntrusivePtr<page_layout::Task> const& next_task,
 		PageId const& page_id, bool batch, bool debug);
 	
 	virtual ~Task();
@@ -68,11 +71,44 @@ public:
 		CachingFactory<imageproc::GrayImage> const& gray_orig_image_factory,
 		std::shared_ptr<imageproc::AbstractImageTransform const> const& orig_image_transform);
 private:
-	class UiUpdater;
+	class ManualModeUiUpdater;
+	class ContentModeUiUpdater;
+	class PageModeUiUpdater;
+	class ImageModeUiUpdater;
 	
+	FilterResultPtr processManualMode(
+		TaskStatus const& status,
+		std::shared_ptr<AcceleratableOperations> const& accel_ops,
+		QImage const& orig_image,
+		CachingFactory<imageproc::GrayImage> const& gray_orig_image_factory,
+		imageproc::AffineImageTransform const& orig_image_transform, Params& params);
+
+	FilterResultPtr processContentMode(
+		TaskStatus const& status,
+		std::shared_ptr<AcceleratableOperations> const& accel_ops,
+		QImage const& orig_image,
+		CachingFactory<imageproc::GrayImage> const& gray_orig_image_factory,
+		imageproc::AffineImageTransform const& orig_image_transform, Params& params);
+
+	FilterResultPtr processPageMode(
+		TaskStatus const& status,
+		std::shared_ptr<AcceleratableOperations> const& accel_ops,
+		QImage const& orig_image,
+		CachingFactory<imageproc::GrayImage> const& gray_orig_image_factory,
+		imageproc::AffineImageTransform const& orig_image_transform, Params& params);
+
+	FilterResultPtr processImageMode(
+		TaskStatus const& status,
+		std::shared_ptr<AcceleratableOperations> const& accel_ops,
+		QImage const& orig_image,
+		CachingFactory<imageproc::GrayImage> const& gray_orig_image_factory,
+		imageproc::AffineImageTransform const& orig_image_transform, Params& params);
+
+	static void cleanup(TaskStatus const& status, imageproc::BinaryImage& img);
+
 	IntrusivePtr<Filter> m_ptrFilter;
-	IntrusivePtr<page_layout::Task> m_ptrNextTask;
 	IntrusivePtr<Settings> m_ptrSettings;
+	IntrusivePtr<page_layout::Task> m_ptrNextTask;
 	std::auto_ptr<DebugImagesImpl> m_ptrDbg;
 	PageId m_pageId;
 	bool m_batchProcessing;

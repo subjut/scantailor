@@ -6,6 +6,7 @@ SET(
 	sources
 	ImageView.cpp ImageView.h
 	Filter.cpp Filter.h
+	DetectionMode.cpp DetectionMode.h
 	OptionsWidget.cpp OptionsWidget.h
 	ApplyDialog.cpp ApplyDialog.h
 	ContentBoxFinder.cpp ContentBoxFinder.h

@@ -21,13 +21,13 @@
 
 #include "ui_SelectContentOptionsWidget.h"
 #include "FilterOptionsWidget.h"
+#include "DetectionMode.h"
 #include "IntrusivePtr.h"
-#include "AutoManualMode.h"
 #include "ContentBox.h"
-#include "Dependencies.h"
 #include "PageId.h"
-#include "PageSelectionAccessor.h"
 #include "Params.h"
+#include "Dependencies.h"
+#include "PageSelectionAccessor.h"
 #include <boost/optional.hpp>
 #include <QSizeF>
 #include <QRectF>
@@ -36,6 +36,7 @@
 namespace select_content
 {
 
+class DetectionMode;
 class Settings;
 
 class OptionsWidget :
@@ -48,40 +49,50 @@ public:
 	
 	virtual ~OptionsWidget();
 	
-	void preUpdateUI(PageId const& page_id);
+	void preUpdateUI(PageId const& page_id, DetectionMode const& detection_mode);
 	
 	void postUpdateUI(Params const& params);
 public slots:
-	void manualContentBoxSet(
+	void manualContentBoxSetExternally(
 		ContentBox const& content_box, QSizeF const& content_size_px);
-
-	void autoContentBoxSet(
-		ContentBox const & content_box, QSizeF const & content_size_px);
-
-	void pageContentBoxSet(
-		ContentBox const & content_box, QSizeF const & content_size_px);
 	
-	void imageContentBoxSet(
-		ContentBox const & content_box, QSizeF const & content_size_px);
-	//TODO Implement manually setting page border detection rectangle
+	void manualDetectionModeSetExternally(
+		select_content::DetectionMode const& mode);
 private slots:
+	void manualModeToggled(bool checked);
+	
+	void contentModeToggled(bool checked);
+
+	void pageModeToggled(bool checked);
+
+	void imageModeToggled(bool checked);
+
 	void showApplyToDialog();
 
 	void applySelection(std::set<PageId> const& pages);
 
-	void modeChanged(bool auto_mode);
-
-	void fineTunePageToggled(bool tuning_mode);
+	void fineTunePageToggled(bool checked);
 private:
-	void updateModeIndication(AutoManualMode const mode);
+	void setupDetectionModeButtons();
+
+	void setupUiForDetectionMode(DetectionMode::Mode mode);
 	
-	void commitCurrentParams();
-	
+	Ui::SelectContentOptionsWidget ui;
 	IntrusivePtr<Settings> m_ptrSettings;
-	boost::optional<Params> m_params;
-	PageSelectionAccessor m_pageSelectionAccessor;
 	PageId m_pageId;
-	int m_ignoreAutoManualToggle;
+
+	/**
+	* m_pageParams is not always up to date. We make sure not to commit
+	* it to m_ptrSettings between preUpdateUI() and postUpdateUI(),
+	* where it's certainly not up to date.
+	*/
+	Params m_pageParams;
+
+//	boost::optional<Params> m_params;
+	QAbstractButton* m_detectionModeButtons[DetectionMode::LAST + 1];
+	int m_ignoreSignalsFromUiControls;
+
+	PageSelectionAccessor m_pageSelectionAccessor;
 };
 
 } // namespace select_content

@@ -20,7 +20,7 @@
 #define SELECT_CONTENT_PARAMS_H_
 
 #include "Dependencies.h"
-#include "AutoManualMode.h"
+#include "DetectionMode.h"
 #include "ContentBox.h"
 #include <QSizeF>
 #include <QRectF>
@@ -48,7 +48,7 @@ public:
 	 * @param mode Tells whether page corners should be fine tuned.
 	 */
 	Params(ContentBox const& content_box, QSizeF const& content_size_px,
-		Dependencies const& deps, AutoManualMode mode, bool const fineTuning);
+		Dependencies const& deps, DetectionMode mode, bool const fineTuning);
 	
 	Params(Dependencies const& deps);
 	
@@ -56,6 +56,12 @@ public:
 	
 	~Params();
 	
+	static DetectionMode defaultDetectionMode();
+
+	DetectionMode detectionMode() const { return m_mode; }
+
+	void setDetectionMode(DetectionMode mode) { m_mode = mode; }
+
 	ContentBox const& contentBox() const { return m_contentBox; }
 
 	void setContentBox(ContentBox const& content_box) { m_contentBox = content_box; }
@@ -65,13 +71,13 @@ public:
 
 	void setContentSizePx(QSizeF const& size) { m_contentSizePx = size; }
 	
-	Dependencies const& dependencies() const { return m_deps; }
+	//Dependencies const& dependencies() const { return m_deps; }
 
-	void setDependencies(Dependencies const& deps) { m_deps = deps; }
+	//void setDependencies(Dependencies const& deps) { m_deps = deps; }
 	
-	AutoManualMode mode() const { return m_mode; }
+	//AutoManualMode mode() const { return m_mode; }
 
-	void setMode(AutoManualMode mode) { m_mode = mode; }
+	//void setMode(AutoManualMode mode) { m_mode = mode; }
 	
 	void setFineTuning(bool fine_tune) { m_fineTuneCorners = fine_tune; }
 
@@ -82,7 +88,7 @@ private:
 	ContentBox m_contentBox;
 	QSizeF m_contentSizePx;
 	Dependencies m_deps;
-	AutoManualMode m_mode;
+	DetectionMode m_mode;
 	bool m_fineTuneCorners;
 };
 

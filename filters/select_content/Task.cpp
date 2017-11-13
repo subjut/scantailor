@@ -18,22 +18,21 @@
 
 #include "Task.h"
 #include "Filter.h"
-#include "DebugImagesImpl.h"
 #include "OptionsWidget.h"
-#include "AutoManualMode.h"
-#include "Dependencies.h"
-#include "Params.h"
 #include "Settings.h"
+#include "Params.h"
+#include "Dependencies.h"
 #include "TaskStatus.h"
+#include "DebugImagesImpl.h"
 #include "ContentBoxFinder.h"
 #include "PageFinder.h"
 #include "FilterUiInterface.h"
 #include "ImageView.h"
 #include "OrthogonalRotation.h"
+#include "filters/page_layout/Task.h"
 #include "imageproc/AbstractImageTransform.h"
 #include "imageproc/AffineImageTransform.h"
 #include "imageproc/AffineTransformedImage.h"
-#include "filters/page_layout/Task.h"
 #include <QObject>
 #include <QTransform>
 #include <QDebug>
@@ -166,6 +165,26 @@ Task::process(
 			)
 		);
 	}
+}
+
+FilterResultPtr Task::processManualMode(TaskStatus const & status, std::shared_ptr<AcceleratableOperations> const & accel_ops, QImage const & orig_image, CachingFactory<imageproc::GrayImage> const & gray_orig_image_factory, imageproc::AffineImageTransform const & orig_image_transform, Params & params)
+{
+	return FilterResultPtr();
+}
+
+FilterResultPtr Task::processContentMode(TaskStatus const & status, std::shared_ptr<AcceleratableOperations> const & accel_ops, QImage const & orig_image, CachingFactory<imageproc::GrayImage> const & gray_orig_image_factory, imageproc::AffineImageTransform const & orig_image_transform, Params & params)
+{
+	return FilterResultPtr();
+}
+
+FilterResultPtr Task::processPageMode(TaskStatus const & status, std::shared_ptr<AcceleratableOperations> const & accel_ops, QImage const & orig_image, CachingFactory<imageproc::GrayImage> const & gray_orig_image_factory, imageproc::AffineImageTransform const & orig_image_transform, Params & params)
+{
+	return FilterResultPtr();
+}
+
+FilterResultPtr Task::processImageMode(TaskStatus const & status, std::shared_ptr<AcceleratableOperations> const & accel_ops, QImage const & orig_image, CachingFactory<imageproc::GrayImage> const & gray_orig_image_factory, imageproc::AffineImageTransform const & orig_image_transform, Params & params)
+{
+	return FilterResultPtr();
 }
 
 
