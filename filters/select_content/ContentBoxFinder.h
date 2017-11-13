@@ -19,6 +19,7 @@
 #ifndef SELECT_CONTENT_CONTENTBOXFINDER_H_
 #define SELECT_CONTENT_CONTENTBOXFINDER_H_
 
+#include "AutoManualMode.h"
 #include "imageproc/BinaryThreshold.h"
 #include "acceleration/AcceleratableOperations.h"
 #include <memory>
@@ -46,7 +47,8 @@ public:
 		TaskStatus const& status,
 		std::shared_ptr<AcceleratableOperations> const& accel_ops,
 		imageproc::AffineTransformedImage const& image,
-		QRectF const& page_rect,
+		AutoManualMode mode,
+		bool corner_tuning,
 		DebugImages* dbg = 0);
 private:
 	class Garbage;

@@ -157,12 +157,12 @@ ConsoleBatch::createCompositeTask(
 		);
 		debug = false;
 	}
-	if (last_filter_idx >= m_ptrStages->deskewFilterIdx()) {
+	/*if (last_filter_idx >= m_ptrStages->deskewFilterIdx()) {
 		deskew_task = m_ptrStages->deskewFilter()->createTask(
 			page.id(), select_content_task, batch, debug
 		);
 		debug = false;
-	}
+	}*/
 	if (last_filter_idx >= m_ptrStages->pageSplitFilterIdx()) {
 		page_split_task = m_ptrStages->pageSplitFilter()->createTask(
 			page, deskew_task, batch, debug
@@ -345,12 +345,8 @@ ConsoleBatch::setupSelectContent(std::set<PageId> allPages)
 
 
 		// SELECT CONTENT FILTER
-		if (cli.hasContentRect())
-			params.setContentRect(cli.getContentRect());
-		
-		params.setContentDetect(cli.isContentDetectionEnabled());
-		params.setPageDetect(cli.isPageDetectionEnabled());
-		params.setFineTuneCorners(cli.isFineTuningEnabled());
+		if (cli.hasContentBox())
+			params.setContentBox(cli.getContentBox());
 
 		select_content->getSettings()->setPageParams(page, params);
 	}
@@ -369,7 +365,7 @@ ConsoleBatch::setupPageLayout(std::set<PageId> allPages)
 		// PAGE LAYOUT FILTER
 		page_layout::Alignment alignment = cli.getAlignment();
 		if (cli.hasMargins())
-			page_layout->getSettings()->setHardMarginsMM(page, cli.getMargins());
+//			page_layout->getSettings()->setHardMarginsMM(page, cli.getMargins());
 		if (cli.hasAlignment())
 			page_layout->getSettings()->setPageAlignment(page, alignment);
 	}

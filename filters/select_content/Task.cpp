@@ -109,7 +109,7 @@ Task::process(
 	std::auto_ptr<Params> params(m_ptrSettings->getPageParams(m_pageId));
 	if (params.get() && !params->dependencies().matches(deps)) {
 		// Dependency mismatch.
-		if (params->mode() == MODE_AUTO || params->mode() == MODE_PAGE || params->mode() == MODE_IMAGE) {
+		if (params->mode() != MODE_MANUAL) {
 			params.reset();
 		} else {
 			// If the content box was set manually, we don't want to lose it
@@ -121,7 +121,6 @@ Task::process(
 			params->setDependencies(deps);
 			m_ptrSettings->setPageParams(m_pageId, *params);
 		}
-
 	}
 
 	boost::optional<AffineTransformedImage> dewarped;
@@ -132,13 +131,14 @@ Task::process(
 		);
 
 		QRectF const content_rect(
-			ContentBoxFinder::findContentBox(status, accel_ops, *dewarped, m_ptrDbg.get())
+			ContentBoxFinder::findContentBox(status, accel_ops, *dewarped,
+				params->mode(), params->isFineTuningEnabled(), m_ptrDbg.get())
 		);
 
 		params.reset(
 			new Params(
 				ContentBox(*orig_image_transform, content_rect),
-				content_rect.size(), deps, MODE_AUTO
+				content_rect.size(), deps, MODE_AUTO, false
 			)
 		);
 

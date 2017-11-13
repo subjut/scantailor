@@ -20,8 +20,6 @@
 #ifndef SELECT_CONTENT_PAGEFINDER_H_
 #define SELECT_CONTENT_PAGEFINDER_H_
 
-#include "imageproc/BinaryThreshold.h"
-
 #include <Qt>
 
 class TaskStatus;
@@ -42,13 +40,10 @@ namespace select_content
 class PageFinder
 {
 public:
-	static QRectF findPageBox(
-		TaskStatus const& status, FilterData const& data, bool fine_tune=false,
-		DebugImages* dbg = 0);
-private:
 	static QRect detectBorders(QImage const& img);
-	static int detectEdge(QImage const& img, int start, int end, int inc, int mid, Qt::Orientation orient);
 	static void fineTuneCorners(QImage const& img, QRect &rect);
+private:
+	static int detectEdge(QImage const& img, int start, int end, int inc, int mid, Qt::Orientation orient);
 	static void fineTuneCorner(QImage const& img, int &x, int &y, int inc_x, int inc_y);
 };
 

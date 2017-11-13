@@ -19,18 +19,6 @@
 
 #include "PageFinder.h"
 
-#include "CommandLine.h"
-#include "Dpi.h"
-#include "DebugImages.h"
-#include "FilterData.h"
-#include "ImageTransformation.h"
-#include "imageproc/BinaryImage.h"
-#include "imageproc/Binarize.h"
-#include "imageproc/Transform.h"
-#include "imageproc/GrayRasterOp.h"
-#include "imageproc/Grayscale.h"
-#include "TaskStatus.h"
-
 #include <Qt>
 #include <QColor>
 #include <QDebug>
@@ -44,52 +32,6 @@ namespace select_content
 {
 
 using namespace imageproc;
-
-QRectF
-PageFinder::findPageBox(
-	TaskStatus const& status, FilterData const& data, bool fine_tune, DebugImages* dbg)
-{
-	ImageTransformation xform_150dpi(data.xform());
-	xform_150dpi.preScaleToDpi(Dpi(150, 150));
-
-	if (xform_150dpi.resultingRect().toRect().isEmpty()) {
-		return QRectF();
-	}
-	
-	uint8_t const darkest_gray_level = darkestGrayLevel(data.grayImage());
-	QColor const outside_color(darkest_gray_level, darkest_gray_level, darkest_gray_level);
-
-	QImage gray150(
-		transformToGray(
-			data.grayImage(), xform_150dpi.transform(),
-			xform_150dpi.resultingRect().toRect(),
-			OutsidePixels::assumeColor(outside_color)
-		)
-	);
-	// Note that we fill new areas that appear as a result of
-	// rotation with black, not white.  Filling them with white
-	// may be bad for detecting the shadow around the page.
-	if (dbg) {
-		dbg->add(gray150, "gray150");
-	}
-
-	BinaryImage bw150(peakThreshold(gray150));
-	//BinaryImage bw150(binarizeOtsu(gray150));
-	if (dbg) {
-	    dbg->add(bw150, "peakThreshold");
-	}
-
-	QImage bwimg(bw150.toQImage());
-	QRect content_rect(detectBorders(bwimg));
-	if (fine_tune)
-		fineTuneCorners(bwimg, content_rect);
-	
-
-	// Transform back from 150dpi.
-	QTransform combined_xform(xform_150dpi.transform().inverted());
-	combined_xform *= data.xform().transform();
-	return combined_xform.map(QRectF(content_rect)).boundingRect();
-}
 
 QRect
 PageFinder::detectBorders(QImage const& img)

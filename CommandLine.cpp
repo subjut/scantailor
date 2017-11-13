@@ -211,8 +211,7 @@ CommandLine::setup()
 	m_colorMode = fetchColorMode();
 	m_margins = fetchMargins();
 	m_alignment = fetchAlignment();
-	m_contentDetection = fetchContentDetection();
-	m_contentRect = fetchContentRect();
+	m_contentBox = fetchContentBox();
 	m_orientation = fetchOrientation();
 	m_threshold = fetchThreshold();
 	m_deskewAngle = fetchDeskewAngle();
@@ -399,16 +398,16 @@ CommandLine::fetchContentDetection()
 }
 
 
-QRectF
-CommandLine::fetchContentRect()
+ContentBox
+CommandLine::fetchContentBox()
 {
-	if (!hasContentRect())
-		return QRectF();
+	if (!hasContentBox())
+		return ContentBox();
 
 	QRegExp rx("([\\d\\.]+)x([\\d\\.]+):([\\d\\.]+)x([\\d\\.]+)");
 
 	if (rx.exactMatch(m_options["content-box"])) {
-		return QRectF(rx.cap(1).toFloat(), rx.cap(2).toFloat(), rx.cap(3).toFloat(), rx.cap(4).toFloat());
+		return ContentBox();//rx.cap(1).toFloat(), rx.cap(2).toFloat(), rx.cap(3).toFloat(), rx.cap(4).toFloat());
 	}
 
 	std::cout << "invalid --content-box=" << m_options["content-box"].toLocal8Bit().constData() << "\n";
@@ -485,15 +484,15 @@ CommandLine::fetchEndFilterIdx()
 	return m_options["end-filter"].toInt() - 1;
 }
 
-#if 0
-output::DewarpingMode
-CommandLine::fetchDewarpingMode()
-{
-	if (!hasDewarping())
-		return output::DewarpingMode::OFF;
 
-	return output::DewarpingMode(m_options["dewarping"].toLower());
-}
+//output::DewarpingMode
+//CommandLine::fetchDewarpingMode()
+//{
+//	if (!hasDewarping())
+//		return output::DewarpingMode::OFF;
+//
+//	return output::DewarpingMode(m_options["dewarping"].toLower());
+//}
 
 output::DespeckleLevel
 CommandLine::fetchDespeckleLevel()
@@ -504,15 +503,15 @@ CommandLine::fetchDespeckleLevel()
 	return output::despeckleLevelFromString(m_options["despeckle"]);
 }
 
-output::DepthPerception
-CommandLine::fetchDepthPerception()
-{
-	if (!hasDepthPerception())
-		return output::DepthPerception();
+//output::DepthPerception
+//CommandLine::fetchDepthPerception()
+//{
+//	if (!hasDepthPerception())
+//		return output::DepthPerception();
+//
+//	return output::DepthPerception(m_options["depth-perception"]);
+//}
 
-	return output::DepthPerception(m_options["depth-perception"]);
-}
-#endif
 bool
 CommandLine::hasMargins() const
 {
@@ -535,12 +534,3 @@ CommandLine::hasAlignment() const
 	);
 }
 
-bool
-CommandLine::hasOutputDpi() const
-{
-	return(
-		m_options.contains("output-dpi") ||
-		m_options.contains("output-dpi-x") ||
-		m_options.contains("output-dpi-y")
-	);
-}

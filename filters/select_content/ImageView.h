@@ -65,8 +65,7 @@ public:
 		std::shared_ptr<imageproc::AbstractImageTransform const> const& orig_transform,
 		imageproc::AffineTransformedImage const& affine_transformed_image,
 		ImagePixmapUnion const& downscaled_image,
-		ContentBox const& content_box,
-		QRectF const& page_rect);
+		ContentBox const& content_box);
 	
 	virtual ~ImageView();
 signals:
@@ -117,7 +116,6 @@ private:
 	std::shared_ptr<imageproc::AbstractImageTransform const> m_ptrOrigTransform;
 
 	QRectF m_contentRect;
-	QRectF m_pageRect;
 
 	QSizeF m_minBoxSize;
 };

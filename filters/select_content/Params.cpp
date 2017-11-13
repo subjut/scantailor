@@ -29,7 +29,6 @@ Params::Params(
 	ContentBox const& content_box, QSizeF const& content_size_px,
 	Dependencies const& deps, AutoManualMode const mode, bool const fineTuning)
 :	m_contentBox(content_box),
-	// m_pageRect(content_rect->toTransformedRect),  // TODO: initialize
 	m_contentSizePx(content_size_px),
 	m_deps(deps),
 	m_mode(mode),
@@ -52,7 +51,6 @@ Params::Params(QDomElement const& filter_el)
 		)
 	)
 ,	m_deps(filter_el.namedItem("dependencies").toElement())
-,	m_mode(filter_el.attribute("mode") == "manual" ? MODE_MANUAL : MODE_AUTO)
 ,	m_fineTuneCorners(filter_el.attribute("fine-tune-corners") == "true" ? true : false)
 {
 	if (filter_el.attribute("mode") == "auto") {

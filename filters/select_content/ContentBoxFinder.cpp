@@ -20,6 +20,9 @@
 #include "TaskStatus.h"
 #include "DebugImages.h"
 #include "Despeckle.h"
+#include "Params.h"
+#include "PageFinder.h"
+#include "AutoManualMode.h"
 #include "imageproc/AffineTransformedImage.h"
 #include "imageproc/BinaryImage.h"
 #include "imageproc/BinaryThreshold.h"
@@ -109,7 +112,10 @@ struct PreferVertical
 QRectF
 ContentBoxFinder::findContentBox(TaskStatus const& status,
 	std::shared_ptr<AcceleratableOperations> const& accel_ops,
-	AffineTransformedImage const& image, QRectF const& page_rect, DebugImages* dbg)
+	imageproc::AffineTransformedImage const& image,
+	AutoManualMode mode,
+	bool corner_tuning,
+	DebugImages* dbg)
 {
 	AffineImageTransform downscaled_transform(image.xform());
 	downscaled_transform.scaleTo(QSize(1500, 1500), Qt::KeepAspectRatio);
@@ -146,13 +152,28 @@ ContentBoxFinder::findContentBox(TaskStatus const& status,
 		dbg->add(bw150, "bw150");
 	}
 	
-	double const xscale = 150.0 / data.xform().origDpi().horizontal();
-	double const yscale = 150.0 / data.xform().origDpi().vertical();
-	QRectF page_rect150(page_rect.left()*xscale, page_rect.top()*yscale,
-		page_rect.right()*xscale, page_rect.bottom()*yscale);
-	PolygonRasterizer::fillExcept(
-		bw150, BLACK, page_rect150, Qt::WindingFill
-	);
+	if (mode == MODE_PAGE) {
+		BinaryImage bw150(peakThreshold(gray150));
+		//BinaryImage bw150(binarizeOtsu(gray150));
+		if (dbg) {
+			dbg->add(bw150, "peakThreshold");
+		}
+
+		QImage bwimg(bw150.toQImage());
+		QRect page_rect(PageFinder::detectBorders(bwimg));
+		if (corner_tuning)
+			PageFinder::fineTuneCorners(bwimg, page_rect);
+
+		//double const xscale = 150.0 / data.xform().origDpi().horizontal();
+		//double const yscale = 150.0 / data.xform().origDpi().vertical();
+		//QRectF page_rect150(page_rect.left()*xscale, page_rect.top()*yscale,
+		//	page_rect.right()*xscale, page_rect.bottom()*yscale);
+		QRectF page_rectF(page_rect);
+		QPolygonF page_polygon(page_rectF);
+		PolygonRasterizer::fillExcept(
+			bw150, BLACK, page_polygon, Qt::WindingFill
+		);
+	}
 
 	PolygonRasterizer::fillExcept(
 		bw150, BLACK, downscaled_transform.transformedCropArea(), Qt::WindingFill
@@ -224,7 +245,7 @@ ContentBoxFinder::findContentBox(TaskStatus const& status,
 	
 	CommandLine const& cli = CommandLine::get();
 	Despeckle::Level despeckleLevel = Despeckle::NORMAL;
-	if (cli.hasContentRect()) {
+	if (cli.hasContentBox()) {
 		despeckleLevel = cli.getContentDetection();
 	}
 
@@ -447,7 +468,6 @@ ContentBoxFinder::findContentBox(TaskStatus const& status,
 		}
 	}
 	
-	// Transform back from 150dpi.
 	QTransform const transform_back(
 		downscaled_transform.transform().inverted() * image.xform().transform()
 	);
