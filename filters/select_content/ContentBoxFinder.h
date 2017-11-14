@@ -19,7 +19,7 @@
 #ifndef SELECT_CONTENT_CONTENTBOXFINDER_H_
 #define SELECT_CONTENT_CONTENTBOXFINDER_H_
 
-#include "AutoManualMode.h"
+#include "DetectionMode.h"
 #include "imageproc/BinaryThreshold.h"
 #include "acceleration/AcceleratableOperations.h"
 #include <memory>
@@ -47,7 +47,7 @@ public:
 		TaskStatus const& status,
 		std::shared_ptr<AcceleratableOperations> const& accel_ops,
 		imageproc::AffineTransformedImage const& image,
-		AutoManualMode mode,
+		DetectionMode mode,
 		bool corner_tuning,
 		DebugImages* dbg = 0);
 private:

@@ -71,9 +71,9 @@ public:
 
 	void setContentSizePx(QSizeF const& size) { m_contentSizePx = size; }
 	
-	//Dependencies const& dependencies() const { return m_deps; }
+	Dependencies const& dependencies() const { return m_deps; }
 
-	//void setDependencies(Dependencies const& deps) { m_deps = deps; }
+	void setDependencies(Dependencies const& deps) { m_deps = deps; }
 	
 	//AutoManualMode mode() const { return m_mode; }
 

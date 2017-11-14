@@ -30,11 +30,10 @@ OptionsWidget::OptionsWidget(
 	IntrusivePtr<Settings> const& settings,
 	PageSelectionAccessor const& page_selection_accessor)
 :	m_ptrSettings(settings),
+	m_pageParams(Dependencies()),
 	m_pageSelectionAccessor(page_selection_accessor),
 	m_ignoreSignalsFromUiControls(0)
 {
-	using namespace select_content;
-
 	setupUi(this);
 	setupDetectionModeButtons();
 	

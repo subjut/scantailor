@@ -22,7 +22,7 @@
 #include "Despeckle.h"
 #include "Params.h"
 #include "PageFinder.h"
-#include "AutoManualMode.h"
+#include "DetectionMode.h"
 #include "imageproc/AffineTransformedImage.h"
 #include "imageproc/BinaryImage.h"
 #include "imageproc/BinaryThreshold.h"
@@ -113,7 +113,7 @@ QRectF
 ContentBoxFinder::findContentBox(TaskStatus const& status,
 	std::shared_ptr<AcceleratableOperations> const& accel_ops,
 	imageproc::AffineTransformedImage const& image,
-	AutoManualMode mode,
+	DetectionMode mode,
 	bool corner_tuning,
 	DebugImages* dbg)
 {
@@ -152,7 +152,7 @@ ContentBoxFinder::findContentBox(TaskStatus const& status,
 		dbg->add(bw150, "bw150");
 	}
 	
-	if (mode == MODE_PAGE) {
+	if (mode == DetectionMode::PAGE) {
 		BinaryImage bw150(peakThreshold(gray150));
 		//BinaryImage bw150(binarizeOtsu(gray150));
 		if (dbg) {
