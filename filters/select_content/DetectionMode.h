@@ -20,6 +20,8 @@
 #ifndef CONTENT_DETECTION_MODE_H_
 #define CONTENT_DETECTION_MODE_H_
 
+#include <QString>
+
 namespace select_content
 {
 	

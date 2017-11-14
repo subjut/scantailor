@@ -77,6 +77,26 @@ OptionsWidget::postUpdateUI(Params const& params)
 }
 
 void
+OptionsWidget::manualContentBoxSetExternally(
+	ContentBox const& content_box, QSizeF const& content_size_px)
+{
+	m_pageParams.setContentBox(content_box);
+	m_pageParams.setContentSizePx(content_size_px);
+	m_ptrSettings->setPageParams(m_pageId, m_pageParams);
+	emit invalidateThumbnail(m_pageId);
+}
+
+void
+OptionsWidget::manualDetectionModeSetExternally(
+	select_content::DetectionMode const & mode)
+{
+	m_pageParams.setDetectionMode(mode);
+	m_ptrSettings->setPageParams(m_pageId, m_pageParams);
+	setupUiForDetectionMode(mode);
+	emit reloadRequested();
+}
+
+void
 OptionsWidget::manualModeToggled(bool checked)
 {
 	if (!checked || m_ignoreSignalsFromUiControls) {
@@ -90,10 +110,6 @@ OptionsWidget::manualModeToggled(bool checked)
 	emit invalidateThumbnail(m_pageId);
 }
 
-void
-OptionsWidget::manualDetectionModeSetExternally(select_content::DetectionMode const & mode)
-{
-}
 
 void
 OptionsWidget::contentModeToggled(bool checked)

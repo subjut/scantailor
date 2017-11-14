@@ -49,7 +49,8 @@ public:
 	
 	virtual ~OptionsWidget();
 	
-	void preUpdateUI(PageId const& page_id, DetectionMode const& detection_mode);
+	void preUpdateUI(PageId const& page_id,
+		DetectionMode const& detection_mode = DetectionMode::CONTENT);
 	
 	void postUpdateUI(Params const& params);
 public slots:
