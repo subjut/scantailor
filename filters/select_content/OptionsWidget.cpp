@@ -37,14 +37,14 @@ OptionsWidget::OptionsWidget(
 	setupUi(this);
 	setupDetectionModeButtons();
 	
-	connect(ui.manualBtn, SIGNAL(toggled(bool)), SLOT(manualModeToggled(bool)));
-	connect(ui.autoBtn, SIGNAL(toggled(bool)), SLOT(contentModeToggled(bool)));
-	connect(ui.pageBtn, SIGNAL(toggled(bool)), SLOT(pageModeToggled(bool)));
-	connect(ui.imageBtn, SIGNAL(toggled(bool)), SLOT(imageModeToggled(bool)));
+	connect(manualBtn, SIGNAL(toggled(bool)), SLOT(manualModeToggled(bool)));
+	connect(autoBtn, SIGNAL(toggled(bool)), SLOT(contentModeToggled(bool)));
+	connect(pageBtn, SIGNAL(toggled(bool)), SLOT(pageModeToggled(bool)));
+	connect(imageBtn, SIGNAL(toggled(bool)), SLOT(imageModeToggled(bool)));
 	
-	connect(ui.fineTunePage, SIGNAL(clicked(bool)), SLOT(fineTunePageToggled(bool)));
+	connect(fineTunePage, SIGNAL(clicked(bool)), SLOT(fineTunePageToggled(bool)));
 	
-	connect(ui.applyToBtn, SIGNAL(clicked()), this, SLOT(showApplyToDialog()));
+	connect(applyToBtn, SIGNAL(clicked()), this, SLOT(showApplyToDialog()));
 }
 
 OptionsWidget::~OptionsWidget()
@@ -177,10 +177,10 @@ OptionsWidget::setupDetectionModeButtons()
 		"Unexpected number of content detection modes"
 		);
 	
-	m_detectionModeButtons[DetectionMode::MANUAL] = ui.manualBtn;
-	m_detectionModeButtons[DetectionMode::CONTENT] = ui.autoBtn;
-	m_detectionModeButtons[DetectionMode::PAGE] = ui.pageBtn;
-	m_detectionModeButtons[DetectionMode::IMAGE] = ui.imageBtn;
+	m_detectionModeButtons[DetectionMode::MANUAL] = manualBtn;
+	m_detectionModeButtons[DetectionMode::CONTENT] = autoBtn;
+	m_detectionModeButtons[DetectionMode::PAGE] = pageBtn;
+	m_detectionModeButtons[DetectionMode::IMAGE] = imageBtn;
 }
 
 
@@ -190,7 +190,7 @@ OptionsWidget::setupUiForDetectionMode(DetectionMode::Mode mode)
 	ScopedIncDec<int> guard(m_ignoreSignalsFromUiControls);
 
 	m_detectionModeButtons[mode]->setChecked(true);
-	ui.fineTunePage->setEnabled(mode == DetectionMode::PAGE);
+	fineTunePage->setEnabled(mode == DetectionMode::PAGE);
 }
 
 void

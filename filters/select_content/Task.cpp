@@ -105,14 +105,40 @@ namespace select_content
 		status.throwIfCancelled();
 
 		Dependencies const deps(orig_image_transform->fingerprint());
+		
+		boost::optional<AffineTransformedImage> dewarped;
 
 		std::auto_ptr<Params> params(m_ptrSettings->getPageParams(m_pageId));
 		if (params.get() && !params->dependencies().matches(deps)) {
 			// Dependency mismatch.
-			if (params->detectionMode() != DetectionMode::MANUAL) {
+			
+			if (params->detectionMode() != DetectionMode::CONTENT) {
+				// reset parameters and let the default below catch it
 				params.reset();
-			}
-			else {
+			} else if (params->detectionMode() != DetectionMode::PAGE ||
+					params->detectionMode() != DetectionMode::IMAGE) {
+				// build new content rect based on a non default DetectionMode
+				
+				dewarped = orig_image_transform->toAffine(
+					orig_image, Qt::transparent, accel_ops
+				);
+				QRectF const content_rect(
+					ContentBoxFinder::findContentBox(status, accel_ops, *dewarped,
+						params->detectionMode(), params->isFineTuningEnabled(), m_ptrDbg.get()
+					)
+				);
+				params.reset(
+					new Params(
+						ContentBox(*orig_image_transform, content_rect),
+						content_rect.size(), deps, params->detectionMode(),
+						params->isFineTuningEnabled()
+					)
+				);
+
+				// save settings
+				m_ptrSettings->setPageParams(m_pageId, *params);
+
+			} else {
 				// If the content box was set manually, we don't want to lose it
 				// just because the user went back and adjusted the warping grid slightly.
 				// We still need to update params->contentSizePx() however.
@@ -124,7 +150,6 @@ namespace select_content
 			}
 		}
 
-		boost::optional<AffineTransformedImage> dewarped;
 
 		if (!params.get()) {
 			dewarped = orig_image_transform->toAffine(
@@ -177,10 +202,12 @@ namespace select_content
 		IntrusivePtr<Filter> const& filter,
 		std::shared_ptr<AcceleratableOperations> const& accel_ops,
 		PageId const& page_id,
-		Params const& params, std::auto_ptr<DebugImagesImpl> dbg,
+		Params const& params,
+		std::auto_ptr<DebugImagesImpl> dbg,
 		std::shared_ptr<AbstractImageTransform const> const& orig_transform,
-		AffineTransformedImage const& affine_transformed_image, bool const batch)
-		: m_ptrFilter(filter),
+		AffineTransformedImage const& affine_transformed_image,
+		bool const batch)
+:		m_ptrFilter(filter),
 		m_ptrAccelOps(accel_ops),
 		m_pageId(page_id),
 		m_params(params),

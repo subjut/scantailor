@@ -78,7 +78,6 @@ private:
 
 	void setupUiForDetectionMode(DetectionMode::Mode mode);
 	
-	Ui::SelectContentOptionsWidget ui;
 	IntrusivePtr<Settings> m_ptrSettings;
 	PageId m_pageId;
 
@@ -88,8 +87,6 @@ private:
 	* where it's certainly not up to date.
 	*/
 	Params m_pageParams;
-
-//	boost::optional<Params> m_params;
 	QAbstractButton* m_detectionModeButtons[DetectionMode::LAST + 1];
 	int m_ignoreSignalsFromUiControls;
 

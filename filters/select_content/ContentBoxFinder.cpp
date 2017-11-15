@@ -163,16 +163,11 @@ ContentBoxFinder::findContentBox(TaskStatus const& status,
 		QRect page_rect(PageFinder::detectBorders(bwimg));
 		if (corner_tuning)
 			PageFinder::fineTuneCorners(bwimg, page_rect);
-
-		//double const xscale = 150.0 / data.xform().origDpi().horizontal();
-		//double const yscale = 150.0 / data.xform().origDpi().vertical();
-		//QRectF page_rect150(page_rect.left()*xscale, page_rect.top()*yscale,
-		//	page_rect.right()*xscale, page_rect.bottom()*yscale);
-		QRectF page_rectF(page_rect);
-		QPolygonF page_polygon(page_rectF);
-		PolygonRasterizer::fillExcept(
-			bw150, BLACK, page_polygon, Qt::WindingFill
+		
+		QTransform const transform_back(
+			downscaled_transform.transform().inverted() * image.xform().transform()
 		);
+		return transform_back.map(QRectF(page_rect)).boundingRect();
 	}
 
 	PolygonRasterizer::fillExcept(
