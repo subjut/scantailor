@@ -84,6 +84,8 @@ public:
 	bool isFineTuningEnabled() const { return m_fineTuneCorners; }
 
 	QDomElement toXml(QDomDocument& doc, QString const& name) const;
+
+	void takeManualSettingsFrom(Params const& other);
 private:
 	ContentBox m_contentBox;
 	QSizeF m_contentSizePx;

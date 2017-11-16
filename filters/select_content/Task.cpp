@@ -106,70 +106,52 @@ namespace select_content
 
 		Dependencies const deps(orig_image_transform->fingerprint());
 		
-		boost::optional<AffineTransformedImage> dewarped;
+		std::unique_ptr<Params> params(m_ptrSettings->getPageParams(m_pageId));
+		std::unique_ptr<Params> old_params;
 
-		std::auto_ptr<Params> params(m_ptrSettings->getPageParams(m_pageId));
-		if (params.get() && !params->dependencies().matches(deps)) {
-			// Dependency mismatch.
-			
-			if (params->detectionMode() != DetectionMode::CONTENT) {
-				// reset parameters and let the default below catch it
-				params.reset();
-			} else if (params->detectionMode() != DetectionMode::PAGE ||
-					params->detectionMode() != DetectionMode::IMAGE) {
-				// build new content rect based on a non default DetectionMode
-				
-				dewarped = orig_image_transform->toAffine(
-					orig_image, Qt::transparent, accel_ops
-				);
-				QRectF const content_rect(
-					ContentBoxFinder::findContentBox(status, accel_ops, *dewarped,
-						params->detectionMode(), params->isFineTuningEnabled(), m_ptrDbg.get()
-					)
-				);
-				params.reset(
-					new Params(
-						ContentBox(*orig_image_transform, content_rect),
-						content_rect.size(), deps, params->detectionMode(),
-						params->isFineTuningEnabled()
-					)
-				);
-
-				// save settings
-				m_ptrSettings->setPageParams(m_pageId, *params);
-
-			} else {
-				// If the content box was set manually, we don't want to lose it
-				// just because the user went back and adjusted the warping grid slightly.
-				// We still need to update params->contentSizePx() however.
-				params->setContentSizePx(
-					params->contentBox().toTransformedRect(*orig_image_transform).size()
-				);
-				params->setDependencies(deps);
-				m_ptrSettings->setPageParams(m_pageId, *params);
+		if (params.get()) {
+			if (!deps.matches(params->dependencies())) {
+				params.swap(old_params);
 			}
 		}
 
-
 		if (!params.get()) {
+			params.reset(new Params(deps));
+			if (old_params) {
+				params->takeManualSettingsFrom(*old_params);
+			}
+		}
+
+		boost::optional<AffineTransformedImage> dewarped;
+		if (params->defaultDetectionMode() == DetectionMode::MANUAL) {
+			// If the content box was set manually, we don't want to lose it
+			// just because the user went back and adjusted the warping grid slightly.
+			// We still need to update params->contentSizePx() however.
+			params->setContentSizePx(
+				params->contentBox().toTransformedRect(*orig_image_transform).size()
+			);
+			params->setDependencies(deps);
+			m_ptrSettings->setPageParams(m_pageId, *params);
+		} else {
+			// all other modes have to be fully processed
 			dewarped = orig_image_transform->toAffine(
 				orig_image, Qt::transparent, accel_ops
 			);
-
 			QRectF const content_rect(
 				ContentBoxFinder::findContentBox(status, accel_ops, *dewarped,
-					DetectionMode::CONTENT, false, m_ptrDbg.get())
+					params->detectionMode(), params->isFineTuningEnabled(), m_ptrDbg.get()
+				)
 			);
-
 			params.reset(
 				new Params(
 					ContentBox(*orig_image_transform, content_rect),
-					content_rect.size(), deps, DetectionMode::CONTENT, false
+					content_rect.size(), deps, params->detectionMode(),
+					params->isFineTuningEnabled()
 				)
 			);
-
-			m_ptrSettings->setPageParams(m_pageId, *params);
 		}
+		// save settings
+		m_ptrSettings->setPageParams(m_pageId, *params);
 
 		status.throwIfCancelled();
 
@@ -242,7 +224,10 @@ namespace select_content
 		);
 		ui->setImageWidget(view, ui->TRANSFER_OWNERSHIP, m_ptrDbg.get());
 
-		// TODO: Enable/disable fine tune corners checkbox
+		QObject::connect(
+			view, SIGNAL(manualContentRectSet(QRectF const&)),
+			opt_widget, SLOT(manualContentRectSet(QRectF const&))
+		);
 	}
 
 } // namespace select_content

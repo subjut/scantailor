@@ -82,4 +82,13 @@ Params::toXml(QDomDocument& doc, QString const& name) const
 	return el;
 }
 
+void
+Params::takeManualSettingsFrom(Params const& other)
+{
+	// These settings are specified manually,
+	// so we want to preserve them after a dependency mismatch.
+	m_mode = other.detectionMode();
+	m_fineTuneCorners = other.isFineTuningEnabled();
+}
+
 } // namespace content_rect

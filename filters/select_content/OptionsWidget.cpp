@@ -72,7 +72,7 @@ OptionsWidget::postUpdateUI(Params const& params)
 	
 	setupUiForDetectionMode(params.detectionMode());
 	if (params.detectionMode() == DetectionMode::PAGE) {
-		//enable fine tuning check box?
+		fineTunePage->setEnabled(params.isFineTuningEnabled());
 	}
 }
 
