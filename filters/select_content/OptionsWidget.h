@@ -78,6 +78,7 @@ private:
 
 	void setupUiForDetectionMode(DetectionMode::Mode mode);
 	
+	Ui::SelectContentOptionsWidget ui;
 	IntrusivePtr<Settings> m_ptrSettings;
 	PageId m_pageId;
 

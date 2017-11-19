@@ -34,17 +34,19 @@ OptionsWidget::OptionsWidget(
 	m_pageSelectionAccessor(page_selection_accessor),
 	m_ignoreSignalsFromUiControls(0)
 {
-	setupUi(this);
+	using namespace select_content;
+
+	ui.setupUi(this);
 	setupDetectionModeButtons();
+
+	connect(ui.manualModeBtn, SIGNAL(toggled(bool)), this, SLOT(manualModeToggled(bool)));
+	connect(ui.contentModeBtn, SIGNAL(toggled(bool)), this, SLOT(contentModeToggled(bool)));
+	connect(ui.pageModeBtn, SIGNAL(toggled(bool)), this, SLOT(pageModeToggled(bool)));
+	connect(ui.imageModeBtn, SIGNAL(toggled(bool)), this, SLOT(imageModeToggled(bool)));
 	
-	connect(manualBtn, SIGNAL(toggled(bool)), SLOT(manualModeToggled(bool)));
-	connect(autoBtn, SIGNAL(toggled(bool)), SLOT(contentModeToggled(bool)));
-	connect(pageBtn, SIGNAL(toggled(bool)), SLOT(pageModeToggled(bool)));
-	connect(imageBtn, SIGNAL(toggled(bool)), SLOT(imageModeToggled(bool)));
+	connect(ui.fineTunePageCB, SIGNAL(clicked(bool)), SLOT(fineTunePageToggled(bool)));
 	
-	connect(fineTunePage, SIGNAL(clicked(bool)), SLOT(fineTunePageToggled(bool)));
-	
-	connect(applyToBtn, SIGNAL(clicked()), this, SLOT(showApplyToDialog()));
+	connect(ui.applyToBtn, SIGNAL(clicked()), this, SLOT(showApplyToDialog()));
 }
 
 OptionsWidget::~OptionsWidget()
@@ -61,6 +63,7 @@ OptionsWidget::preUpdateUI(PageId const& page_id,
 	m_pageParams.setDetectionMode(detection_mode);
 
 	setupUiForDetectionMode(detection_mode);
+	ui.fineTunePageCB->setEnabled(false);
 }
 
 void
@@ -69,10 +72,11 @@ OptionsWidget::postUpdateUI(Params const& params)
 	ScopedIncDec<int> guard(m_ignoreSignalsFromUiControls);
 
 	m_pageParams = params;
-	
+
 	setupUiForDetectionMode(params.detectionMode());
+
 	if (params.detectionMode() == DetectionMode::PAGE) {
-		fineTunePage->setEnabled(params.isFineTuningEnabled());
+		ui.fineTunePageCB->setChecked(params.isFineTuningEnabled());
 	}
 }
 
@@ -138,11 +142,6 @@ OptionsWidget::pageModeToggled(bool checked)
 	m_ptrSettings->setPageParams(m_pageId, m_pageParams);
 	setupUiForDetectionMode(DetectionMode::PAGE);
 
-	// TODO enable/disable finetune checkbox
-	if (!checked) {
-		
-	}
-
 	emit reloadRequested();
 }
 
@@ -163,6 +162,7 @@ OptionsWidget::imageModeToggled(bool checked)
 void
 OptionsWidget::fineTunePageToggled(bool checked)
 {
+	ui.fineTunePageCB->setChecked(checked);
 	m_pageParams.setFineTuning(checked);
 	m_ptrSettings->setPageParams(m_pageId, m_pageParams);
 
@@ -177,10 +177,10 @@ OptionsWidget::setupDetectionModeButtons()
 		"Unexpected number of content detection modes"
 		);
 	
-	m_detectionModeButtons[DetectionMode::MANUAL] = manualBtn;
-	m_detectionModeButtons[DetectionMode::CONTENT] = autoBtn;
-	m_detectionModeButtons[DetectionMode::PAGE] = pageBtn;
-	m_detectionModeButtons[DetectionMode::IMAGE] = imageBtn;
+	m_detectionModeButtons[DetectionMode::MANUAL] = ui.manualModeBtn;
+	m_detectionModeButtons[DetectionMode::CONTENT] = ui.contentModeBtn;
+	m_detectionModeButtons[DetectionMode::PAGE] = ui.pageModeBtn;
+	m_detectionModeButtons[DetectionMode::IMAGE] = ui.imageModeBtn;
 }
 
 
@@ -190,7 +190,8 @@ OptionsWidget::setupUiForDetectionMode(DetectionMode::Mode mode)
 	ScopedIncDec<int> guard(m_ignoreSignalsFromUiControls);
 
 	m_detectionModeButtons[mode]->setChecked(true);
-	fineTunePage->setEnabled(mode == DetectionMode::PAGE);
+
+	ui.fineTunePageCB->setEnabled(mode == DetectionMode::PAGE);
 }
 
 void

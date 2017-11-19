@@ -75,10 +75,6 @@ public:
 
 	void setDependencies(Dependencies const& deps) { m_deps = deps; }
 	
-	//AutoManualMode mode() const { return m_mode; }
-
-	//void setMode(AutoManualMode mode) { m_mode = mode; }
-	
 	void setFineTuning(bool fine_tune) { m_fineTuneCorners = fine_tune; }
 
 	bool isFineTuningEnabled() const { return m_fineTuneCorners; }
