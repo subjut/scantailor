@@ -135,6 +135,8 @@ int main(int argc, char** argv)
 		0, google_breakpad::ExceptionHandler::HANDLER_ALL
 	);
 #endif
+	// rescaling for high DPI displays
+	QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
 	Application app(argc, argv);
 
