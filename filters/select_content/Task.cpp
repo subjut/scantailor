@@ -141,8 +141,7 @@ FilterResultPtr
 		QRectF content_rect;
 
 		if (params->detectionMode() == DetectionMode::IMAGE) {
-			content_rect = dewarped->xform().origCropArea().boundingRect();
-			// TODO: make sure content rect is fully inside the image
+			content_rect = dewarped->xform().transformedCropArea().boundingRect().toRect();
 		} else {
 			// CONTENT and PAGE mode
 			content_rect = QRectF(
