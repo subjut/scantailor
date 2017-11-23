@@ -56,9 +56,6 @@ public:
 public slots:
 	void manualContentBoxSetExternally(
 		ContentBox const& content_box, QSizeF const& content_size_px);
-	
-	void manualDetectionModeSetExternally(
-		select_content::DetectionMode const& mode);
 private slots:
 	void manualModeToggled(bool checked);
 	

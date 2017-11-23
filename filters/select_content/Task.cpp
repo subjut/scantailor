@@ -226,13 +226,9 @@ void
 	);
 	ui->setImageWidget(view, ui->TRANSFER_OWNERSHIP, m_ptrDbg.get());
 
-	//QObject::connect(
-	//	view, SIGNAL(manualContentRectSet(QRectF const&)),
-	//	opt_widget, SLOT(manualContentRectSet(QRectF const&))
-	//);
 	QObject::connect(
-		view, SIGNAL(detectionModeChanged(select_content::DetectionMode const&)),
-		opt_widget, SLOT(manualDetectionModeSetExternally(select_content::DetectionMode const&))
+		view, SIGNAL(manualContentBoxSet(ContentBox const&, QSizeF const&)),
+		opt_widget, SLOT(manualContentBoxSetExternally(ContentBox const&, QSizeF const&))
 	);
 }
 

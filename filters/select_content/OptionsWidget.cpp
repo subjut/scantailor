@@ -86,19 +86,12 @@ OptionsWidget::manualContentBoxSetExternally(
 {
 	m_pageParams.setContentBox(content_box);
 	m_pageParams.setContentSizePx(content_size_px);
+	m_pageParams.setDetectionMode(DetectionMode::MANUAL);
+	ui.manualModeBtn->setChecked(true);
 	m_ptrSettings->setPageParams(m_pageId, m_pageParams);
 	emit invalidateThumbnail(m_pageId);
 }
 
-void
-OptionsWidget::manualDetectionModeSetExternally(
-	select_content::DetectionMode const & mode)
-{
-	m_pageParams.setDetectionMode(mode);
-	m_ptrSettings->setPageParams(m_pageId, m_pageParams);
-	setupUiForDetectionMode(mode);
-	emit reloadRequested();
-}
 
 void
 OptionsWidget::manualModeToggled(bool checked)
