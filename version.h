@@ -73,7 +73,7 @@
 #define BUILD_MONTH ((BUILD_DATE_IS_BAD) ? 00 : COMPUTE_BUILD_MONTH)
 #define BUILD_DAY ((BUILD_DATE_IS_BAD) ? 00 : COMPUTE_BUILD_DAY)
 
-#define VERSION "experimental"
+#define VERSION "Pdf"
 #define VERSION_QUAD "" // Must be "x.x.x.x" or an empty string.
 
 #endif
