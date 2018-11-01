@@ -51,7 +51,7 @@ CommandLine::set(CommandLine const& cl)
 }
 
 
-void
+bool
 CommandLine::parseCli(QStringList const& argv)
 {
 	QRegExp rx("^--([^=]+)=(.*)$");
@@ -59,6 +59,37 @@ CommandLine::parseCli(QStringList const& argv)
 	QRegExp rx_short("^-([^=]+)=(.*)$");
 	QRegExp rx_short_switch("^-([^=]+)$");
 	QRegExp rx_project(".*\\.ScanTailor$", Qt::CaseInsensitive);
+
+	QList<QString> opts;
+	opts << "help";
+	opts << "verbose";
+	opts << "layout";
+	opts << "layout-direction";
+	opts << "orientation";
+	opts << "rotate";
+	opts << "deskew";
+	opts << "disable-content-detection";
+	opts << "enable-page-detection";
+	opts << "enable-fine-tuning";
+	opts << "content-detection";
+	opts << "content-box";
+	opts << "margins";
+	opts << "margins-left";
+	opts << "margins-right";
+	opts << "margins-top";
+	opts << "margins-bottom";
+	opts << "alignment";
+	opts << "alignment-vertical";
+	opts << "alignment-horizontal";
+	opts << "alignment-tolerance";
+	opts << "color-mode";
+	opts << "white-margins";
+	opts << "normalize-illumination";
+	opts << "threshold";
+	opts << "despeckle";
+	opts << "start-filter";
+	opts << "end-filter";
+	opts << "output-project";
 
 	QMap<QString, QString> shortMap;
 	shortMap["h"] = "help";
@@ -75,17 +106,41 @@ CommandLine::parseCli(QStringList const& argv)
 #endif
 		if (rx.exactMatch(argv[i])) {
 			// option with a value
-			m_options[rx.cap(1)] = rx.cap(2);
-		} else if (rx_switch.exactMatch(argv[i])) {
+			QString key = rx.cap(1);
+			if (!opts.contains(key)) {
+				m_error = true;
+				std::cout << "Unknown option '" << key.toStdString() << "'" << std::endl;
+				continue;
+			}
+			m_options[key] = rx.cap(2);
+		}
+		else if (rx_switch.exactMatch(argv[i])) {
 			// option without value
-			m_options[rx_switch.cap(1)] = "true";
-		} else if (rx_short.exactMatch(argv[i])) {
+			QString key = rx_switch.cap(1);
+			if (!opts.contains(key)) {
+				m_error = true;
+				std::cout << "Unknown switch '" << key.toStdString() << "'" << std::endl;
+				continue;
+			}
+			m_options[key] = "true";
+		}
+		else if (rx_short.exactMatch(argv[i])) {
 			// option with a value
 			QString key = shortMap[rx_short.cap(1)];
+			if (key == "") {
+				std::cout << "Unknown option: '" << rx_short.cap(1).toStdString() << "'" << std::endl;
+				m_error = true;
+				continue;
+			}
 			m_options[key] = rx_short.cap(2);
-		} else if (rx_short_switch.exactMatch(argv[i])) {
+		}
+		else if (rx_short_switch.exactMatch(argv[i])) {
 			QString key = shortMap[rx_short_switch.cap(1)];
-			if (key == "") continue;
+			if (key == "") {
+				std::cout << "Unknown switch: '" << rx_short_switch.cap(1).toStdString() << "'" << std::endl;
+				m_error = true;
+				continue;
+			}
 			m_options[key] = "true";
 		} else if (rx_project.exactMatch(argv[i])) {
 			// project file
@@ -129,6 +184,7 @@ CommandLine::parseCli(QStringList const& argv)
 	for (int i=0; i<params.size(); i++) { std::cout << params[i].toAscii().constData() << "=" << m_options[params[i]].toAscii().constData() << "\n"; }
 	std::cout << "Images: " << CommandLine::m_images.size() << "\n";
 #endif
+	return m_error;
 }
 
 void
@@ -155,8 +211,7 @@ CommandLine::setup()
 	m_colorMode = fetchColorMode();
 	m_margins = fetchMargins();
 	m_alignment = fetchAlignment();
-	m_contentDetection = fetchContentDetection();
-	m_contentRect = fetchContentRect();
+	m_contentBox = fetchContentBox();
 	m_orientation = fetchOrientation();
 	m_threshold = fetchThreshold();
 	m_deskewAngle = fetchDeskewAngle();
@@ -201,6 +256,9 @@ CommandLine::printHelp()
 	std::cout << "\t--orientation=<left|right|upsidedown|none>\n\t\t\t\t\t\t-- default: none" << "\n";
 	std::cout << "\t--rotate=<0.0...360.0>\t\t\t-- it also sets deskew to manual mode" << "\n";
 	std::cout << "\t--deskew=<auto|manual>\t\t\t-- default: auto" << "\n";
+	std::cout << "\t--disable-content-detection\t\t\t-- default: enabled" << "\n";
+	std::cout << "\t--enable-page-detection\t\t\t-- default: disabled" << "\n";
+	std::cout << "\t--enable-fine-tuning\t\t\t-- default: disabled; if page detection enabled it moves edges while corners are in black" << "\n";
 	std::cout << "\t--content-detection=<cautious|normal|aggressive>\n\t\t\t\t\t\t-- default: normal" << "\n";
 	std::cout << "\t--content-box=<<left_offset>x<top_offset>:<width>x<height>>" << "\n";
 	std::cout << "\t\t\t\t\t\t-- if set the content detection is se to manual mode" << "\n";
@@ -213,19 +271,11 @@ CommandLine::printHelp()
 	std::cout << "\t--alignment=center\t\t\t-- sets vertical and horizontal alignment to center" << "\n";
 	std::cout << "\t\t--alignment-vertical=<top|center|bottom>" << "\n";
 	std::cout << "\t\t--alignment-horizontal=<left|center|right>" << "\n";
-	std::cout << "\t--dpi=<number>\t\t\t\t-- sets x and y dpi. default: 600" << "\n";
-	std::cout << "\t\t--dpi-x=<number>" << "\n";
-	std::cout << "\t\t--dpi-y=<number>" << "\n";
-	std::cout << "\t--output-dpi=<number>\t\t\t-- sets x and y output dpi. default: 600" << "\n";
-	std::cout << "\t\t--output-dpi-x=<number>" << "\n";
-	std::cout << "\t\t--output-dpi-y=<number>" << "\n";
 	std::cout << "\t--color-mode=<black_and_white|color_grayscale|mixed>\n\t\t\t\t\t\t-- default: black_and_white" << "\n";
 	std::cout << "\t--white-margins\t\t\t\t-- default: false" << "\n";
 	std::cout << "\t--normalize-illumination\t\t-- default: false" << "\n";
 	std::cout << "\t--threshold=<n>\t\t\t\t-- n<0 thinner, n>0 thicker; default: 0" << "\n";
 	std::cout << "\t--despeckle=<off|cautious|normal|aggressive>\n\t\t\t\t\t\t-- default: normal" << "\n";
-	std::cout << "\t--dewarping=<off|auto>\t\t\t-- default: off" << "\n";
-	std::cout << "\t--depth-perception=<1.0...3.0>\t\t-- default: 2.0" << "\n";
 	std::cout << "\t--start-filter=<1...6>\t\t\t-- default: 4" << "\n";
 	std::cout << "\t--end-filter=<1...6>\t\t\t-- default: 6" << "\n";
 	std::cout << "\t--output-project=, -o=<project_name>" << "\n";
@@ -348,16 +398,16 @@ CommandLine::fetchContentDetection()
 }
 
 
-QRectF
-CommandLine::fetchContentRect()
+ContentBox
+CommandLine::fetchContentBox()
 {
-	if (!hasContentRect())
-		return QRectF();
+	if (!hasContentBox())
+		return ContentBox();
 
 	QRegExp rx("([\\d\\.]+)x([\\d\\.]+):([\\d\\.]+)x([\\d\\.]+)");
 
 	if (rx.exactMatch(m_options["content-box"])) {
-		return QRectF(rx.cap(1).toFloat(), rx.cap(2).toFloat(), rx.cap(3).toFloat(), rx.cap(4).toFloat());
+		return ContentBox();//rx.cap(1).toFloat(), rx.cap(2).toFloat(), rx.cap(3).toFloat(), rx.cap(4).toFloat());
 	}
 
 	std::cout << "invalid --content-box=" << m_options["content-box"].toLocal8Bit().constData() << "\n";
@@ -434,15 +484,15 @@ CommandLine::fetchEndFilterIdx()
 	return m_options["end-filter"].toInt() - 1;
 }
 
-#if 0
-output::DewarpingMode
-CommandLine::fetchDewarpingMode()
-{
-	if (!hasDewarping())
-		return output::DewarpingMode::OFF;
 
-	return output::DewarpingMode(m_options["dewarping"].toLower());
-}
+//output::DewarpingMode
+//CommandLine::fetchDewarpingMode()
+//{
+//	if (!hasDewarping())
+//		return output::DewarpingMode::OFF;
+//
+//	return output::DewarpingMode(m_options["dewarping"].toLower());
+//}
 
 output::DespeckleLevel
 CommandLine::fetchDespeckleLevel()
@@ -453,15 +503,15 @@ CommandLine::fetchDespeckleLevel()
 	return output::despeckleLevelFromString(m_options["despeckle"]);
 }
 
-output::DepthPerception
-CommandLine::fetchDepthPerception()
-{
-	if (!hasDepthPerception())
-		return output::DepthPerception();
+//output::DepthPerception
+//CommandLine::fetchDepthPerception()
+//{
+//	if (!hasDepthPerception())
+//		return output::DepthPerception();
+//
+//	return output::DepthPerception(m_options["depth-perception"]);
+//}
 
-	return output::DepthPerception(m_options["depth-perception"]);
-}
-#endif
 bool
 CommandLine::hasMargins() const
 {
@@ -484,12 +534,3 @@ CommandLine::hasAlignment() const
 	);
 }
 
-bool
-CommandLine::hasOutputDpi() const
-{
-	return(
-		m_options.contains("output-dpi") ||
-		m_options.contains("output-dpi-x") ||
-		m_options.contains("output-dpi-y")
-	);
-}

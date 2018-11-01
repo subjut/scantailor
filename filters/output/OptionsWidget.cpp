@@ -20,7 +20,7 @@
 #include "ApplyColorsDialog.h"
 #include "Settings.h"
 #include "Params.h"
-#include "dewarping/DistortionModel.h"
+//#include "dewarping/DistortionModel.h"
 #include "DespeckleLevel.h"
 #include "ZoneSet.h"
 #include "PictureZoneComparator.h"
@@ -39,7 +39,7 @@
 #include <Qt>
 #include <QDebug>
 
-using namespace dewarping;
+//using namespace dewarping;
 
 namespace output
 {
@@ -395,7 +395,7 @@ OptionsWidget::reloadIfNecessary()
 {
 	ZoneSet saved_picture_zones;
 	ZoneSet saved_fill_zones;
-	dewarping::DistortionModel saved_distortion_model;
+//	dewarping::DistortionModel saved_distortion_model;
 	DespeckleLevel saved_despeckle_level = DESPECKLE_CAUTIOUS;
 	
 	std::auto_ptr<OutputParams> output_params(m_ptrSettings->getOutputParams(m_pageId));

@@ -439,4 +439,10 @@ BinaryImage binarizeWolf(
 	return bw_img;
 }
 
+BinaryImage
+peakThreshold(QImage const& image)
+{
+	return BinaryImage(image, BinaryThreshold::peakThreshold(image));
+}
+
 } // namespace imageproc

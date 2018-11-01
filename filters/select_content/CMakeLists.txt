@@ -6,9 +6,11 @@ SET(
 	sources
 	ImageView.cpp ImageView.h
 	Filter.cpp Filter.h
+	DetectionMode.cpp DetectionMode.h
 	OptionsWidget.cpp OptionsWidget.h
 	ApplyDialog.cpp ApplyDialog.h
 	ContentBoxFinder.cpp ContentBoxFinder.h
+	PageFinder.cpp PageFinder.h
 	Task.cpp Task.h
 	CacheDrivenTask.cpp CacheDrivenTask.h
 	Dependencies.cpp Dependencies.h

@@ -17,9 +17,10 @@
 */
 
 #include "Settings.h"
-#include "Utils.h"
 #include "RelinkablePath.h"
 #include "AbstractRelinker.h"
+#include "DetectionMode.h"
+#include "../../Utils.h"
 #include <QMutexLocker>
 
 namespace select_content
@@ -37,37 +38,30 @@ void
 Settings::clear()
 {
 	QMutexLocker locker(&m_mutex);
-	m_pageParams.clear();
+	m_perPageParams.clear();
 }
 
 void
 Settings::performRelinking(AbstractRelinker const& relinker)
 {
 	QMutexLocker locker(&m_mutex);
-	PageParams new_params;
+	PerPageParams new_params;
 
-	for(PageParams::value_type const& kv : m_pageParams) {
+	for(PerPageParams::value_type const& kv : m_perPageParams) {
 		RelinkablePath const old_path(kv.first.imageId().filePath(), RelinkablePath::File);
 		PageId new_page_id(kv.first);
 		new_page_id.imageId().setFilePath(relinker.substitutionPathFor(old_path));
-		new_params.insert(PageParams::value_type(new_page_id, kv.second));
+		new_params.insert(PerPageParams::value_type(new_page_id, kv.second));
 	}
 
-	m_pageParams.swap(new_params);
+	m_perPageParams.swap(new_params);
 }
 
 void
 Settings::setPageParams(PageId const& page_id, Params const& params)
 {
 	QMutexLocker locker(&m_mutex);
-	Utils::mapSetValue(m_pageParams, page_id, params);
-}
-
-void
-Settings::clearPageParams(PageId const& page_id)
-{
-	QMutexLocker locker(&m_mutex);
-	m_pageParams.erase(page_id);
+	Utils::mapSetValue(m_perPageParams, page_id, params);
 }
 
 std::auto_ptr<Params>
@@ -75,11 +69,44 @@ Settings::getPageParams(PageId const& page_id) const
 {
 	QMutexLocker locker(&m_mutex);
 	
-	PageParams::const_iterator const it(m_pageParams.find(page_id));
-	if (it != m_pageParams.end()) {
+	PerPageParams::const_iterator const it(m_perPageParams.find(page_id));
+	if (it != m_perPageParams.end()) {
 		return std::auto_ptr<Params>(new Params(it->second));
 	} else {
 		return std::auto_ptr<Params>();
+	}
+}
+
+DetectionMode
+Settings::getDetectionMode(PageId const& page_id) const
+{
+	QMutexLocker locker(&m_mutex);
+
+	PerPageParams::const_iterator it(m_perPageParams.find(page_id));
+	if (it != m_perPageParams.end()) {
+		return it->second.detectionMode();
+	}
+	else {
+		return Params::defaultDetectionMode();
+	}
+}
+
+void
+Settings::setDetectionMode(
+	std::set<PageId> const& pages, DetectionMode const& detection_mode)
+{
+	QMutexLocker const locker(&m_mutex);
+
+	for (PageId const& page_id : pages) {
+		PerPageParams::iterator it = m_perPageParams.find(page_id);
+		if (it != m_perPageParams.end()) {
+			it->second.setDetectionMode(detection_mode);
+		}
+		else {
+			Params params((Dependencies()));
+			params.setDetectionMode(detection_mode);
+			Utils::mapSetValue(m_perPageParams, page_id, params);
+		}
 	}
 }
 

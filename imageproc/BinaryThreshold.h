@@ -50,6 +50,12 @@ public:
 	 */
 	static BinaryThreshold otsuThreshold(GrayscaleHistogram const& pixels_by_color);
 	
+	/*
+     * \brief Helper functions for Page edge detection.
+	 */
+	static BinaryThreshold peakThreshold(QImage const& image);
+	static BinaryThreshold peakThreshold(GrayscaleHistogram const& pixels_by_color);
+
 	/**
 	 * \brief Image binarization using Mokji's global thresholding method.
 	 *

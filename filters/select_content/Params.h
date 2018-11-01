@@ -20,9 +20,10 @@
 #define SELECT_CONTENT_PARAMS_H_
 
 #include "Dependencies.h"
-#include "AutoManualMode.h"
+#include "DetectionMode.h"
 #include "ContentBox.h"
 #include <QSizeF>
+#include <QRectF>
 
 class QDomDocument;
 class QDomElement;
@@ -42,9 +43,12 @@ public:
 	 * @param deps Dependencies are used to decide when we need to
 	 *        re-process the image due to changes made in previous stages.
 	 * @param mode Tells whether the content box was detected automatically or set manually.
+	 * @param contentDetect Tells whether the content box should be detected.
+	 * @param pageDetect Tells whether physical page should be detected.
+	 * @param mode Tells whether page corners should be fine tuned.
 	 */
 	Params(ContentBox const& content_box, QSizeF const& content_size_px,
-		Dependencies const& deps, AutoManualMode mode);
+		Dependencies const& deps, DetectionMode mode, bool const fineTuning);
 	
 	Params(Dependencies const& deps);
 	
@@ -52,6 +56,12 @@ public:
 	
 	~Params();
 	
+	static DetectionMode defaultDetectionMode();
+
+	DetectionMode detectionMode() const { return m_mode; }
+
+	void setDetectionMode(DetectionMode mode) { m_mode = mode; }
+
 	ContentBox const& contentBox() const { return m_contentBox; }
 
 	void setContentBox(ContentBox const& content_box) { m_contentBox = content_box; }
@@ -65,16 +75,19 @@ public:
 
 	void setDependencies(Dependencies const& deps) { m_deps = deps; }
 	
-	AutoManualMode mode() const { return m_mode; }
+	void setFineTuning(bool fine_tune) { m_fineTuneCorners = fine_tune; }
 
-	void setMode(AutoManualMode mode) { m_mode = mode; }
-	
+	bool isFineTuningEnabled() const { return m_fineTuneCorners; }
+
 	QDomElement toXml(QDomDocument& doc, QString const& name) const;
+
+	void takeManualSettingsFrom(Params const& other);
 private:
 	ContentBox m_contentBox;
 	QSizeF m_contentSizePx;
 	Dependencies m_deps;
-	AutoManualMode m_mode;
+	DetectionMode m_mode;
+	bool m_fineTuneCorners;
 };
 
 } // namespace select_content

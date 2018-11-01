@@ -1,96 +1,192 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>SelectContentOptionsWidget</class>
- <widget class="QWidget" name="SelectContentOptionsWidget" >
-  <property name="geometry" >
+ <widget class="QWidget" name="SelectContentOptionsWidget">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>218</width>
-    <height>202</height>
+    <width>338</width>
+    <height>565</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" >
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QGroupBox" name="groupBox" >
-     <property name="title" >
+    <widget class="QGroupBox" name="contentDetectionBox">
+     <property name="title">
       <string>Content Box</string>
      </property>
-     <layout class="QHBoxLayout" >
+     <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
-       <spacer>
-        <property name="orientation" >
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0" >
-         <size>
-          <width>1</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
+       <layout class="QHBoxLayout" name="detectionModeCenteringBox">
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>281</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="detectionModeBox">
+          <item>
+           <widget class="QPushButton" name="manualModeBtn">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Manually adjust the content box size</string>
+            </property>
+            <property name="text">
+             <string>Manual</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="contentModeBtn">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Lay content box around the text on the page</string>
+            </property>
+            <property name="text">
+             <string>Content</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pageModeBtn">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Set content box to the size of the page</string>
+            </property>
+            <property name="statusTip">
+             <string>This mode works best on images with clearly defined page borders (background black, page white).</string>
+            </property>
+            <property name="text">
+             <string>Page</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="imageModeBtn">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Disable content detection and set whole image as content area</string>
+            </property>
+            <property name="statusTip">
+             <string>This is useful, if the images are already the size of the output page. Set all borders to 0 in the next step.</string>
+            </property>
+            <property name="whatsThis">
+             <string/>
+            </property>
+            <property name="text">
+             <string>Image</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>281</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
       </item>
       <item>
-       <widget class="QPushButton" name="autoBtn" >
-        <property name="text" >
-         <string>Auto</string>
+       <widget class="QCheckBox" name="fineTunePageCB">
+        <property name="enabled">
+         <bool>false</bool>
         </property>
-        <property name="checkable" >
-         <bool>true</bool>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
         </property>
-        <property name="checked" >
-         <bool>true</bool>
+        <property name="statusTip">
+         <string>Decrease page size so all corners are out of the black area</string>
         </property>
-        <property name="autoExclusive" >
-         <bool>true</bool>
+        <property name="text">
+         <string>Fine tune detection of page corners</string>
         </property>
        </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="manualBtn" >
-        <property name="text" >
-         <string>Manual</string>
-        </property>
-        <property name="checkable" >
-         <bool>true</bool>
-        </property>
-        <property name="autoExclusive" >
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer>
-        <property name="orientation" >
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0" >
-         <size>
-          <width>1</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
       </item>
      </layout>
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="scopeBox" >
-     <property name="title" >
+    <widget class="QGroupBox" name="scopeBox">
+     <property name="title">
       <string>Scope</string>
      </property>
-     <layout class="QVBoxLayout" >
+     <layout class="QVBoxLayout">
       <item>
-       <layout class="QHBoxLayout" >
+       <layout class="QHBoxLayout">
         <item>
          <spacer>
-          <property name="orientation" >
+          <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-          <property name="sizeHint" >
+          <property name="sizeHint" stdset="0">
            <size>
             <width>40</width>
             <height>20</height>
@@ -99,18 +195,18 @@
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="applyToBtn" >
-          <property name="text" >
+         <widget class="QPushButton" name="applyToBtn">
+          <property name="text">
            <string>Apply to ...</string>
           </property>
          </widget>
         </item>
         <item>
          <spacer>
-          <property name="orientation" >
+          <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-          <property name="sizeHint" >
+          <property name="sizeHint" stdset="0">
            <size>
             <width>40</width>
             <height>20</height>
@@ -124,11 +220,11 @@
     </widget>
    </item>
    <item>
-    <spacer name="verticalSpacer" >
-     <property name="orientation" >
+    <spacer name="verticalSpacer">
+     <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
-     <property name="sizeHint" stdset="0" >
+     <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
        <height>40</height>
@@ -139,7 +235,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../../../resources/resources.qrc" />
+  <include location="../../../resources/resources.qrc"/>
  </resources>
  <connections/>
 </ui>

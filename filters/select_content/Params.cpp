@@ -27,28 +27,32 @@ namespace select_content
 
 Params::Params(
 	ContentBox const& content_box, QSizeF const& content_size_px,
-	Dependencies const& deps, AutoManualMode const mode)
+	Dependencies const& deps, DetectionMode const mode, bool const fineTuning)
 :	m_contentBox(content_box),
 	m_contentSizePx(content_size_px),
 	m_deps(deps),
-	m_mode(mode)
+	m_mode(defaultDetectionMode()),
+	m_fineTuneCorners(fineTuning)
 {
 }
 
 Params::Params(Dependencies const& deps)
-:	m_deps(deps)
+:	m_deps(deps),
+	m_mode(defaultDetectionMode()),
+	m_fineTuneCorners(false)
 {
 }
 
 Params::Params(QDomElement const& filter_el)
-:	m_contentBox(filter_el.namedItem("content-box").toElement())
+:	m_mode(filter_el.attribute("detectionMode"))
+,	m_contentBox(filter_el.namedItem("content-box").toElement())
 ,	m_contentSizePx(
 		XmlUnmarshaller::sizeF(
 			filter_el.namedItem("content-size-px").toElement()
 		)
 	)
+,	m_fineTuneCorners(filter_el.attribute("fine-tune-corners") == "true" ? true : false)
 ,	m_deps(filter_el.namedItem("dependencies").toElement())
-,	m_mode(filter_el.attribute("mode") == "manual" ? MODE_MANUAL : MODE_AUTO)
 {
 }
 
@@ -56,17 +60,35 @@ Params::~Params()
 {
 }
 
+DetectionMode
+Params::defaultDetectionMode()
+{
+	return DetectionMode::CONTENT;
+}
+
 QDomElement
 Params::toXml(QDomDocument& doc, QString const& name) const
 {
+	
 	XmlMarshaller marshaller(doc);
 	
+	
 	QDomElement el(doc.createElement(name));
-	el.setAttribute("mode", m_mode == MODE_AUTO ? "auto" : "manual");
+	el.setAttribute("detectionMode", m_mode.toString());
+	el.setAttribute("fine-tune-corners", m_fineTuneCorners ? "true" : "false");
 	el.appendChild(m_contentBox.toXml(doc, "content-box"));
 	el.appendChild(marshaller.sizeF(m_contentSizePx, "content-size-px"));
 	el.appendChild(m_deps.toXml(doc, "dependencies"));
 	return el;
+}
+
+void
+Params::takeManualSettingsFrom(Params const& other)
+{
+	// These settings are specified manually,
+	// so we want to preserve them after a dependency mismatch.
+	m_mode = other.detectionMode();
+	m_fineTuneCorners = other.isFineTuningEnabled();
 }
 
 } // namespace content_rect

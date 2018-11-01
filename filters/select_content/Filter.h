@@ -85,6 +85,7 @@ public:
 		IntrusivePtr<page_layout::CacheDrivenTask> const& next_task);
 	
 	OptionsWidget* optionsWidget() { return m_ptrOptionsWidget.get(); };
+
 	Settings* getSettings() { return m_ptrSettings.get(); };
 private:
 	void writePageSettings(
