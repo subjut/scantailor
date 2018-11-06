@@ -30,7 +30,7 @@
 #include <QPainter>
 #include <Qt>
 #include <QtGlobal>
-#include <math.h>
+#include <cmath>
 
 namespace deskew
 {

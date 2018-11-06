@@ -20,7 +20,7 @@
 #include "PageSelectionAccessor.h"
 #include <QButtonGroup>
 #include <QDebug>
-#include <assert.h>
+#include <cassert>
 
 namespace select_content
 {

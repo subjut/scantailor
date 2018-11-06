@@ -24,7 +24,7 @@
 #include "ImageId.h"
 #include "PageId.h"
 #include <vector>
-#include <assert.h>
+#include <cassert>
 
 namespace fix_orientation
 {

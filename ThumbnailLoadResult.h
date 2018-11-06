@@ -22,7 +22,7 @@
 #include "imageproc/AffineImageTransform.h"
 #include <QPixmap>
 #include <boost/optional.hpp>
-#include <assert.h>
+#include <cassert>
 
 class ThumbnailLoadResult
 {

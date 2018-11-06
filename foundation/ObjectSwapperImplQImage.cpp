@@ -20,7 +20,7 @@
 #include <QTemporaryFile>
 #include <QImageWriter>
 #include <QDebug>
-#include <assert.h>
+#include <cassert>
 
 ObjectSwapperImpl<QImage>::ObjectSwapperImpl(QString const& swap_dir)
 :	m_swapDir(swap_dir)

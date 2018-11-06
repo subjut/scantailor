@@ -65,9 +65,9 @@
 #include <utility>
 #include <algorithm>
 #include <limits>
-#include <math.h>
+#include <cmath>
 #include <stdint.h>
-#include <assert.h>
+#include <cassert>
 
 namespace page_split
 {

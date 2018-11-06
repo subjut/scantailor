@@ -57,7 +57,7 @@
 #include <vector>
 #include <algorithm>
 #include <limits>
-#include <math.h>
+#include <cmath>
 #include <stdlib.h>
 #include <limits.h>
 

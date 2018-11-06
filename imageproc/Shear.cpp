@@ -22,9 +22,9 @@
 #include <QRect>
 #include <QPoint>
 #include <stdexcept>
-#include <math.h>
+#include <cmath>
 #include <stdlib.h>
-#include <assert.h>
+#include <cassert>
 
 namespace imageproc
 {

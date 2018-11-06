@@ -25,7 +25,7 @@
 #include <QRect>
 #include <algorithm>
 #include <vector>
-#include <assert.h>
+#include <cassert>
 
 class QImage;
 

@@ -19,7 +19,7 @@
 */
 
 #include <cstdlib>
-#include <assert.h>
+#include <cassert>
 #include <iostream>
 
 #include <QDir>

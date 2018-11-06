@@ -34,7 +34,7 @@
 #include <QtGlobal> // For Q_OS_*
 #include <boost/bind.hpp>
 #include <vector>
-#include <assert.h>
+#include <cassert>
 
 class ZoneContextMenuInteraction::OrderByArea
 {

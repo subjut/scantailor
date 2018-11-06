@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QTransform>
 #include <QDebug>
 #include <boost/optional.hpp>
-#include <assert.h>
+#include <cassert>
 
 using namespace imageproc;
 

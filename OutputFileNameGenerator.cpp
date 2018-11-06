@@ -22,7 +22,7 @@
 #include "AbstractRelinker.h"
 #include <QFileInfo>
 #include <QDir>
-#include <assert.h>
+#include <cassert>
 
 OutputFileNameGenerator::OutputFileNameGenerator()
 :	m_ptrDisambiguator(new FileNameDisambiguator),

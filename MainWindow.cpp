@@ -125,8 +125,8 @@
 #include <algorithm>
 #include <vector>
 #include <stddef.h>
-#include <math.h>
-#include <assert.h>
+#include <cmath>
+#include <cassert>
 
 class MainWindow::PageSelectionProviderImpl : public PageSelectionProvider
 {

@@ -24,7 +24,7 @@
 #include <QDomDocument>
 #include <QDomElement>
 #include <QString>
-#include <assert.h>
+#include <cassert>
 
 OrthogonalRotation::OrthogonalRotation(QDomElement const& el)
 :	m_degrees(0)

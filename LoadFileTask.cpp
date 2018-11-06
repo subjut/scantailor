@@ -37,7 +37,7 @@
 #include <QDir>
 #include <QImage>
 #include <QString>
-#include <assert.h>
+#include <cassert>
 
 class LoadFileTask::ErrorResult : public FilterResult
 {

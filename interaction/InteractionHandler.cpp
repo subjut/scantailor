@@ -25,7 +25,7 @@
 #include <QWheelEvent>
 #include <QContextMenuEvent>
 #include <boost/checked_delete.hpp>
-#include <assert.h>
+#include <cassert>
 
 #define DISPATCH(list, call) {                    \
 	HandlerList::iterator it(list->begin());      \

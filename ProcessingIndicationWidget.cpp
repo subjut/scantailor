@@ -24,7 +24,7 @@
 #include <QPalette>
 #include <QRect>
 #include <QRectF>
-#include <math.h>
+#include <cmath>
 
 using namespace imageproc;
 

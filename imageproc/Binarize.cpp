@@ -30,10 +30,10 @@
 #include <vector>
 #include <algorithm>
 #include <stdexcept>
-#include <math.h>
+#include <cmath>
 #include <stdint.h>
 #include <string.h>
-#include <assert.h>
+#include <cassert>
 
 namespace imageproc
 {

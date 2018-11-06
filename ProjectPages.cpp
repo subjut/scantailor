@@ -35,7 +35,7 @@
 #include <map>
 #include <algorithm>
 #include <stddef.h>
-#include <assert.h>
+#include <cassert>
 
 ProjectPages::ProjectPages(Qt::LayoutDirection const layout_direction)
 {

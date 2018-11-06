@@ -22,7 +22,7 @@
 #include <QMessageBox>
 #include <Qt>
 #include <algorithm>
-#include <assert.h>
+#include <cassert>
 
 ProjectOpeningContext::ProjectOpeningContext(
 	QWidget* parent, QString const& project_file, QDomDocument const& doc)

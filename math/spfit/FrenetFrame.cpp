@@ -17,7 +17,7 @@
 */
 
 #include "FrenetFrame.h"
-#include <math.h>
+#include <cmath>
 
 using namespace Eigen;
 

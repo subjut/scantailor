@@ -22,7 +22,7 @@
 #include <QDomNode>
 #include <QDomElement>
 #include <QString>
-#include <assert.h>
+#include <cassert>
 
 EditableSpline::EditableSpline()
 {

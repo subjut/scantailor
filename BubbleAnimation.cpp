@@ -27,8 +27,8 @@
 #include <QBrush>
 #include <Qt>
 #include <algorithm>
-#include <math.h>
-#include <assert.h>
+#include <cmath>
+#include <cassert>
 
 using namespace imageproc;
 

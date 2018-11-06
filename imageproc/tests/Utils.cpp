@@ -25,7 +25,7 @@
 #include <iostream>
 #include <stdint.h>
 #include <stdlib.h>
-#include <assert.h>
+#include <cassert>
 
 namespace imageproc
 {

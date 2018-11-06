@@ -26,7 +26,7 @@
 #include <QRect>
 #include <algorithm>
 #include <stdexcept>
-#include <assert.h>
+#include <cassert>
 #include <limits.h>
 
 namespace imageproc

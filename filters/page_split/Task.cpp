@@ -41,7 +41,7 @@
 #include <QObject>
 #include <QDebug>
 #include <memory>
-#include <assert.h>
+#include <cassert>
 
 using namespace imageproc;
 

@@ -25,7 +25,7 @@
 #include <QColor>
 #include <algorithm>
 #include <stdexcept>
-#include <assert.h>
+#include <cassert>
 
 class QImage;
 

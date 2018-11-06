@@ -32,7 +32,7 @@
 #include <QObject>
 #include <QDomDocument>
 #include <QDomElement>
-#include <assert.h>
+#include <cassert>
 #include "CommandLine.h"
 
 namespace select_content

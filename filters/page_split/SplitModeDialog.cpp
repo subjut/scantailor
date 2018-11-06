@@ -20,7 +20,7 @@
 #include "PageSelectionAccessor.h"
 #include <QPixmap>
 #include <QButtonGroup>
-#include <assert.h>
+#include <cassert>
 
 namespace page_split
 {

@@ -22,7 +22,7 @@
 #include "PageLayout.h"
 #include <QSizeF>
 #include <memory>
-#include <assert.h>
+#include <cassert>
 
 namespace page_split
 {

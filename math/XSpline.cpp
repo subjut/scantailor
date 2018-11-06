@@ -27,8 +27,8 @@
 #include <string>
 #include <stdexcept>
 #include <algorithm>
-#include <math.h>
-#include <assert.h>
+#include <cmath>
+#include <cassert>
 
 struct XSpline::TensionDerivedParams
 {

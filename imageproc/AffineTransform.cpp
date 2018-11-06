@@ -32,8 +32,8 @@
 #include <stdexcept>
 #include <algorithm>
 #include <stdint.h>
-#include <math.h>
-#include <assert.h>
+#include <cmath>
+#include <cassert>
 
 namespace imageproc
 {

@@ -31,7 +31,7 @@
 #include <QString>
 #include <QSettings>
 #include <QVariant>
-#include <assert.h>
+#include <cassert>
 
 using namespace imageproc::constants;
 

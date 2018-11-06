@@ -30,8 +30,8 @@
 #include <tiff.h>
 #include <tiffio.h>
 #include <string.h>
-#include <math.h>
-#include <assert.h>
+#include <cmath>
+#include <cassert>
 
 /**
  * m_reverseBitsLUT[byte] gives the same byte, but with bit order reversed.

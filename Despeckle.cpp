@@ -33,7 +33,7 @@
 #include <algorithm>
 #include <stddef.h>
 #include <stdint.h>
-#include <assert.h>
+#include <cassert>
 
 /**
  * \file

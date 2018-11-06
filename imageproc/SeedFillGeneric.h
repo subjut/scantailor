@@ -25,7 +25,7 @@
 #include "BinaryImage.h"
 #include <QSize>
 #include <vector>
-#include <assert.h>
+#include <cassert>
 
 namespace imageproc
 {

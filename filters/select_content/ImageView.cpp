@@ -35,7 +35,7 @@
 #include <Qt>
 #include <boost/bind.hpp>
 #include <algorithm>
-#include <assert.h>
+#include <cassert>
 
 using namespace imageproc;
 
