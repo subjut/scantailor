@@ -624,6 +624,11 @@ SET(
 SOURCE_GROUP("Sources" FILES ${common_sources} ${gui_only_sources} ${cli_only_sources})
 SOURCE_GROUP("Special Headers" FILES version.h config.h.in)
 
+# Compatibility for CMAKE >= 3.10
+IF (POLICY CMP0071)
+    cmake_policy(SET CMP0071 NEW)
+ENDIF (POLICY CMP0071)
+
 IF(CMAKE_COMPILER_IS_GNUCXX)
 	# There seems to be a bug in either gcc or boost that makes page sorting either crash
 	# or go into infinite loop.  It's reproducible on a very simple test case on at least
