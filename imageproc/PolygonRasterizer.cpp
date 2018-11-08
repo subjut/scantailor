@@ -31,10 +31,10 @@
 #include <iterator>
 #include <algorithm>
 #include <stdexcept>
-#include <math.h>
+#include <cmath>
 #include <string.h>
 #include <stdint.h>
-#include <assert.h>
+#include <cassert>
 
 namespace imageproc
 {

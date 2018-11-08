@@ -20,7 +20,7 @@
 #include "DragHandler.h"
 #include <QMouseEvent>
 #include <QDebug>
-#include <math.h>
+#include <cmath>
 
 DragWatcher::DragWatcher(DragHandler& drag_handler)
 :	m_rDragHandler(drag_handler),

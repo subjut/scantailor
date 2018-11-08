@@ -41,7 +41,7 @@
 #include <Qt>
 #include <QDebug>
 #include <boost/bind.hpp>
-#include <assert.h>
+#include <cassert>
 
 namespace output
 {

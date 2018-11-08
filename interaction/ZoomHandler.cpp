@@ -22,7 +22,7 @@
 #include <QWheelEvent>
 #include <QKeyEvent>
 #include <QRectF>
-#include <math.h>
+#include <cmath>
 
 ZoomHandler::ZoomHandler(ImageViewBase& image_view)
 :	m_rImageView(image_view),

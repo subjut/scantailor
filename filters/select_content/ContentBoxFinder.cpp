@@ -20,6 +20,9 @@
 #include "TaskStatus.h"
 #include "DebugImages.h"
 #include "Despeckle.h"
+#include "Params.h"
+#include "PageFinder.h"
+#include "DetectionMode.h"
 #include "imageproc/AffineTransformedImage.h"
 #include "imageproc/BinaryImage.h"
 #include "imageproc/BinaryThreshold.h"
@@ -54,7 +57,7 @@
 #include <vector>
 #include <algorithm>
 #include <limits>
-#include <math.h>
+#include <cmath>
 #include <stdlib.h>
 #include <limits.h>
 
@@ -109,7 +112,10 @@ struct PreferVertical
 QRectF
 ContentBoxFinder::findContentBox(TaskStatus const& status,
 	std::shared_ptr<AcceleratableOperations> const& accel_ops,
-	AffineTransformedImage const& image, DebugImages* dbg)
+	imageproc::AffineTransformedImage const& image,
+	DetectionMode mode,
+	bool corner_tuning,
+	DebugImages* dbg)
 {
 	AffineImageTransform downscaled_transform(image.xform());
 	downscaled_transform.scaleTo(QSize(1500, 1500), Qt::KeepAspectRatio);
@@ -146,6 +152,24 @@ ContentBoxFinder::findContentBox(TaskStatus const& status,
 		dbg->add(bw150, "bw150");
 	}
 	
+	if (mode == DetectionMode::PAGE) {
+		BinaryImage bw150(peakThreshold(gray150));
+		//BinaryImage bw150(binarizeOtsu(gray150));
+		if (dbg) {
+			dbg->add(bw150, "peakThreshold");
+		}
+
+		QImage bwimg(bw150.toQImage());
+		QRect page_rect(PageFinder::detectBorders(bwimg));
+		if (corner_tuning)
+			PageFinder::fineTuneCorners(bwimg, page_rect);
+		
+		QTransform const transform_back(
+			downscaled_transform.transform().inverted() * image.xform().transform()
+		);
+		return transform_back.map(QRectF(page_rect)).boundingRect();
+	}
+
 	PolygonRasterizer::fillExcept(
 		bw150, BLACK, downscaled_transform.transformedCropArea(), Qt::WindingFill
 	);
@@ -216,7 +240,7 @@ ContentBoxFinder::findContentBox(TaskStatus const& status,
 	
 	CommandLine const& cli = CommandLine::get();
 	Despeckle::Level despeckleLevel = Despeckle::NORMAL;
-	if (cli.hasContentRect()) {
+	if (cli.hasContentBox()) {
 		despeckleLevel = cli.getContentDetection();
 	}
 
@@ -439,7 +463,6 @@ ContentBoxFinder::findContentBox(TaskStatus const& status,
 		}
 	}
 	
-	// Transform back from 150dpi.
 	QTransform const transform_back(
 		downscaled_transform.transform().inverted() * image.xform().transform()
 	);

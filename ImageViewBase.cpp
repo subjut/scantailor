@@ -47,8 +47,8 @@
 #include <Qt>
 #include <QDebug>
 #include <algorithm>
-#include <assert.h>
-#include <math.h>
+#include <cassert>
+#include <cmath>
 
 #ifdef ENABLE_OPENGL
 #include <QGLWidget>

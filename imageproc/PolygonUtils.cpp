@@ -22,8 +22,8 @@
 #include <QLineF>
 #include <algorithm>
 #include <stddef.h>
-#include <math.h>
-#include <assert.h>
+#include <cmath>
+#include <cassert>
 
 namespace imageproc
 {

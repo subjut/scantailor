@@ -26,7 +26,7 @@
 #include <QDebug>
 #include <stdexcept>
 #include <stdint.h>
-#include <math.h>
+#include <cmath>
 
 namespace imageproc
 {

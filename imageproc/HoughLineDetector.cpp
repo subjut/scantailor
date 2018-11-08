@@ -38,9 +38,9 @@
 #include <QDebug>
 #include <algorithm>
 #include <new>
-#include <math.h>
+#include <cmath>
 #include <stdint.h>
-#include <assert.h>
+#include <cassert>
 
 namespace imageproc
 {

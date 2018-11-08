@@ -25,7 +25,7 @@
 #include <QDebug>
 #include <algorithm>
 #include <stdexcept>
-#include <assert.h>
+#include <cassert>
 
 namespace imageproc
 {

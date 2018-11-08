@@ -18,7 +18,7 @@
 
 #include "PolylineIntersector.h"
 #include "ToLineProjector.h"
-#include <math.h>
+#include <cmath>
 
 PolylineIntersector::Hint::Hint()
 :	m_lastSegment(0),

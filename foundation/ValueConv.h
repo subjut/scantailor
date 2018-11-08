@@ -21,7 +21,7 @@
 
 #include "foundation_config.h"
 #include "NumericTraits.h"
-#include <math.h>
+#include <cmath>
 
 template<typename ToType>
 class StaticCastValueConv

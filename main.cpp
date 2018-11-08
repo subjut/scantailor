@@ -135,6 +135,8 @@ int main(int argc, char** argv)
 		0, google_breakpad::ExceptionHandler::HANDLER_ALL
 	);
 #endif
+	// rescaling for high DPI displays
+	QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
 	Application app(argc, argv);
 
@@ -146,6 +148,11 @@ int main(int argc, char** argv)
 	// parse command line arguments
 	CommandLine cli(app.arguments());
 	CommandLine::set(cli);
+
+	if (cli.isError()) {
+		cli.printHelp();
+		return 1;
+	}
 
 	if (cli.hasHelp()) {
 		cli.printHelp();

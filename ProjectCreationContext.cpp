@@ -22,7 +22,7 @@
 #include <QString>
 #include <Qt>
 #include <algorithm>
-#include <assert.h>
+#include <cassert>
 
 ProjectCreationContext::ProjectCreationContext(QWidget* parent)
 :	m_layoutDirection(Qt::LeftToRight),

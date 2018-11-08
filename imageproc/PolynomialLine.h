@@ -23,7 +23,7 @@
 #include "ValueConv.h"
 #include <Eigen/Core>
 #include <limits>
-#include <math.h>
+#include <cmath>
 
 namespace imageproc
 {

@@ -31,6 +31,7 @@
 #include "filters/output/DespeckleLevel.h"
 #include "filters/deskew/DewarpingMode.h"
 #include "filters/page_layout/Alignment.h"
+#include "ContentBox.h"
 #include "ImageFileInfo.h"
 #include "RelativeMargins.h"
 #include "Despeckle.h"
@@ -49,19 +50,21 @@ public:
 	static CommandLine const& get() { return m_globalInstance; }
 	static void set(CommandLine const& cl);
 
-	CommandLine(QStringList const& argv, bool g=true) : m_gui(g), m_global(false) { CommandLine::parseCli(argv); }
+	CommandLine(QStringList const& argv, bool g=true) : m_error(false), m_gui(g), m_global(false) { CommandLine::parseCli(argv); }
 
 	bool isGui() const { return m_gui; }
 	bool isVerbose() const { return contains("verbose"); }
+	bool isError() const { return m_error; }
 
 	std::vector<ImageFileInfo> const& images() const { return m_images; }
 	QString const& outputDirectory() const { return m_outputDirectory; }
 	QString const& projectFile() const { return m_projectFile; }
 	QString const& outputProjectFile() const { return m_outputProjectFile; }
 
+	bool isFineTuningEnabled() const { return contains("enable-fine-tuning"); };
+
 	bool hasMargins() const;
 	bool hasAlignment() const;
-	bool hasOutputDpi() const;
 
 	bool hasHelp() const { return contains("help"); }
 	bool hasOutputProject() const { return contains("output-project"); }
@@ -72,14 +75,14 @@ public:
 	bool hasOrientation() const { return contains("orientation"); }
 	bool hasDeskewAngle() const { return contains("rotate"); }
 	bool hasDeskew() const { return contains("deskew"); }
-	bool hasContentRect() const { return contains("content-box"); }
+	bool hasContentBox() const { return contains("content-box"); }
 	bool hasColorMode() const { return contains("color-mode"); }
 	bool hasWhiteMargins() const { return contains("white-margins"); }
 	bool hasNormalizeIllumination() const { return contains("normalize-illumination"); }
 	bool hasThreshold() const { return contains("threshold"); }
 	bool hasDespeckle() const { return contains("despeckle"); }
-	bool hasDewarping() const { return contains("dewarping"); }
-	bool hasDepthPerception() const { return contains("dewarping"); }
+//	bool hasDewarping() const { return contains("dewarping"); }
+//	bool hasDepthPerception() const { return contains("dewarping"); }
 
 	page_split::LayoutType getLayout() const { return m_layoutType; }
 	Qt::LayoutDirection getLayoutDirection() const { return m_layoutDirection; }
@@ -87,14 +90,14 @@ public:
 	RelativeMargins getMargins() const { return m_margins; }
 	page_layout::Alignment getAlignment() const { return m_alignment; }
 	Despeckle::Level getContentDetection() const { return m_contentDetection; }
-	QRectF getContentRect() const { return m_contentRect; }
+	ContentBox getContentBox() const { return m_contentBox; }
 	Orientation getOrientation() const { return m_orientation; }
 	int getThreshold() const { return m_threshold; }
 	double getDeskewAngle() const { return m_deskewAngle; }
 	int getStartFilterIdx() const { return m_startFilterIdx; }
 	int getEndFilterIdx() const { return m_endFilterIdx; }
 	//output::DewarpingMode getDewarpingMode() const { return m_dewarpingMode; }
-	//output::DespeckleLevel getDespeckleLevel() const { return m_despeckleLevel; }
+	output::DespeckleLevel getDespeckleLevel() const { return m_despeckleLevel; }
 	//output::DepthPerception getDepthPerception() const { return m_depthPerception; }
 
 	bool help() { return m_options.contains("help"); }
@@ -105,6 +108,7 @@ private:
 
 	static CommandLine m_globalInstance;
 
+	bool m_error;
 	bool m_gui;
 	bool m_global;
 
@@ -126,17 +130,17 @@ private:
 	RelativeMargins m_margins;
 	page_layout::Alignment m_alignment;
 	Despeckle::Level m_contentDetection;
-	QRectF m_contentRect;
+	ContentBox m_contentBox;
 	Orientation m_orientation;
 	int m_threshold;
 	double m_deskewAngle;
 	int m_startFilterIdx;
 	int m_endFilterIdx;
 	//output::DewarpingMode m_dewarpingMode;
-	//output::DespeckleLevel m_despeckleLevel;
+	output::DespeckleLevel m_despeckleLevel;
 	//output::DepthPerception m_depthPerception;
 
-	void parseCli(QStringList const& argv);
+	bool parseCli(QStringList const& argv);
 	void addImage(QString const& path);
 	void setup();
 	page_split::LayoutType fetchLayoutType();
@@ -145,7 +149,7 @@ private:
 	RelativeMargins fetchMargins();
 	page_layout::Alignment fetchAlignment();
 	Despeckle::Level fetchContentDetection();
-	QRectF fetchContentRect();
+	ContentBox fetchContentBox();
 	Orientation fetchOrientation();
 	QString fetchOutputProjectFile();
 	int fetchThreshold();
@@ -153,7 +157,7 @@ private:
 	int fetchStartFilterIdx();
 	int fetchEndFilterIdx();
 	//output::DewarpingMode fetchDewarpingMode();
-	//output::DespeckleLevel fetchDespeckleLevel();
+	output::DespeckleLevel fetchDespeckleLevel();
 	//output::DepthPerception fetchDepthPerception();
 };
 

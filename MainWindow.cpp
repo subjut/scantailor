@@ -1,19 +1,19 @@
 /*
-    Scan Tailor - Interactive post-processing tool for scanned pages.
-    Copyright (C) 2015  Joseph Artsimovich <joseph.artsimovich@gmail.com>
+		Scan Tailor - Interactive post-processing tool for scanned pages.
+		Copyright (C) 2015  Joseph Artsimovich <joseph.artsimovich@gmail.com>
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+		This program is free software: you can redistribute it and/or modify
+		it under the terms of the GNU General Public License as published by
+		the Free Software Foundation, either version 3 of the License, or
+		(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+		This program is distributed in the hope that it will be useful,
+		but WITHOUT ANY WARRANTY; without even the implied warranty of
+		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+		GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+		You should have received a copy of the GNU General Public License
+		along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "MainWindow.h"
@@ -121,11 +121,12 @@
 #include <QResource>
 #include <Qt>
 #include <QDebug>
+#include <QDate>
 #include <algorithm>
 #include <vector>
 #include <stddef.h>
-#include <math.h>
-#include <assert.h>
+#include <cmath>
+#include <cassert>
 
 class MainWindow::PageSelectionProviderImpl : public PageSelectionProvider
 {
@@ -778,7 +779,7 @@ MainWindow::setImageWidget(
 	
 	if (!debug_images || debug_images->empty()) {
 		m_pImageFrameLayout->addWidget(widget);
-    } else {
+		} else {
 		m_ptrTabbedDebugImages->addTab(widget, "Main");
 		QString label;
 		IntrusivePtr<DebugViewFactory> factory;
@@ -1490,7 +1491,8 @@ MainWindow::showAboutDialog()
 	Ui::AboutDialog ui;
 	QDialog* dialog = new QDialog(this);
 	ui.setupUi(dialog);
-	ui.version->setText(QString::fromUtf8(VERSION));
+	ui.version->setText(QString::fromUtf8(VERSION) + "\n" + tr("build on ") +
+		QDate(BUILD_YEAR, BUILD_MONTH, BUILD_DAY).toString(Qt::SystemLocaleShortDate));
 
 	QResource license(":/GPLv3.html");
 	ui.licenseViewer->setHtml(QString::fromUtf8((char const*)license.data(), license.size()));

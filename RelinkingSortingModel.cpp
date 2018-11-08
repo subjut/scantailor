@@ -20,7 +20,7 @@
 #include "RelinkingModel.h"
 #include "RelinkablePath.h"
 #include <QString>
-#include <assert.h>
+#include <cassert>
 
 RelinkingSortingModel::RelinkingSortingModel(QObject* parent)
 :	QSortFilterProxyModel(parent)

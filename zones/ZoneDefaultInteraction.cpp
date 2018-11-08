@@ -31,7 +31,7 @@
 #include <Qt>
 #include <QMouseEvent>
 #include <vector>
-#include <assert.h>
+#include <cassert>
 
 ZoneDefaultInteraction::ZoneDefaultInteraction(ZoneInteractionContext& context)
 :	m_rContext(context),

@@ -18,7 +18,7 @@
 
 #include "PageId.h"
 #include <QString>
-#include <assert.h>
+#include <cassert>
 
 PageId::PageId()
 :	m_subPage(SINGLE_PAGE)

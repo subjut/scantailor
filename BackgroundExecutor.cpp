@@ -23,7 +23,7 @@
 #include <QThread>
 #include <QEvent>
 #include <new>
-#include <assert.h>
+#include <cassert>
 
 class BackgroundExecutor::Dispatcher : public QObject
 {

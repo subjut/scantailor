@@ -38,7 +38,7 @@
 #include <QPointF>
 #include <Qt>
 #include <QDebug>
-#include <math.h>
+#include <cmath>
 
 using namespace imageproc;
 

@@ -31,7 +31,7 @@
 #include <QFileInfo>
 #include <boost/bind.hpp>
 #include <stddef.h>
-#include <assert.h>
+#include <cassert>
 
 ProjectWriter::ProjectWriter(
 	IntrusivePtr<ProjectPages> const& page_sequence,

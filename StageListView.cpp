@@ -37,7 +37,7 @@
 #include <QDebug>
 #include <algorithm>
 #include <memory>
-#include <assert.h>
+#include <cassert>
 
 class StageListView::Model : public QAbstractTableModel
 {

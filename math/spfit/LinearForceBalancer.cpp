@@ -17,7 +17,7 @@
 */
 
 #include "LinearForceBalancer.h"
-#include <math.h>
+#include <cmath>
 
 namespace spfit
 {

@@ -34,7 +34,7 @@
 #include <Qt>
 #include <boost/bind.hpp>
 #include <algorithm>
-#include <math.h>
+#include <cmath>
 
 using namespace imageproc;
 

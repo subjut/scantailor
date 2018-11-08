@@ -45,7 +45,7 @@
 #include <vector>
 #include <algorithm>
 #include <stdint.h>
-#include <assert.h>
+#include <cassert>
 #include <string.h>
 
 using namespace imageproc;

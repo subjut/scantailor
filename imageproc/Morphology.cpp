@@ -28,8 +28,8 @@
 #include <vector>
 #include <stdexcept>
 #include <algorithm>
-#include <math.h>
-#include <assert.h>
+#include <cmath>
+#include <cassert>
 #include <string.h>
 
 namespace imageproc

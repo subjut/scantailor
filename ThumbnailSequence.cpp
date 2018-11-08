@@ -64,7 +64,7 @@
 #include <QDebug>
 #include <algorithm>
 #include <stddef.h>
-#include <assert.h>
+#include <cassert>
 
 using namespace ::boost::multi_index;
 

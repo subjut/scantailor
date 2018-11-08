@@ -34,7 +34,7 @@
 #include <utility>
 #include <iterator>
 #include <algorithm>
-#include <assert.h>
+#include <cassert>
 
 class RelinkingModel::StatusUpdateResponse
 {

@@ -19,7 +19,7 @@
 #include "AffineTransformedImage.h"
 #include <QSize>
 #include <cmath>
-#include <assert.h>
+#include <cassert>
 
 namespace imageproc
 {

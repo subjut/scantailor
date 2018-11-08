@@ -18,7 +18,7 @@
 
 #include "ConstraintSet.h"
 #include "FittableSpline.h"
-#include <assert.h>
+#include <cassert>
 
 namespace spfit
 {

@@ -23,7 +23,7 @@
 #include "ObjectSwapperImpl.h"
 #include <boost/shared_ptr.hpp>
 #include <memory>
-#include <assert.h>
+#include <cassert>
 
 class QString;
 

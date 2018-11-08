@@ -25,9 +25,9 @@
 #include <Eigen/Cholesky>
 #include <stdexcept>
 #include <algorithm>
-#include <math.h>
+#include <cmath>
 #include <stdint.h>
-#include <assert.h>
+#include <cassert>
 
 using namespace Eigen;
 

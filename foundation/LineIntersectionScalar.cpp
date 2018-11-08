@@ -18,7 +18,7 @@
 
 #include "LineIntersectionScalar.h"
 #include <limits>
-#include <math.h>
+#include <cmath>
 
 bool
 lineIntersectionScalar(QLineF const& line1, QLineF const& line2, double& s1, double& s2)

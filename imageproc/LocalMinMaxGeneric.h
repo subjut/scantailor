@@ -24,7 +24,7 @@
 #include <QRect>
 #include <vector>
 #include <algorithm>
-#include <assert.h>
+#include <cassert>
 
 namespace imageproc
 {

@@ -64,7 +64,7 @@
 #include <memory>
 #include <algorithm>
 #include <stdexcept>
-#include <assert.h>
+#include <cassert>
 #include <stddef.h>
 
 #include "CommandLine.h"

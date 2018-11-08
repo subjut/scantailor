@@ -39,7 +39,7 @@
 #include <Qt>
 #include <boost/bind.hpp>
 #include <vector>
-#include <assert.h>
+#include <cassert>
 
 namespace output
 {

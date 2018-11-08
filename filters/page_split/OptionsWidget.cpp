@@ -26,7 +26,7 @@
 #include "ProjectPages.h"
 #include "ScopedIncDec.h"
 #include <QPixmap>
-#include <assert.h>
+#include <cassert>
 
 namespace page_split
 {

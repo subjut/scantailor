@@ -21,7 +21,7 @@
 
 #include "foundation_config.h"
 #include <limits>
-#include <math.h>
+#include <cmath>
 
 class QPointF;
 class QLineF;

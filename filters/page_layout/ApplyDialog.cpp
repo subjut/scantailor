@@ -19,7 +19,7 @@
 #include "ApplyDialog.h"
 #include "PageSelectionAccessor.h"
 #include <QButtonGroup>
-#include <assert.h>
+#include <cassert>
 
 namespace page_layout
 {

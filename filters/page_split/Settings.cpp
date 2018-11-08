@@ -20,7 +20,7 @@
 #include "RelinkablePath.h"
 #include "AbstractRelinker.h"
 #include <QMutexLocker>
-#include <assert.h>
+#include <cassert>
 
 namespace page_split
 {

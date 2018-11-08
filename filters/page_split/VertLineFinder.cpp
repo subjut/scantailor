@@ -38,7 +38,7 @@
 #include <QDebug>
 #include <list>
 #include <algorithm>
-#include <math.h>
+#include <cmath>
 
 namespace page_split
 {

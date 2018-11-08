@@ -30,10 +30,10 @@
 #include <vector>
 #include <algorithm>
 #include <stdexcept>
-#include <math.h>
+#include <cmath>
 #include <stdint.h>
 #include <string.h>
-#include <assert.h>
+#include <cassert>
 
 namespace imageproc
 {
@@ -437,6 +437,12 @@ BinaryImage binarizeWolf(
 	}
 	
 	return bw_img;
+}
+
+BinaryImage
+peakThreshold(QImage const& image)
+{
+	return BinaryImage(image, BinaryThreshold::peakThreshold(image));
 }
 
 } // namespace imageproc

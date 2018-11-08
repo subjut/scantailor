@@ -26,7 +26,7 @@
 #include <QPointF>
 #include <QString>
 #include <QCryptographicHash>
-#include <assert.h>
+#include <cassert>
 
 namespace imageproc
 {

@@ -22,7 +22,7 @@
 #include <boost/cstdint.hpp>
 #include <string.h>
 #include <stddef.h>
-#include <assert.h>
+#include <cassert>
 
 namespace imageproc
 {

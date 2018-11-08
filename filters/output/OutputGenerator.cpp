@@ -69,7 +69,7 @@
 #include <memory>
 #include <new>
 #include <algorithm>
-#include <assert.h>
+#include <cassert>
 #include <string.h>
 #include <stdint.h>
 

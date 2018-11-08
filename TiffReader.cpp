@@ -30,7 +30,7 @@
 #include <tiff.h>
 #include <tiffio.h>
 #include <new>
-#include <assert.h>
+#include <cassert>
 
 class TiffReader::TiffHeader
 {

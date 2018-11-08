@@ -40,9 +40,9 @@
 #include <QDebug>
 #include <limits>
 #include <algorithm>
-#include <math.h>
+#include <cmath>
 #include <stddef.h>
-#include <assert.h>
+#include <cassert>
 
 using namespace imageproc;
 
