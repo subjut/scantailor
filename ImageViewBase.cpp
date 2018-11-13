@@ -1,6 +1,6 @@
 /*
     Scan Tailor - Interactive post-processing tool for scanned pages.
-    Copyright (C) 2015  Joseph Artsimovich <joseph.artsimovich@gmail.com>
+    Copyright (C)  Joseph Artsimovich <joseph.artsimovich@gmail.com>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -161,7 +161,8 @@ ImageViewBase::ImageViewBase(
 	m_ignoreScrollEvents(0),
 	m_ignoreResizeEvents(0),
 	m_blockScrollBarUpdate(0),
-	m_hqTransformEnabled(true)
+	m_hqTransformEnabled(true),
+	m_displayAlternative(false)
 {
 	/* For some reason, the default viewport fills background with
 	 * a color different from QPalette::Window. Here we make it not
@@ -202,8 +203,8 @@ ImageViewBase::ImageViewBase(
 	}
 	
 	m_pixmapToImage.scale(
-		(double)m_image.width() / m_pixmap.width(),
-		(double)m_image.height() / m_pixmap.height()
+		(double)image.width() / m_pixmap.width(),
+		(double)image.height() / m_pixmap.height()
 	);
 	
 	m_widgetFocalPoint = centeredWidgetFocalPoint();
@@ -219,7 +220,7 @@ ImageViewBase::ImageViewBase(
 	updateWidgetTransformAndFixFocalPoint(CENTER_IF_FITS);
 
 	interactionState().setDefaultStatusTip(
-		tr("Use the mouse wheel or +/- to zoom.  When zoomed, dragging is possible.")
+		tr("Use the mouse wheel or +/- to zoom. When zoomed, dragging is possible. Hold Space to display original page.")
 	);
 	ensureStatusTip(interactionState().statusTip());
 
@@ -245,6 +246,10 @@ ImageViewBase::hqTransformSetEnabled(bool const enabled)
 		}
 		if (!m_hqPixmap.isNull()) {
 			m_hqPixmap = QPixmap();
+
+            if (!m_alternativeHqPixmap.isNull()) {
+                m_alternativeHqPixmap = QPixmap();
+            }
 			update();
 		}
 	} else if (enabled && !m_hqTransformEnabled) {
@@ -474,7 +479,7 @@ ImageViewBase::paintEvent(QPaintEvent* event)
 		clip_path.addPolygon(m_virtualToWidget.map(m_virtualImageCropArea));
 		painter.setClipPath(clip_path);
 
-		painter.drawPixmap(m_hqPixmapPos, m_hqPixmap);
+		painter.drawPixmap(m_hqPixmapPos, get_hq_pixmap());
 	} else {
 		scheduleHqVersionRebuild();
 
@@ -485,7 +490,7 @@ ImageViewBase::paintEvent(QPaintEvent* event)
 		clip_path.addPolygon(pixmap_to_virtual.inverted().map(m_virtualImageCropArea));
 		painter.setClipPath(clip_path);
 
-		PixmapRenderer::drawPixmap(painter, m_pixmap);
+		PixmapRenderer::drawPixmap(painter, get_pixmap());
 	}
 
 	painter.restore();
@@ -511,7 +516,12 @@ ImageViewBase::keyPressEvent(QKeyEvent* event)
 	m_rootInteractionHandler.keyPressEvent(event, m_interactionState);
 	event->setAccepted(true);
 	updateStatusTipAndCursor();
-	maybeQueueRedraw();
+	if (m_alternativeImage && (Qt::Key)event->key() == 0x20) {
+		m_displayAlternative = true;
+		update();
+	} else {
+		maybeQueueRedraw();
+	}
 }
 
 void
@@ -521,7 +531,12 @@ ImageViewBase::keyReleaseEvent(QKeyEvent* event)
 	m_rootInteractionHandler.keyReleaseEvent(event, m_interactionState);
 	event->setAccepted(true);
 	updateStatusTipAndCursor();
-	maybeQueueRedraw();
+	if (m_alternativeImage && (Qt::Key)event->key() == 0x20) {
+		m_displayAlternative = false;
+		update();
+	} else {
+		maybeQueueRedraw();
+	}
 }
 
 void
@@ -1003,11 +1018,11 @@ ImageViewBase::validateHqPixmap() const
 		return false;
 	}
 
-	if (m_hqPixmap.isNull()) {
+	if (get_hq_pixmap().isNull()) {
 		return false;
 	}
 
-	if (m_hqSourceId != m_image.cacheKey()) {
+	if (m_hqSourceId != get_image().cacheKey()) {
 		return false;
 	}
 
@@ -1040,7 +1055,7 @@ ImageViewBase::initiateBuildingHqVersion()
 		return;
 	}
 
-	m_hqPixmap = QPixmap();
+	set_hq_pixmap(QPixmap());
 
 	if (m_ptrHqTransformTask.get()) {
 		m_ptrHqTransformTask->cancel();
@@ -1054,7 +1069,7 @@ ImageViewBase::initiateBuildingHqVersion()
 	);
 
 	IntrusivePtr<HqTransformTask> const task(
-		new HqTransformTask(this, m_ptrAccelOps, m_image, xform, target_rect)
+		new HqTransformTask(this, m_ptrAccelOps, get_image(), xform, target_rect)
 	);
 	
 	backgroundExecutor().enqueueTask(task);
@@ -1062,7 +1077,7 @@ ImageViewBase::initiateBuildingHqVersion()
 	m_ptrHqTransformTask = task;
 	m_hqXform = xform;
 	m_hqPixmapPos = target_rect.topLeft();
-	m_hqSourceId = m_image.cacheKey();
+	m_hqSourceId = get_image().cacheKey();
 }
 
 /**
@@ -1075,7 +1090,7 @@ ImageViewBase::hqVersionBuilt(QImage const& image)
 		return;
 	}
 	
-	m_hqPixmap = QPixmap::fromImage(image);
+	set_hq_pixmap(QPixmap::fromImage(image));
 	m_ptrHqTransformTask.reset();
 	update();
 }
@@ -1115,6 +1130,21 @@ ImageViewBase::backgroundExecutor()
 	return executor;
 }
 
+void
+ImageViewBase::setAlternativeImage(shared_ptr<QImage> image, shared_ptr<QPixmap> pixmap, std::shared_ptr<AcceleratableOperations> const& accel_ops)
+{
+    m_alternativeImage = image;
+    if (m_alternativeImage) {
+        if (!pixmap) {
+            QPixmap new_pixmap = QPixmap::fromImage(createDownscaledImage(*m_alternativeImage, accel_ops));
+            m_alternativePixmap.reset(new QPixmap(new_pixmap));
+        } else {
+            m_alternativePixmap = pixmap;
+        }
+    } else {
+        m_alternativePixmap.reset();
+    }
+}
 
 /*==================== ImageViewBase::HqTransformTask ======================*/
 

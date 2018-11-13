@@ -44,6 +44,8 @@ class BackgroundExecutor;
 class ImagePresentation;
 class AcceleratableOperations;
 
+using namespace std;
+
 /**
  * \brief The base class for widgets that display and manipulate images.
  *
@@ -238,6 +240,12 @@ public:
 	void moveTowardsIdealPosition(double pixel_length);
 
 	static BackgroundExecutor& backgroundExecutor();
+
+    void setAlternativeImage(shared_ptr<QImage> image, shared_ptr<QPixmap> pixmap,
+		std::shared_ptr<AcceleratableOperations> const& accel_ops);
+
+    shared_ptr<QPixmap> getAlternativePixmap() const { return m_alternativePixmap; }
+
 protected:
 	virtual void paintEvent(QPaintEvent* event);
 
@@ -306,6 +314,21 @@ private:
 	void maybeQueueRedraw();
 	
 	std::shared_ptr<AcceleratableOperations> m_ptrAccelOps;
+	
+	const QImage& get_image() const { return m_displayAlternative && m_alternativeImage ? *(m_alternativeImage) : m_image; }
+
+    const QPixmap& get_pixmap() const { return m_displayAlternative && m_alternativePixmap ? *(m_alternativePixmap) : m_pixmap; }
+
+    const QPixmap& get_hq_pixmap() const { return m_displayAlternative? m_alternativeHqPixmap : m_hqPixmap; }
+
+    void set_hq_pixmap(const QPixmap& pixmap)
+    {
+        if (m_displayAlternative) {
+            m_alternativeHqPixmap = pixmap;
+        } else {
+            m_hqPixmap = pixmap;
+        }
+    }
 
 	InteractionHandler m_rootInteractionHandler;
 
@@ -316,6 +339,8 @@ private:
 	 * for delayed rendering.
 	 */
 	QImage m_image;
+	
+    shared_ptr<QImage> m_alternativeImage;
 	
 	/**
 	 * This timer is used for delaying the construction of
@@ -329,10 +354,14 @@ private:
 	 */
 	QPixmap m_pixmap;
 	
+    shared_ptr<QPixmap> m_alternativePixmap;
+	
 	/**
 	 * The high quality, pre-transformed version of m_pixmap.
 	 */
 	QPixmap m_hqPixmap;
+	
+    QPixmap m_alternativeHqPixmap;
 	
 	/**
 	 * The position, in widget coordinates, where m_hqPixmap is to be drawn.
@@ -448,6 +477,8 @@ private:
 	int m_blockScrollBarUpdate;
 	
 	bool m_hqTransformEnabled;
+
+	bool m_displayAlternative;
 };
 
 #endif

@@ -52,6 +52,8 @@
 #include "ErrorWidget.h"
 #include "imageproc/BinaryImage.h"
 #include "imageproc/PolygonUtils.h"
+#include "imageproc/DrawOver.h"
+#include "imageproc/AffineTransform.h"
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
 #include <QImage>
@@ -85,8 +87,11 @@ public:
 		PageId const& page_id,
 		QImage const& orig_image,
 		QImage const& output_image,
+		AffineImageTransform const& xform,
 		std::function<QPointF(QPointF const&)> const& orig_to_output,
 		std::function<QPointF(QPointF const&)> const& output_to_orig,
+		QRect const& m_contentRect,
+		QRect const& m_outerRect,
 		BinaryImage const& picture_mask,
 		CachingFactory<QImage> const& cached_transformed_orig_image,
 		CachingFactory<QImage> const& cached_downscaled_transformed_orig_image,
@@ -97,6 +102,8 @@ public:
 	virtual void updateUI(FilterUiInterface* ui);
 	
 	virtual IntrusivePtr<AbstractFilter> filter() { return m_ptrFilter; }
+
+	QImage* getAlternativeImage();
 private:
 	IntrusivePtr<Filter> m_ptrFilter;
 	std::shared_ptr<AcceleratableOperations> m_ptrAccelOps;
@@ -106,8 +113,11 @@ private:
 	PageId m_pageId;
 	QImage m_origImage;
 	QImage m_outputImage;
+	AffineImageTransform m_xform;
 	std::function<QPointF(QPointF const&)> m_origToOutput;
 	std::function<QPointF(QPointF const&)> m_outputToOrig;
+	QRect m_contentRect;
+	QRect m_outerRect;
 	QImage m_downscaledOutputImage;
 	BinaryImage m_pictureMask;
 	CachingFactory<QImage> m_cachedTransformedOrigImage;
@@ -421,8 +431,10 @@ Task::processScaled(
 		new UiUpdater(
 			m_ptrFilter, accel_ops, m_ptrSettings, m_ptrDbg, params,
 			m_pageId, orig_image, out_img,
+			orig_image_transform->toAffine(),
 			generator.origToOutputMapper(),
 			generator.outputToOrigMapper(),
+			content_rect.toAlignedRect(), out_rect,
 			automask_img, cached_transform_orig_image,
 			cached_downscaled_transform_orig_image,
 			despeckle_state, despeckle_visualization,
@@ -473,8 +485,11 @@ Task::UiUpdater::UiUpdater(
 	PageId const& page_id,
 	QImage const& orig_image,
 	QImage const& output_image,
+	AffineImageTransform const& xform,
 	std::function<QPointF(QPointF const&)> const& orig_to_output,
 	std::function<QPointF(QPointF const&)> const& output_to_orig,
+	QRect const& content_rect,
+	QRect const& outer_rect,
 	BinaryImage const& picture_mask,
 	CachingFactory<QImage> const& cached_transformed_orig_image,
 	CachingFactory<QImage> const& cached_downscaled_transformed_orig_image,
@@ -489,8 +504,11 @@ Task::UiUpdater::UiUpdater(
 	m_pageId(page_id),
 	m_origImage(orig_image),
 	m_outputImage(output_image),
+	m_xform(xform),
 	m_origToOutput(orig_to_output),
 	m_outputToOrig(output_to_orig),
+	m_contentRect(content_rect),
+	m_outerRect(outer_rect),
 	m_downscaledOutputImage(ImageViewBase::createDownscaledImage(output_image, accel_ops)),
 	m_pictureMask(picture_mask),
 	m_cachedTransformedOrigImage(cached_transformed_orig_image),
@@ -523,6 +541,16 @@ Task::UiUpdater::updateUI(FilterUiInterface* ui)
 			m_downscaledOutputImage, OutputMargins()
 		)
 	);
+	
+	// Alternitive Image on Space press
+    std::shared_ptr<QImage> alt_image_ptr;
+    std::shared_ptr<QPixmap> alt_downscaled_pixmap_ptr;
+
+    alt_image_ptr.reset(getAlternativeImage());
+    if (alt_image_ptr) {
+        image_view->setAlternativeImage(alt_image_ptr, shared_ptr<QPixmap>(), m_ptrAccelOps);
+        alt_downscaled_pixmap_ptr = image_view->getAlternativePixmap();
+    }
 
 	std::auto_ptr<QWidget> picture_zone_editor;
 	if (m_pictureMask.isNull()) {
@@ -551,6 +579,12 @@ Task::UiUpdater::updateUI(FilterUiInterface* ui)
 			m_origToOutput, m_outputToOrig, m_pageId, m_ptrSettings
 		)
 	);
+	
+	// Alternitive Image on Space press
+    if (alt_image_ptr) {
+        qobject_cast<FillZoneEditor*>(fill_zone_editor.get())->setAlternativeImage(alt_image_ptr, alt_downscaled_pixmap_ptr, m_ptrAccelOps);
+    }
+
 	QObject::connect(
 		fill_zone_editor.get(), SIGNAL(invalidateThumbnail(PageId const&)),
 		opt_widget, SIGNAL(invalidateThumbnail(PageId const&))
@@ -567,6 +601,16 @@ Task::UiUpdater::updateUI(FilterUiInterface* ui)
 				m_ptrAccelOps, m_despeckleState, m_despeckleVisualization, m_debug
 			)
 		);
+
+		// Alternitive Image on Space press
+        QObject::connect(qobject_cast<DespeckleView*>(despeckle_view.get()), &DespeckleView::imageViewCreated,
+                         [=](ImageViewBase* ivb) {
+            if (ivb && alt_image_ptr) {
+                ivb->setAlternativeImage(alt_image_ptr, alt_downscaled_pixmap_ptr, m_ptrAccelOps);
+            }
+        });
+
+
 		QObject::connect(
 			opt_widget, SIGNAL(despeckleLevelChanged(DespeckleLevel, bool*)),
 			despeckle_view.get(), SLOT(despeckleLevelChanged(DespeckleLevel, bool*))
@@ -588,6 +632,56 @@ Task::UiUpdater::updateUI(FilterUiInterface* ui)
 	);
 
 	ui->setImageWidget(tab_widget.release(), ui->TRANSFER_OWNERSHIP, m_ptrDbg.get());
+}
+
+
+QVector<QRgb> _gray_palette;
+
+QImage*
+Task::UiUpdater::getAlternativeImage()
+{
+	QRect outRect(m_outerRect);
+	QRect contentRect(m_contentRect);
+	
+	// Get coordinates where the content rect has to be moved
+	QPoint moveContentTo(contentRect.top() - outRect.top(),
+						contentRect.left() - outRect.left());
+	outRect.moveTo(0, 0);
+
+	QImage src = affineTransform(m_origImage, m_xform.transform(),
+					contentRect, imageproc::OutsidePixels::assumeColor(Qt::white));
+
+    QSize const target_size(outRect.size().expandedTo(QSize(1, 1)));
+
+    QImage* res = new QImage(target_size, m_origImage.format());
+    if (res->format() == QImage::Format_Indexed8) {
+        if (_gray_palette.size() < 256) {
+            // init gray_palette
+            for (int i = 0; i < _gray_palette.size(); ++i) {
+                _gray_palette[i] = qRgb(i, i, i);
+            }
+            for (int i = _gray_palette.size(); i < 256; ++i) {
+                _gray_palette.append(qRgb(i, i, i));
+            }
+        }
+        res->setColorTable(_gray_palette);
+    }
+    res->fill(Qt::white);
+
+    if (src.format() != res->format()) {
+        src = src.convertToFormat(res->format());
+    }
+
+    QRect const src_rect(src.rect());
+	contentRect.moveTo(moveContentTo);
+    QRect dst_rect(contentRect);
+    dst_rect.setSize(src_rect.size()); //to be 100% safe
+
+    imageproc::drawOver(*res, dst_rect, src, src_rect);
+    res->setDotsPerMeterX(m_outputImage.dotsPerMeterX());
+    res->setDotsPerMeterY(m_outputImage.dotsPerMeterY());
+
+    return res;
 }
 
 } // namespace output
