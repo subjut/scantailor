@@ -640,9 +640,23 @@ QVector<QRgb> _gray_palette;
 QImage*
 Task::UiUpdater::getAlternativeImage()
 {
+	// return no image, if there is no output image
+	if (m_outerRect.top() >= m_outerRect.bottom()) {
+		return nullptr;
+	}
+
 	QRect outRect(m_outerRect);
 	QRect contentRect(m_contentRect);
-	
+
+	bool noContentRect = false;
+	// Set the content rect to the original image if its empty (e.g. deleted)
+	if (contentRect.top() > contentRect.bottom()) {
+		// scale to output size
+		contentRect.setRight(m_origImage.rect().right() * m_xform.transform().m11());
+		contentRect.setBottom(m_origImage.rect().bottom() * m_xform.transform().m22());
+		noContentRect = true;
+	}
+
 	// Get coordinates where the content rect has to be moved
 	QPoint moveContentTo(contentRect.top() - outRect.top(),
 						contentRect.left() - outRect.left());
@@ -673,7 +687,11 @@ Task::UiUpdater::getAlternativeImage()
     }
 
     QRect const src_rect(src.rect());
-	contentRect.moveTo(moveContentTo);
+	if (noContentRect) {
+		contentRect.moveCenter(res->rect().center());
+	} else {
+		contentRect.moveTo(moveContentTo);
+	}
     QRect dst_rect(contentRect);
     dst_rect.setSize(src_rect.size()); //to be 100% safe
 
