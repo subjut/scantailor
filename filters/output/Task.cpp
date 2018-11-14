@@ -657,10 +657,11 @@ Task::UiUpdater::getAlternativeImage()
 		noContentRect = true;
 	}
 
-	// Get coordinates where the content rect has to be moved
-	QPoint moveContentTo(contentRect.top() - outRect.top(),
-						contentRect.left() - outRect.left());
-	outRect.moveTo(0, 0);
+	// Align content inside margins
+	contentRect.setLeft(std::max(contentRect.left(), outRect.left()));
+	contentRect.setRight(std::min(contentRect.right(), outRect.right()));
+	contentRect.setTop(std::max(contentRect.top(), outRect.top()));
+	contentRect.setBottom(std::min(contentRect.bottom(), outRect.bottom()));
 
 	QImage src = affineTransform(m_origImage, m_xform.transform(),
 					contentRect, imageproc::OutsidePixels::assumeColor(Qt::white));
@@ -690,7 +691,7 @@ Task::UiUpdater::getAlternativeImage()
 	if (noContentRect) {
 		contentRect.moveCenter(res->rect().center());
 	} else {
-		contentRect.moveTo(moveContentTo);
+		contentRect.translate(-outRect.topLeft());
 	}
     QRect dst_rect(contentRect);
     dst_rect.setSize(src_rect.size()); //to be 100% safe
