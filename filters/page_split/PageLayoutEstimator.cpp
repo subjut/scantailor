@@ -99,7 +99,7 @@ struct CenterComparator
  * \param dbg An optional sink for debugging images.
  * \return The page layout detected or a null auto_ptr.
  */
-std::auto_ptr<PageLayout> autoDetectSinglePageLayout(
+std::unique_ptr<PageLayout> autoDetectSinglePageLayout(
 	LayoutType const layout_type,
 	std::vector<QLineF> const& ltr_lines,
 	QRectF const& virtual_image_rect, DebugImages* dbg)
@@ -134,14 +134,14 @@ std::auto_ptr<PageLayout> autoDetectSinglePageLayout(
 		}
 		
 		// Return a SINGLE_PAGE_UNCUT layout.
-		return std::auto_ptr<PageLayout>(new PageLayout(virtual_image_rect));
+		return std::unique_ptr<PageLayout>(new PageLayout(virtual_image_rect));
 	} while (false);
 	
 	if (ltr_lines.empty()) {
 		// Impossible to detect the layout type.
-		return std::auto_ptr<PageLayout>();
+		return std::unique_ptr<PageLayout>();
 	} else if (ltr_lines.size() > 1) {
-		return std::auto_ptr<PageLayout>(
+		return std::unique_ptr<PageLayout>(
 			new PageLayout(virtual_image_rect, ltr_lines.front(), ltr_lines.back())
 		);
 	} else {
@@ -152,14 +152,14 @@ std::auto_ptr<PageLayout> autoDetectSinglePageLayout(
 			QLineF const right_line(
 				virtual_image_rect.topRight(), virtual_image_rect.bottomRight()
 			);
-			return std::auto_ptr<PageLayout>(
+			return std::unique_ptr<PageLayout>(
 				new PageLayout(virtual_image_rect, line, right_line)
 			);
 		} else {
 			QLineF const left_line(
 				virtual_image_rect.topLeft(), virtual_image_rect.bottomLeft()
 			);
-			return std::auto_ptr<PageLayout>(
+			return std::unique_ptr<PageLayout>(
 				new PageLayout(virtual_image_rect, left_line, line)
 			);
 		}
@@ -173,15 +173,15 @@ std::auto_ptr<PageLayout> autoDetectSinglePageLayout(
  * \param image_size The dimentions of the page image.
  * \return The page layout detected or a null auto_ptr.
  */
-std::auto_ptr<PageLayout> autoDetectTwoPageLayout(
+std::unique_ptr<PageLayout> autoDetectTwoPageLayout(
 	std::vector<QLineF> const& ltr_lines,
 	QRectF const& virtual_image_rect)
 {
 	if (ltr_lines.empty()) {
 		// Impossible to detect the page layout.
-		return std::auto_ptr<PageLayout>();
+		return std::unique_ptr<PageLayout>();
 	} else if (ltr_lines.size() == 1) {
-		return std::auto_ptr<PageLayout>(
+		return std::unique_ptr<PageLayout>(
 			new PageLayout(virtual_image_rect, ltr_lines.front())
 		);
 	}
@@ -199,7 +199,7 @@ std::auto_ptr<PageLayout> autoDetectTwoPageLayout(
 		}
 	}
 	
-	return std::auto_ptr<PageLayout>(
+	return std::unique_ptr<PageLayout>(
 		new PageLayout(virtual_image_rect, *best_line)
 	);
 }
@@ -241,7 +241,7 @@ PageLayoutEstimator::estimatePageLayout(
 		return PageLayout(image.xform().transformedCropArea().boundingRect());
 	}
 	
-	std::auto_ptr<PageLayout> layout(
+	std::unique_ptr<PageLayout> layout(
 		tryCutAtFoldingLine(layout_type, image, accel_ops, dbg)
 	);
 	if (layout.get()) {
@@ -290,7 +290,7 @@ private:
  * \return The detected page layout, or a null auto_ptr if page layout
  *         could not be detected.
  */
-std::auto_ptr<PageLayout>
+std::unique_ptr<PageLayout>
 PageLayoutEstimator::tryCutAtFoldingLine(
 	LayoutType const layout_type, AffineTransformedImage const& image,
 	std::shared_ptr<AcceleratableOperations> const& accel_ops,

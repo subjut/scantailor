@@ -51,7 +51,7 @@ public:
 	UiUpdater(IntrusivePtr<Filter> const& filter,
 		std::shared_ptr<AcceleratableOperations> const& accel_ops,
 		PageId const& page_id, Params const& params,
-		std::auto_ptr<DebugImagesImpl> dbg,
+		std::unique_ptr<DebugImagesImpl> const& dbg,
 		std::shared_ptr<AbstractImageTransform const> const& orig_transform,
 		AffineTransformedImage const& affine_transformed_image,
 		bool batch);
@@ -64,7 +64,7 @@ private:
 	std::shared_ptr<AcceleratableOperations> m_ptrAccelOps;
 	PageId m_pageId;
 	Params m_params;
-	std::auto_ptr<DebugImagesImpl> m_ptrDbg;
+	std::unique_ptr<DebugImagesImpl> const& m_ptrDbg;
 	std::shared_ptr<AbstractImageTransform const> m_ptrOrigTransform;
 	AffineTransformedImage m_affineTransformedImage;
 	QImage m_downscaledImage;
@@ -186,7 +186,7 @@ Task::UiUpdater::UiUpdater(
 	std::shared_ptr<AcceleratableOperations> const& accel_ops,
 	PageId const& page_id,
 	Params const& params,
-	std::auto_ptr<DebugImagesImpl> dbg,
+	std::unique_ptr<DebugImagesImpl> const& dbg,
 	std::shared_ptr<AbstractImageTransform const> const& orig_transform,
 	AffineTransformedImage const& affine_transformed_image,
 	bool const batch)

@@ -56,13 +56,13 @@ CacheDrivenTask::process(
 	std::shared_ptr<imageproc::AbstractImageTransform const> const& full_size_image_transform,
 	ContentBox const& content_box)
 {
-	std::auto_ptr<Params> const params(
+	std::unique_ptr<Params> const params(
 		m_ptrSettings->getPageParams(page_info.id())
 	);
 	if (!params.get() || !params->contentSize().isValid()) {
 		if (ThumbnailCollector* thumb_col = dynamic_cast<ThumbnailCollector*>(collector)) {
 			thumb_col->processThumbnail(
-				std::auto_ptr<QGraphicsItem>(
+				std::unique_ptr<QGraphicsItem>(
 					new IncompleteThumbnail(
 						thumb_col->thumbnailCache(),
 						thumb_col->maxLogicalThumbSize(),
@@ -99,7 +99,7 @@ CacheDrivenTask::process(
 	
 	if (ThumbnailCollector* thumb_col = dynamic_cast<ThumbnailCollector*>(collector)) {
 		
-		std::auto_ptr<QGraphicsItem> thumb;
+		std::unique_ptr<QGraphicsItem> thumb;
 
 		if (content_box.isValid()) {
 			thumb.reset(
@@ -121,7 +121,7 @@ CacheDrivenTask::process(
 			);
 		}
 
-		thumb_col->processThumbnail(thumb);
+		thumb_col->processThumbnail(std::move(thumb));
 	}
 }
 

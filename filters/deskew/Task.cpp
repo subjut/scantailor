@@ -80,7 +80,7 @@ class Task::NoDistortionUiUpdater : public FilterResult
 public:
 	NoDistortionUiUpdater(IntrusivePtr<Filter> const& filter,
 		std::shared_ptr<AcceleratableOperations> const& accel_ops,
-		std::auto_ptr<DebugImagesImpl> dbg_img,
+		std::unique_ptr<DebugImagesImpl> const& dbg_img,
 		AffineTransformedImage const& transformed_image,
 		PageId const& page_id,
 		Params const& page_params,
@@ -92,7 +92,7 @@ public:
 private:
 	IntrusivePtr<Filter> m_ptrFilter;
 	std::shared_ptr<AcceleratableOperations> m_ptrAccelOps;
-	std::auto_ptr<DebugImagesImpl> m_ptrDbg;
+	std::unique_ptr<DebugImagesImpl> const& m_ptrDbg;
 	AffineTransformedImage m_fullSizeImage;
 	QImage m_downscaledImage;
 	PageId m_pageId;
@@ -105,7 +105,7 @@ class Task::RotationUiUpdater : public FilterResult
 public:
 	RotationUiUpdater(IntrusivePtr<Filter> const& filter,
 		std::shared_ptr<AcceleratableOperations> const& accel_ops,
-		std::auto_ptr<DebugImagesImpl> dbg_img,
+		std::unique_ptr<DebugImagesImpl> const& dbg_img,
 		AffineTransformedImage const& full_size_image,
 		PageId const& page_id,
 		Params const& page_params,
@@ -117,7 +117,7 @@ public:
 private:
 	IntrusivePtr<Filter> m_ptrFilter;
 	std::shared_ptr<AcceleratableOperations> m_ptrAccelOps;
-	std::auto_ptr<DebugImagesImpl> m_ptrDbg;
+	std::unique_ptr<DebugImagesImpl> const& m_ptrDbg;
 	AffineTransformedImage m_fullSizeImage;
 	QImage m_downscaledImage;
 	PageId m_pageId;
@@ -130,7 +130,7 @@ class Task::PerspectiveUiUpdater : public FilterResult
 public:
 	PerspectiveUiUpdater(IntrusivePtr<Filter> const& filter,
 		std::shared_ptr<AcceleratableOperations> const& accel_ops,
-		std::auto_ptr<DebugImagesImpl> dbg_img,
+		std::unique_ptr<DebugImagesImpl> const& dbg_img,
 		AffineTransformedImage const& full_size_image,
 		PageId const& page_id, Params const& page_params,
 		bool batch_processing);
@@ -141,7 +141,7 @@ public:
 private:
 	IntrusivePtr<Filter> m_ptrFilter;
 	std::shared_ptr<AcceleratableOperations> m_ptrAccelOps;
-	std::auto_ptr<DebugImagesImpl> m_ptrDbg;
+	std::unique_ptr<DebugImagesImpl> const& m_ptrDbg;
 	AffineTransformedImage m_fullSizeImage;
 	QImage m_downscaledImage;
 	PageId m_pageId;
@@ -154,7 +154,7 @@ class Task::DewarpingUiUpdater : public FilterResult
 public:
 	DewarpingUiUpdater(IntrusivePtr<Filter> const& filter,
 		std::shared_ptr<AcceleratableOperations> const& accel_ops,
-		std::auto_ptr<DebugImagesImpl> dbg_img,
+		std::unique_ptr<DebugImagesImpl> const& dbg_img,
 		AffineTransformedImage const& full_size_image,
 		PageId const& page_id, Params const& page_params,
 		bool batch_processing);
@@ -165,7 +165,7 @@ public:
 private:
 	IntrusivePtr<Filter> m_ptrFilter;
 	std::shared_ptr<AcceleratableOperations> m_ptrAccelOps;
-	std::auto_ptr<DebugImagesImpl> m_ptrDbg;
+	std::unique_ptr<DebugImagesImpl> const& m_ptrDbg;
 	AffineTransformedImage m_fullSizeImage;
 	QImage m_downscaledImage;
 	PageId m_pageId;
@@ -573,7 +573,7 @@ Task::cleanup(TaskStatus const& status, BinaryImage& image)
 Task::NoDistortionUiUpdater::NoDistortionUiUpdater(
 	IntrusivePtr<Filter> const& filter,
 	std::shared_ptr<AcceleratableOperations> const& accel_ops,
-	std::auto_ptr<DebugImagesImpl> dbg_img,
+	std::unique_ptr<DebugImagesImpl> const& dbg_img,
 	AffineTransformedImage const& full_size_image,
 	PageId const& page_id,
 	Params const& page_params,
@@ -616,7 +616,7 @@ Task::NoDistortionUiUpdater::updateUI(FilterUiInterface* ui)
 Task::RotationUiUpdater::RotationUiUpdater(
 	IntrusivePtr<Filter> const& filter,
 	std::shared_ptr<AcceleratableOperations> const& accel_ops,
-	std::auto_ptr<DebugImagesImpl> dbg_img,
+	std::unique_ptr<DebugImagesImpl> const& dbg_img,
 	AffineTransformedImage const& full_size_image,
 	PageId const& page_id,
 	Params const& page_params,
@@ -668,7 +668,7 @@ Task::RotationUiUpdater::updateUI(FilterUiInterface* ui)
 Task::PerspectiveUiUpdater::PerspectiveUiUpdater(
 	IntrusivePtr<Filter> const& filter,
 	std::shared_ptr<AcceleratableOperations> const& accel_ops,
-	std::auto_ptr<DebugImagesImpl> dbg_img,
+	std::unique_ptr<DebugImagesImpl> const& dbg_img,
 	AffineTransformedImage const& full_size_image,
 	PageId const& page_id,
 	Params const& page_params,
@@ -744,7 +744,7 @@ Task::PerspectiveUiUpdater::updateUI(FilterUiInterface* ui)
 Task::DewarpingUiUpdater::DewarpingUiUpdater(
 	IntrusivePtr<Filter> const& filter,
 	std::shared_ptr<AcceleratableOperations> const& accel_ops,
-	std::auto_ptr<DebugImagesImpl> dbg_img,
+	std::unique_ptr<DebugImagesImpl> const& dbg_img,
 	AffineTransformedImage const& full_size_image,
 	PageId const& page_id,
 	Params const& page_params,

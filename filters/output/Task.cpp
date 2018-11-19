@@ -82,7 +82,7 @@ public:
 	UiUpdater(IntrusivePtr<Filter> const& filter,
 		std::shared_ptr<AcceleratableOperations> const& accel_ops,
 		IntrusivePtr<Settings> const& settings,
-		std::auto_ptr<DebugImagesImpl> dbg_img,
+		std::unique_ptr<DebugImagesImpl> const& dbg_img,
 		Params const& params,
 		PageId const& page_id,
 		QImage const& orig_image,
@@ -108,7 +108,7 @@ private:
 	IntrusivePtr<Filter> m_ptrFilter;
 	std::shared_ptr<AcceleratableOperations> m_ptrAccelOps;
 	IntrusivePtr<Settings> m_ptrSettings;
-	std::auto_ptr<DebugImagesImpl> m_ptrDbg;
+	std::unique_ptr<DebugImagesImpl> const& m_ptrDbg;
 	Params m_params;
 	PageId m_pageId;
 	QImage m_origImage;
@@ -221,7 +221,7 @@ Task::processScaled(
 	bool need_reprocess = false;
 	do { // Just to be able to break from it.
 		
-		std::auto_ptr<OutputParams> stored_output_params(
+		std::unique_ptr<OutputParams> stored_output_params(
 			m_ptrSettings->getOutputParams(m_pageId)
 		);
 		
@@ -480,7 +480,7 @@ Task::UiUpdater::UiUpdater(
 	IntrusivePtr<Filter> const& filter,
 	std::shared_ptr<AcceleratableOperations> const& accel_ops,
 	IntrusivePtr<Settings> const& settings,
-	std::auto_ptr<DebugImagesImpl> dbg_img,
+	std::unique_ptr<DebugImagesImpl> const& dbg_img,
 	Params const& params,
 	PageId const& page_id,
 	QImage const& orig_image,
@@ -535,7 +535,7 @@ Task::UiUpdater::updateUI(FilterUiInterface* ui)
 		return;
 	}
 
-	std::auto_ptr<ImageViewBase> image_view(
+	std::unique_ptr<ImageViewBase> image_view(
 		new BasicImageView(
 			m_ptrAccelOps, m_outputImage,
 			m_downscaledOutputImage, OutputMargins()
@@ -552,7 +552,7 @@ Task::UiUpdater::updateUI(FilterUiInterface* ui)
         alt_downscaled_pixmap_ptr = image_view->getAlternativePixmap();
     }
 
-	std::auto_ptr<QWidget> picture_zone_editor;
+	std::unique_ptr<QWidget> picture_zone_editor;
 	if (m_pictureMask.isNull()) {
 		picture_zone_editor.reset(
 			new ErrorWidget(tr("Picture zones are only available in Mixed mode."))
@@ -590,7 +590,7 @@ Task::UiUpdater::updateUI(FilterUiInterface* ui)
 		opt_widget, SIGNAL(invalidateThumbnail(PageId const&))
 	);
 
-	std::auto_ptr<QWidget> despeckle_view;
+	std::unique_ptr<QWidget> despeckle_view;
 	if (m_params.colorParams().colorMode() == ColorParams::COLOR_GRAYSCALE) {
 		despeckle_view.reset(
 			new ErrorWidget(tr("Despeckling can't be done in Color / Grayscale mode."))
@@ -617,7 +617,7 @@ Task::UiUpdater::updateUI(FilterUiInterface* ui)
 		);
 	}
 
-	std::auto_ptr<TabbedImageView> tab_widget(new TabbedImageView);
+	std::unique_ptr<TabbedImageView> tab_widget(new TabbedImageView);
 	tab_widget->setDocumentMode(true);
 	tab_widget->setTabPosition(QTabWidget::East);
 	tab_widget->addTab(image_view.release(), tr("Output"), TAB_OUTPUT);

@@ -91,7 +91,7 @@ CacheDrivenTask::processScaled(
 
 		do { // Just to be able to break from it.
 
-			std::auto_ptr<OutputParams> stored_output_params(
+			std::unique_ptr<OutputParams> stored_output_params(
 				m_ptrSettings->getOutputParams(page_info.id())
 			);
 
@@ -138,7 +138,7 @@ CacheDrivenTask::processScaled(
 
 		if (need_reprocess) {
 			thumb_col->processThumbnail(
-				std::auto_ptr<QGraphicsItem>(
+				std::unique_ptr<QGraphicsItem>(
 					new IncompleteThumbnail(
 						thumb_col->thumbnailCache(),
 						thumb_col->maxLogicalThumbSize(),
@@ -148,7 +148,7 @@ CacheDrivenTask::processScaled(
 			);
 		} else {
 			thumb_col->processThumbnail(
-				std::auto_ptr<QGraphicsItem>(
+				std::unique_ptr<QGraphicsItem>(
 					new Thumbnail(
 						thumb_col->thumbnailCache(),
 						thumb_col->maxLogicalThumbSize(),
