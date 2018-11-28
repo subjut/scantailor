@@ -447,7 +447,7 @@ SET_TARGET_PROPERTIES(
 
 #================================== PODOFO ==================================#
 
-# we use a bit of a different approach here then above and add podofo as as
+# we use a bit of a different approach here than above and add podofo as as
 # an external subproject
 
 # Tell Podofo the correct dependency paths
