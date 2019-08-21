@@ -375,9 +375,7 @@ IF(NOT PODOFO_INCLUDE_DIR)
 	)
 ENDIF()
 
-INCLUDE_DIRECTORIES("${PODOFO_INCLUDE_DIR}/../"
-#	"${PODOFO_INCLUDE_DIR}/base"
-	"${build_outer_dir}/scantailor-deps-build/podofo-build"
+INCLUDE_DIRECTORIES("${PODOFO_INCLUDE_DIR}/../"	"${DEPS_BUILD_DIR}/podofo-build"
 )
 	
 FIND_LIBRARY(
