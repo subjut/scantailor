@@ -7,12 +7,13 @@ FILE(
 	# cmd /c is used because it may be configure.bat, which otherwise wouldn't return control.
 	"cmd /c ${QTBASE_DIR}\\configure -platform ${PLATFORM}"
 	" -debug-and-release -shared -force-debug-info"
-	" -no-gif -system-zlib -system-libpng -system-libjpeg -no-openssl"
+	" -no-gif -system-zlib -system-libpng -system-libjpeg -system-freetype -no-openssl"
 	" -opengl desktop -nomake examples -nomake tests -opensource -confirm-license -no-ltcg"
-	" -I \"${JPEG_INCLUDE_DIR}\" -I \"${ZLIB_INCLUDE_DIR}\""
-	" -I \"${PNG_INCLUDE_DIR}\" -I \"${FREETYPE_INCLUDE_DIR}\""
-	" -L \"${JPEG_LINK_DIR}\" -L \"${ZLIB_LINK_DIR}\""
-	" -L \"${PNG_LINK_DIR}\""
+	" -skip qtconnectivity -skip qtsensors"
+	" -I \"${JPEG_INCLUDE_DIR}\" -I \"${ZLIB_INCLUDE_DIR}\" -I \"${PNG_INCLUDE_DIR}\""
+	" -I \"${FREETYPE_INCLUDE_DIR}\" -I \"${FREETYPE_INCLUDE_DIR}\\freetype\""
+	# we only need to put one lib dir in here, all libs are in same location
+	" -L \"${JPEG_LINK_DIR}\""
 	" -D _BIND_TO_CURRENT_VCLIBS_VERSION=1"
 	"\n"
 	"if errorlevel 1 goto exit\n"

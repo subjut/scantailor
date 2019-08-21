@@ -333,6 +333,7 @@ SET(
 	openjpeg_sources
 	thread.c bio.c cio.c dwt.c event.c image.c invert.c j2k.c jp2.c mct.c mqc.c
 	openjpeg.c opj_clock.c pi.c t1.c t2.c tcd.c tgt.c function_list.c opj_malloc.c
+	sparse_array.c
 )
 LIST_ITEMS_PREPEND(openjpeg_sources "${OPENJPEG_DIR}/src/lib/openjp2/")
 
@@ -386,12 +387,6 @@ STRING(REGEX REPLACE
 STRING(REGEX REPLACE
   "/\\* +(#define +FT_CONFIG_OPTION_USE_PNG) +\\*/" "\\1"
   FTOPTION_H "${FTOPTION_H}")
-STRING(REPLACE "/* #define FT_EXPORT(x)      extern x */"
-		"#define FT_EXPORT(x) __declspec(dllexport) x"
-		FTOPTION_H "${FTOPTION_H}")
-STRING(REPLACE "/* #define FT_EXPORT_DEF(x)  x */"
-		"#define FT_EXPORT_DEF(x)  __declspec(dllexport) x"
-		FTOPTION_H "${FTOPTION_H}")
 FILE(WRITE "${FREETYPE_DIR}/include/freetype/config/ftoption.h-new"
   "${FTOPTION_H}")
 EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -399,28 +394,27 @@ EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_if_different
   "${FREETYPE_DIR}/include/freetype/config/ftoption.h")
 	
 set(freetype_sources
-  src/autofit/autofit.c src/base/ftbase.c src/base/ftbbox.c src/base/ftbdf.c
-  src/base/ftbitmap.c src/base/ftcid.c src/base/ftfntfmt.c src/base/ftfstype.c
-  src/base/ftgasp.c src/base/ftglyph.c src/base/ftgxval.c src/base/ftinit.c
-  src/base/ftlcdfil.c src/base/ftmm.c src/base/ftotval.c src/base/ftpatent.c
-  src/base/ftpfr.c src/base/ftstroke.c src/base/ftsynth.c src/base/ftsystem.c
-  src/base/fttype1.c src/base/ftwinfnt.c src/bdf/bdf.c src/bzip2/ftbzip2.c
-  src/cache/ftcache.c src/cff/cff.c src/cid/type1cid.c src/gzip/ftgzip.c
-  src/lzw/ftlzw.c src/pcf/pcf.c src/pfr/pfr.c src/psaux/psaux.c
-	src/pshinter/pshinter.c	src/psnames/psnames.c src/raster/raster.c
-  src/sfnt/sfnt.c src/smooth/smooth.c src/truetype/truetype.c
-  src/type1/type1.c src/type42/type42.c src/winfonts/winfnt.c
+	src/autofit/autofit.c src/base/ftbase.c src/base/ftbbox.c src/base/ftbdf.c
+	src/base/ftbitmap.c src/base/ftcid.c src/base/ftfstype.c src/base/ftgasp.c
+	src/base/ftglyph.c src/base/ftgxval.c src/base/ftinit.c src/base/ftmm.c
+	src/base/ftotval.c src/base/ftpatent.c src/base/ftpfr.c src/base/ftstroke.c
+	src/base/ftsynth.c src/base/ftsystem.c src/base/fttype1.c src/base/ftwinfnt.c
+	src/bdf/bdf.c src/bzip2/ftbzip2.c src/cache/ftcache.c src/cff/cff.c
+	src/cid/type1cid.c src/gzip/ftgzip.c src/lzw/ftlzw.c src/pcf/pcf.c
+	src/pfr/pfr.c src/psaux/psaux.c src/pshinter/pshinter.c src/psnames/psnames.c
+	src/raster/raster.c src/sfnt/sfnt.c src/smooth/smooth.c
+	src/truetype/truetype.c src/type1/type1.c src/type42/type42.c
+	src/winfonts/winfnt.c
 )
 
 if (WIN32)
-  set(freetype_sources ${freetype_sources} builds/windows/ftdebug.c)
+  set(freetype_sources ${freetype_sources} builds/windows/ftdebug.c
+																					 src/base/ftver.rc)
 else (WIN32)
   set(freetype_sources ${freetype_sources} src/base/ftdebug.c)
 endif (WIN32)
 
 LIST_ITEMS_PREPEND(freetype_sources "${FREETYPE_DIR}/")
-
-add_definitions(-DFT2_BUILD_LIBRARY)
 
 INCLUDE_DIRECTORIES("${FREETYPE_DIR}/include")
 
@@ -433,6 +427,7 @@ target_link_libraries(
 
 SET_TARGET_PROPERTIES(
 	${FREETYPE_LIBRARY_NAME} PROPERTIES
+	C_VISIBILITY_PRESET hidden
 	DEFINE_SYMBOL FREETYPE_DLL
 	ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/staging/libs"
 	ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/staging/libs"
@@ -443,6 +438,10 @@ SET_TARGET_PROPERTIES(
 	RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${QTBUILD_DIR}/bin"
 	RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${QTBUILD_DIR}/bin"
 )
+
+target_compile_definitions(
+  ${FREETYPE_LIBRARY_NAME} PRIVATE FT2_BUILD_LIBRARY _CRT_SECURE_NO_WARNINGS
+	_CRT_NONSTDC_NO_WARNINGS DLL_EXPORT)
 
 
 #================================== PODOFO ==================================#

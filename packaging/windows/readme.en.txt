@@ -11,38 +11,38 @@ features, making Visual Studio versions below 2013 not supported.
 First, download the following software.  Unless stated otherwise, take the
 latest stable version.
 
-1. Visual Studio Express 2013/2015 for Windows Desktop.
-   Homepage: http://www.microsoft.com/visualstudio/eng/products/visual-studio-express-products
+1. Visual Studio 2017/2019 for Windows Desktop.
+   Homepage: https://visualstudio.microsoft.com/
 2. CMake >= 3.1.0
    Homepage: http://www.cmake.org
-3. jpeg library
+3. jpeg library (tested with 9c)
    Homepage: http://www.ijg.org/
-   The file we need will be named jpegsrc.v9.tar.gz or similarly.
-4. zlib
+   The file we need will be named jpegsrc.v9c.tar.gz or similarly.
+4. zlib (tested with 1.2.11)
    Homepage: http://www.zlib.net/
    We need a file named like zlib-x.x.x.tar.gz, where x.x.x represents
    the version number.
-5. libpng
+5. libpng (tested with 1.6.37)
    Homepage: http://www.libpng.org/pub/png/libpng.html
    We need a file named like libpng-x.x.x.tar.gz, where x.x.x represents
    the version number.
-6. libtiff
+6. libtiff (tested with 4.0.10)
    Homepage: http://www.simplesystems.org/libtiff/
    Get the source package from ftp://download.osgeo.org/libtiff/ .
    The file is named tiff-x.x.x.tar.gz, where x.x.x represents the
    version number.
-7. freetype (tested with 2.8.1; needed for podofo)
+7. freetype (tested with 2.10.1; needed for podofo)
    Homepage: https://sourceforge.net/projects/freetype/files/freetype2/
    We need a file named like freetype-x.x.x.tar.gz, where x.x.x represents
    the version number.
-8. podofo (tested with 0.9.5)
+8. podofo (tested with 0.9.6)
    Homepage: http://podofo.sourceforge.net/download.html
    We need a file named like podofo-x.x.x.tar.gz, where x.x.x represents
    the version number.
-9. openjpeg  (tested with 2.2.0 and 2.3.0)
+9. openjpeg  (tested with 2.3.1)
    Homepage: http://www.openjpeg.org/
    This is needed for JPG2000 input image support.
-10. Qt5 >= 5.3 (tested with 5.9.1 and 5.9.2)
+10. Qt5 >= 5.3 (tested with 5.13.0)
    Homepage: http://qt-project.org/
    Either a source-only or any of the binary versions will do. In either case
    a custom build of Qt will be made, though a binary version will result in
@@ -53,10 +53,10 @@ latest stable version.
    is unclear. When installing make sure that "Add Perl to the PATH environment
    variable" option is set.
    Note: Perl seems not to be required for the source build of Qt 5.9.
-12. Boost (tested with 1.56.0, 1.65.1)
+12. Boost (tested with 1.70.0)
    Homepage: http://boost.org/
    You can download it in any file format, provided you know how to unpack it.
-13. Eigen3 (tested with 3.2.5)
+13. Eigen3 (tested with 3.3.7)
    Homepage: http://eigen.tuxfamily.org/
 14. NSIS 2.x (tested with 2.46)
    Homepage: http://nsis.sourceforge.net/
@@ -78,16 +78,16 @@ latest stable version.
    Eigen, and scantailor itself to the build directory.  You should get a
    directory structure like this:
    C:\build
-     | boost_1_65_1
-     | eigen-eigen-5a0156e40feb
-     | jpeg-9b
-     | libpng-1.6.32
+     | boost_1_70_0
+     | eigen-eigen-323c052e1731
+     | jpeg-9c
+     | libpng-1.6.37
      | opencl [optional, if no sdk is installed and you want opencl support]
-     | openjpeg-2.3.0
-     | podofo-0.9.5
-     | qt-everywhere-opensource-src-5.9.2 [if building qt from source]
+     | openjpeg-2.3.1
+     | podofo-0.9.6
+     | qt-everywhere-src-5.13.0 [if building qt from source]
      | scantailor
-     | tiff-4.0.8
+     | tiff-4.0.10
      | zlib-1.2.11
    
    If you went for a source-only version of Qt, unpack it there as well.
@@ -144,7 +144,7 @@ latest stable version.
 
    Click "Configure", then "Generate", just like on step 5.
 
-8. Now we are going to build Scan Tailor itself.  On subsequent build of the
+8. Now we are going to build Scan Tailor itself.  On subsequent builds of the
    same (possibly modified) version, you can start right from this step.
    For building a different version, start from step 7.
    
