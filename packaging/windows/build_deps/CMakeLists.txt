@@ -35,19 +35,11 @@ IF(MSVC)
 		SET(suggest_jom TRUE)
 	ENDIF()
 
-	IF(MSVC60 OR MSVC70 OR MSVC71 OR MSVC80 OR MSVC90 OR MSVC10 OR MSVC11)
-		MESSAGE(FATAL_ERROR "This Visual Studio version is too old and is not supported. Only Visual Studio 2013 and 2015 are currently supported.")
-	ELSEIF(MSVC12)
-		SET(qt_platform win32-msvc)
-		SET(boost_toolset msvc-12.0)
-	ELSEIF(MSVC14)
-		SET(qt_platform win32-msvc)
-		SET(boost_toolset msvc-14.0)
-	ELSE()
-		MESSAGE(FATAL_ERROR "A new and unsupported version of Visual Studio was detected. Only Visual Studio 2013 and 2015 are currently supported.")
+	IF(MSVC_VERSION LESS 1900)
+		MESSAGE(FATAL_ERROR "This Visual Studio version is too old and is not supported. Only Visual Studio 2015 and newer are currently supported.")
 	ENDIF()
 ELSE()
-	MESSAGE(FATAL_ERROR "Unsupported compiler. Only Visual Studio 2013 and 2015 is currently supported.")
+	MESSAGE(FATAL_ERROR "Unsupported compiler. Only Visual Studio 2015 and newer are currently supported.")
 ENDIF()
 
 
@@ -495,7 +487,7 @@ ENDIF()
 ADD_CUSTOM_TARGET(
 	boost ALL
 	COMMAND cmd /c bootstrap
-	COMMAND b2 --with-test toolset=${boost_toolset}
+	COMMAND b2 --with-test toolset=msvc
 	threading=multi link=static variant=debug,release ${boost_64bit_flags}
 	stage
 	WORKING_DIRECTORY "${BOOST_DIR}"
@@ -545,7 +537,7 @@ IF(MSVC)
 	# Disable frame pointer ommission in release mode to ensure
 	# good stack traces from our built-in crash reporter.
 	PATCH_FILE(
-		"${QTBASE_DIR}/mkspecs/${qt_platform}/qmake.conf"
+		"${QTBASE_DIR}/mkspecs/win32-msvc/qmake.conf"
 		
 		# Add the flag.
 		"/(QMAKE_CFLAGS_RELEASE[ \t]*=)/\\1 -Oy-/"
@@ -579,7 +571,7 @@ ADD_CUSTOM_COMMAND(
 	COMMAND "${CMAKE_COMMAND}"
 	"-DPROJECT_ROOT=${CMAKE_SOURCE_DIR}/../../.."
 	"-DTARGET_FILE=${qt_build_script}"
-	"-DPLATFORM=${qt_platform}"
+	"-DPLATFORM=win32-msvc"
 	"-DMAYBE_SKIP_BUILDING_TOOLS=${maybe_skip_building_tools}"
 	"-DMAKE_COMMAND=${make_command}"
 	"-DQTBUILD_DIR=${QTBUILD_DIR}"
