@@ -208,8 +208,6 @@ OptionsWidget::applySelection(std::set<PageId> const& pages)
 		return;
 	}
 
-	assert(m_params);
-
 	for (PageId const& page_id : pages) {
 		m_ptrSettings->setPageParams(page_id, m_pageParams);
 		emit invalidateThumbnail(page_id);
