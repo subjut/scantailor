@@ -14,14 +14,18 @@ ENDIF(NOT MAKENSIS_EXE)
 IF(MSVC)
 	GET_FILENAME_COMPONENT(linker_dir "${CMAKE_LINKER}" PATH)
 	FIND_FILE(
-		VC_REDIST_DIR VC/redist PATHS "${linker_dir}"
-		PATH_SUFFIXES .. ../.. ../../../ DOC "VC/redist directory."
+		VC_REDIST_DIR VC/Redist PATHS "${linker_dir}"
+		PATH_SUFFIXES .. ../.. ../../.. ../../../.. ../../../../.. ../../../../../.. ../../../../../../.. DOC "VC/redist directory."
 	)
 	IF(VC_REDIST_DIR)
 		# Get rid of .. components in the path.
 		GET_FILENAME_COMPONENT(VC_REDIST_DIR "${VC_REDIST_DIR}" ABSOLUTE)
 		SET(VC_REDIST_DIR "${VC_REDIST_DIR}" CACHE PATH "VC/redist directory." FORCE)
-
+		
+		IF(MSVC_VERSION GREATER 1900)
+			SET(VC_REDIST_DIR "${VC_REDIST_DIR}/MSVC")
+		ENDIF()
+		
 		# x86 vs x64
 		IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
 			SET(arch "x64")
@@ -30,7 +34,11 @@ IF(MSVC)
 		ENDIF()
 		
 		# Find CRT redistributables.
-		FILE(GLOB crt_redist_dirs "${VC_REDIST_DIR}/${arch}/Microsoft.VC*.CRT")
+		IF(MSVC_VERSION GREATER 1900)
+			FILE(GLOB crt_redist_dirs "${VC_REDIST_DIR}/*/${arch}/Microsoft.VC*.CRT")
+		ELSE()
+			FILE(GLOB crt_redist_dirs "${VC_REDIST_DIR}/${arch}/Microsoft.VC*.CRT")
+		ENDIF()
 		IF(crt_redist_dirs)
 			LIST(GET crt_redist_dirs 0 CRT_REDIST_PATH)
 		ENDIF(crt_redist_dirs)
