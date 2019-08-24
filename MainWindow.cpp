@@ -1491,7 +1491,7 @@ MainWindow::showAboutDialog()
 	Ui::AboutDialog ui;
 	QDialog* dialog = new QDialog(this);
 	ui.setupUi(dialog);
-	ui.version->setText(QString::fromUtf8(VERSION) + "\n" + tr("build on ") +
+	ui.version->setText(QString::fromUtf8(VERSION) + "\n" + tr("built on ") +
 		QDate(BUILD_YEAR, BUILD_MONTH, BUILD_DAY).toString(Qt::SystemLocaleShortDate));
 
 	QResource license(":/GPLv3.html");

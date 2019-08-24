@@ -203,7 +203,7 @@ int main(int argc, char** argv)
 	}
 	
 	// This information is used by QSettings.
-	app.setApplicationName("Scan Tailor");
+	app.setApplicationName("Scan Tailor PDF");
 	app.setOrganizationName("Scan Tailor");
 	app.setOrganizationDomain("scantailor.sourceforge.net");
 	QSettings settings;

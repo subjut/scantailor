@@ -20,7 +20,7 @@ SET(
 	"${CMAKE_SOURCE_DIR}/cmake/default_cxxflags.cmake"
 )
 
-PROJECT("Scan Tailor")
+PROJECT("Scan Tailor PDF")
 
 SET(CMAKE_CXX_STANDARD 11)
 
