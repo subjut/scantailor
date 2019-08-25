@@ -43,11 +43,6 @@ OptionsWidget::OptionsWidget(
 	m_layoutTypeAutoDetected(false)
 {
 	setupUi(this);
-	
-	// Workaround for QTBUG-182
-	QButtonGroup* grp = new QButtonGroup(this);
-	grp->addButton(autoBtn);
-	grp->addButton(manualBtn);
 
 	connect(
 		singlePageUncutBtn, SIGNAL(toggled(bool)),
