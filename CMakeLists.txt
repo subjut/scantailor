@@ -798,6 +798,22 @@ IF(WIN32)
 		CONFIGURATIONS Debug
 	)
 	
+	# Compatibility with QT >= 5.10
+	IF(EXISTS "${PLUGINS_DIR}/styles/qwindowsvistastyle.dll")
+		COPY_TO_BUILD_DIR(
+			"${PLUGINS_DIR}/styles/qwindowsvistastyle.dll" SUBDIR styles
+			CONFIGURATIONS Release MinSizeRel RelWithDebInfo
+		)
+	ENDIF()
+	
+	IF(EXISTS "${PLUGINS_DIR}/styles/qwindowsvistastyled.dll")
+		COPY_TO_BUILD_DIR(
+			"${PLUGINS_DIR}/styles/qwindowsvistastyled.dll" SUBDIR styles
+			CONFIGURATIONS Debug
+		)
+	ENDIF()
+	
+	# Compatibility with QT < 5.4
 	IF(EXISTS "${PLUGINS_DIR}/accessible/qtaccessiblewidgets.dll")
 		COPY_TO_BUILD_DIR(
 			"${PLUGINS_DIR}/accessible/qtaccessiblewidgets.dll" SUBDIR accessible
